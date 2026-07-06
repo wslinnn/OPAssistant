@@ -157,14 +157,6 @@
     "no_dhcpv6_allocation": "No DHCPv6 allocation",
     "ipv6_address": "IPv6 Address",
     "duid": "DUID",
-    "user_list_loading": "Loading user list...",
-    "oaf_not_supported": "OpenAppFilter plugin not installed or not enabled",
-    "no_user_data": "No user data",
-    "nickname": "Nickname",
-    "user_list": "User List",
-    "current_app": "Current App",
-    "current_url": "Current URL",
-    "frequent_apps": "Frequent Apps",
     "load_failed": "Load Failed",
     "hours": "h",
     "minutes": "m",
@@ -175,8 +167,7 @@
     "disconnect_failed": "Disconnect failed",
     "online_status": "Online Status",
     "online": "Online",
-    "offline": "Offline",
-    "get_user_list_failed": "Failed to get user list"
+    "offline": "Offline"
   },
   "statistics": {
     "title": "Statistics",
@@ -301,31 +292,7 @@
     "restart_required": "Please restart the app to apply language settings"
   },
   "client_detail": {
-    "title": "Client Details",
-    "basic_info": "Basic Info",
-    "app_statistics": "App Statistics",
-    "app_records": "App Records",
-    "device_name": "Device Name",
-    "mac_address": "MAC Address",
-    "ip_address": "IP Address",
-    "online_status": "Online Status",
-    "online": "Online",
-    "offline": "Offline",
-    "current_app": "Current App",
-    "current_url": "Current URL",
-    "loading_statistics": "Loading statistics...",
-    "no_statistics": "No statistics data",
-    "loading_records": "Loading records...",
-    "no_records": "No records",
-    "app_name": "App Name",
-    "last_access": "Last Access",
-    "duration": "Duration",
-    "load_failed": "Load failed",
-    "usage_time": "Usage Time",
-    "hours": "h",
-    "minutes": "m",
-    "seconds": "s",
-    "start_time": "Start Time"
+    "title": "Client Details"
   },
   "pages": {
     "home": "Home",
