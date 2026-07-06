@@ -19,10 +19,6 @@
 						<text class="item-title">{{ $t('about.introduction') }}</text>
 						<text class="item-desc">{{ $t('about.introduction_desc') }}</text>
 					</view>
-					<view class="section-item">
-						<text class="item-title">{{ $t('about.website') }}</text>
-						<text class="item-desc">{{ $t('about.website_url') }}</text>
-					</view>
 				</view>
 			</view>
 		</view>

@@ -470,8 +470,6 @@
 								duration: 1000
 							})
 							
-							// 异步检查oaf_status，不阻塞页面跳转
-							this.checkOafStatus(device)
 							
 							setTimeout(() => {
 								uni.reLaunch({
@@ -493,62 +491,6 @@
 				})
 		},
 		
-		// 获取oaf_status并设置support_parental_control（异步非阻塞）
-		async checkOafStatus(device) {
-			try {
-				const protocol = device.useHttps ? 'https' : 'http'
-				const formattedHost = DeviceManager.formatHostForUrl(device.ip)
-				const url = `${protocol}://${formattedHost}:${device.port}/ubus`
-				
-				// 设置3秒超时
-				const response = await Promise.race([
-					new Promise((resolve, reject) => {
-						uni.request({
-							url: url,
-							method: 'POST',
-							header: {
-								'Content-Type': 'application/json'
-							},
-							data: {
-								jsonrpc: '2.0',
-								id: 1,
-								method: 'call',
-								params: [
-									device.sysauth,
-									'appfilter',
-									'get_oaf_status',
-									{}
-								]
-							},
-							timeout: 3000,
-							success: resolve,
-							fail: reject
-						})
-					}),
-					new Promise((_, reject) => {
-						setTimeout(() => reject(new Error('oaf_status请求超时')), 3000)
-					})
-				])
-				
-				if (response.data && response.data.result && response.data.result[0] === 0) {
-					// oaf_status获取成功，设置support_parental_control为1
-					const updatedDevice = { ...device, support_parental_control: 1 }
-					DeviceManager.setCurrentDevice(updatedDevice)
-					console.log('oaf_status获取成功，设置support_parental_control为1')
-				} else {
-					// oaf_status获取失败，设置support_parental_control为0
-					const updatedDevice = { ...device, support_parental_control: 0 }
-					DeviceManager.setCurrentDevice(updatedDevice)
-					console.log('oaf_status获取失败，设置support_parental_control为0')
-				}
-			} catch (error) {
-				// 请求失败或超时，设置support_parental_control为0
-				const updatedDevice = { ...device, support_parental_control: 0 }
-				DeviceManager.setCurrentDevice(updatedDevice)
-				console.log('oaf_status请求失败或超时，设置support_parental_control为0:', error.message || error)
-			}
-		},
-		
 		reLoginDevice(device) {
 				const deviceWithoutSession = { ...device, sysauth: null }
 				DeviceManager.loginDevice(deviceWithoutSession, (loginResult) => {
@@ -564,8 +506,6 @@
 							duration: 1000
 						})
 						
-						// 异步检查oaf_status，不阻塞页面跳转
-						this.checkOafStatus(updatedDevice)
 						
 						setTimeout(() => {
 							uni.reLaunch({

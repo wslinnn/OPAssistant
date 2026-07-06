@@ -227,11 +227,6 @@
     "confirm_factory_reset_content": "确定要恢复出厂设置吗？",
     "confirm_factory_reset_text": "确认"
   },
-  "settings_more": {
-    "more_functions": "更多功能",
-    "title": "更多功能",
-    "description": "后面会结合应用过滤插件增加更多功能，具体可以关注我的网站动态, www.openappfilter.com"
-  },
   "help": {
     "title": "帮助",
     "usage_scenarios": "使用场景",
@@ -257,9 +252,7 @@
     "author": "作者",
     "author_name": "destan19(TT)",
     "introduction": "介绍",
-    "introduction_desc": "全栈开发程序员，十多年网络通信开发经验，家长控制插件OpenAppFilter作者",
-    "website": "网站",
-    "website_url": "www.openappfilter.com"
+    "introduction_desc": "全栈开发程序员，十多年网络通信开发经验"
   },
   "user_info": {
     "title": "我的信息"

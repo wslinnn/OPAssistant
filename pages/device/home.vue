@@ -171,10 +171,6 @@
 			</view>
 		</view>
 		
-		<!-- 网站链接 -->
-		<view class="footer-link" @click="openWebsite">
-			<text class="footer-text">www.openappfilter.com</text>
-		</view>
 
 	</view>
 </template>
@@ -270,19 +266,6 @@ export default {
 			})
 		},
 		
-		// 打开网站
-		openWebsite() {
-			uni.showModal({
-				title: this.$t('home.open_website'),
-				content: this.$t('home.open_website_confirm'),
-				success: (res) => {
-					if (res.confirm) {
-						// 在浏览器中打开网站
-						plus.runtime.openURL('https://www.openappfilter.com')
-					}
-				}
-			})
-		},
 		
 	updateTabBarText() {
       	uni.setTabBarItem({ index: 0, text: this.$t('tabbar.home') })
@@ -1104,27 +1087,8 @@ export default {
 	}
 
 
-	.footer {
-		text-align: center;
-		padding: 40rpx 20rpx;
-		margin-top: 20rpx;
-	}
+	/* footer 已移除（去 OAF 品牌链接） */
 
-	.footer-text {
-		font-size: 28rpx;
-		color: rgba(255, 255, 255, 0.8);
-		font-weight: 500;
-	}
 
-	.footer-link {
-		text-align: center;
-		padding: 20rpx;
-		margin-top: 20rpx;
-		cursor: pointer;
-		transition: opacity 0.2s ease;
-	}
 
-	.footer-link:active {
-		opacity: 0.7;
-	}
 </style> 

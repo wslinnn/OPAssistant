@@ -72,8 +72,6 @@
     "memory_usage": "Memory Usage",
     "memory_cache": "Memory Cache",
     "connections": "Connections",
-    "open_website": "Open Website",
-    "open_website_confirm": "Open www.openappfilter.com in browser?",
     "network_status": "Network Status",
     "wan_ip": "WAN IP",
     "lan_ip": "LAN IP",
@@ -230,10 +228,6 @@
     "confirm_factory_reset_content": "Are you sure you want to factory reset the device?",
     "confirm_factory_reset_text": "Confirm"
   },
-  "settings_more": {
-    "title": "More Features",
-    "description": "More features will be added later by combining OpenAppFilter plug-in. Please pay attention to my website dynamics for details, www.openappfilter.com"
-  },
   "help": {
     "title": "Help",
     "usage_scenarios": "Usage Scenarios",
@@ -259,9 +253,7 @@
     "author": "Author",
     "author_name": "destan19(TT)",
     "introduction": "Introduction",
-    "introduction_desc": "Full-stack developer with over 10 years of network communication development experience, author of OpenAppFilter parental control plugin",
-    "website": "Website",
-    "website_url": "www.openappfilter.com"
+    "introduction_desc": "Full-stack developer with over 10 years of network communication development experience"
   },
   "user_info": {
     "title": "My Info"

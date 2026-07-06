@@ -49,8 +49,6 @@ Vue.use(VueI18n)
 const i18nVue2 = new VueI18n(i18nConfig)
 Vue.config.productionTip = false
 App.mpType = 'app'
-import tabBar from "components/tabBar.vue"
-Vue.component('tabBar',tabBar)
 
 try {
   function isPromise(obj) {
