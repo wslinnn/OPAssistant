@@ -5,9 +5,10 @@ const DEVICE_LIST_KEY = 'device_list'
 const CURRENT_DEVICE_KEY = 'current_device'
 
 const ERROR_CODES = {
-	NETWORK_ERROR: 4000,        
-	AUTH_ERROR: 4001,             
-	OTHER_ERROR: 4002           
+	NETWORK_ERROR: 4000,
+	AUTH_ERROR: 4001,
+	CERTIFICATE_ERROR: 4003,
+	OTHER_ERROR: 4002
 }
 
 class DeviceManager {
@@ -242,6 +243,11 @@ class DeviceManager {
 			method: 'POST',
 			data: data,
 			timeout: 3000,
+			header: {
+				'x-uniauth': 'true',
+				'Content-Type': 'application/json;charset=UTF-8'
+			},
+			sslVerify: false,
 			success: (res) => {
 				console.log(`[DeviceManager] Login response status code: ${res.statusCode}`)
 				console.log(`[DeviceManager] Login response data:`, JSON.stringify(res.data, null, 2))
@@ -315,16 +321,26 @@ class DeviceManager {
 					errno: err.errno,
 					statusCode: err.statusCode
 				})
-				
-				// Handle WeChat mini-program specific errors
-				let errorMessage = 'Network error, if it\'s a mini-program please keep on the same network segment as the router' + err.errMsg
-				
+
+				// 识别证书错误（HTTPS 自签证书等）
+				let errorCode = ERROR_CODES.NETWORK_ERROR
+				if (err.errMsg) {
+					const msg = err.errMsg.toLowerCase()
+					if (msg.includes('certificate') ||
+						(msg.includes('invalid') && (msg.includes('server') || msg.includes('risk'))) ||
+						msg.includes('-1202') ||
+						(err.statusCode === -1 && (msg.includes('certificate') || msg.includes('pretending')))) {
+						errorCode = ERROR_CODES.CERTIFICATE_ERROR
+						console.log(`[DeviceManager] Certificate error detected`)
+					}
+				}
+
 				// Call failure callback
 				if (callback) {
-					console.log(`[DeviceManager] Calling failure callback, error code: ${ERROR_CODES.NETWORK_ERROR}`)
+					console.log(`[DeviceManager] Calling failure callback, error code: ${errorCode}`)
 					callback({
 						success: false,
-						errorCode: ERROR_CODES.NETWORK_ERROR,
+						errorCode: errorCode,
 					})
 				}
 			}
@@ -403,8 +419,10 @@ class DeviceManager {
 					method: options.method || 'GET',
 					data: options.data || {},
 					timeout: 3000,
+					sslVerify: false,
 					header: {
 						'Cookie': cookieString,
+						'x-uniauth': 'true',
 						'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36',
 						...options.header
 					},
