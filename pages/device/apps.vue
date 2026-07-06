@@ -22,17 +22,11 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
 
 export default {
 	data() {
 		return {
 			appList: [
-				{
-					name: this.$t('apps.parental_control'),
-					icon: '/static/shield-w.png',
-					id: 'parental_control'
-				},
 				{
 					name: this.$t('apps.route'),
 					icon: '/static/route-w.png',
@@ -77,21 +71,7 @@ export default {
 		onPluginClick(app) {
 			console.log("点击插件:", app.name)
 			
-			if (app.id === 'parental_control') {
-				// 检查是否支持家长控制
-				const deviceInfo = DeviceManager.getCurrentDevice()
-				if (deviceInfo.support_parental_control === 0) {
-					// 不支持家长控制，直接跳转到提示页面
-					uni.navigateTo({
-						url: '/pages/device/apps/parental_control/parental_control_about'
-					})
-				} else {
-					// 支持家长控制，跳转到正常页面
-					uni.navigateTo({
-						url: '/pages/device/apps/parental_control/index'
-					})
-				}
-			} else if (app.id === 'route') {
+			if (app.id === 'route') {
 				uni.navigateTo({
 					url: '/pages/device/apps/route/index'
 				})

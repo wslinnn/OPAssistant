@@ -68,46 +68,6 @@
 		},
 
 		{
-		    "path" : "pages/device/apps/parental_control/index",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%parental_control.title%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
-		    "path" : "pages/device/apps/parental_control/basic_settings",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%parental_control.basic_settings%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
-		    "path" : "pages/device/apps/parental_control/app_filter_rules",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%parental_control.app_filter%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
-		    "path" : "pages/device/apps/parental_control/advanced_settings",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%parental_control.advanced_settings%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
-		    "path" : "pages/device/apps/parental_control/parental_control_about",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%parental_control_about.title%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
 		    "path" : "pages/device/apps/process/index",
 		    "style" :                                                                                    
 		    {
