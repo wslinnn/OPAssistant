@@ -359,7 +359,6 @@
   },
   "apps": {
     "title": "应用中心",
-    "parental_control": "家长控制",
     "route": "路由表",
     "process": "系统进程",
     "startup": "启动项",

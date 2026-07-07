@@ -425,7 +425,7 @@
 						DeviceManager.setCurrentDevice(updatedDevice)
 			
 						
-						// 在跳转前先检查session是否有效，然后检查oaf_status
+						// 跳转前校验 session 有效性
 						this.checkSessionValidity(updatedDevice)
 					} else {
 						// 登录失败

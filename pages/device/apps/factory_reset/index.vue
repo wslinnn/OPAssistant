@@ -90,7 +90,8 @@ export default {
 					}]
 				},
 				header: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'x-uniauth': 'true'
 				},
 				timeout: 3000,
 				success: (res) => {
@@ -219,7 +220,7 @@ export default {
 	text-align: center;
 	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
 }
-.reboot-icon {
+.reset-icon {
 	width: 200rpx;
 	height: 200rpx;
 	margin: 0 auto 30rpx;

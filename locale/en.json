@@ -314,7 +314,6 @@
   },
   "apps": {
     "title": "App Center",
-    "parental_control": "Parental Control",
     "route": "Routing Table",
     "process": "Processes",
     "startup": "Startup Items",

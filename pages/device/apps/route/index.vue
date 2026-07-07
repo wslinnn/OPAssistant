@@ -105,7 +105,8 @@ export default {
 					}]
 				},
 				header: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'x-uniauth': 'true'
 				},
 				timeout: 10000,
 				success: (res) => {

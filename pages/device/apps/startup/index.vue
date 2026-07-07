@@ -90,7 +90,8 @@ export default {
 					params: [this.session, 'rc', 'list', {}]
 				},
 				header: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'x-uniauth': 'true'
 				},
 				timeout: 10000,
 				success: (res) => {

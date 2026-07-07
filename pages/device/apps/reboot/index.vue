@@ -86,7 +86,8 @@ export default {
 					params: [this.session, 'system', 'reboot', {}]
 				},
 				header: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'x-uniauth': 'true'
 				},
 				timeout: 3000,
 				success: (res) => {

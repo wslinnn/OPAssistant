@@ -13,32 +13,26 @@
 
 			<!-- 进程列表 -->
 			<view v-if="processList.length > 0" class="process-list">
-				<!-- 表头 -->
-				<view class="table-header">
-					<view class="header-cell process-name">{{ $t('process.process_name') }}</view>
-					<view class="header-cell cpu">{{ $t('process.cpu') }}</view>
-					<view class="header-cell memory">{{ $t('process.memory') }}</view>
-					<view class="header-cell status">{{ $t('process.status') }}</view>
-				</view>
-				
-				<!-- 进程行 -->
-				<view v-for="(process, index) in processList" :key="process.PID" class="process-row" @click="toggleProcessDetail(index)">
-					<view class="table-cell process-name">
+				<!-- 进程卡片 -->
+				<view v-for="(process, index) in processList" :key="process.PID" class="process-card" @click="toggleProcessDetail(index)">
+					<view class="process-card-header">
 						<view class="process-info">
 							<text class="process-name-text">{{ getProcessName(process.COMMAND) }}</text>
-							<text class="process-pid-text">PID: {{ process.PID }}</text>
+							<text class="process-pid-text">{{ process.PID }}</text>
+						</view>
+						<text class="status-chip">{{ getStatusText(process.STAT) }}</text>
+					</view>
+					<view class="process-metrics">
+						<view class="metric-item">
+							<text class="metric-label">{{ $t('process.cpu') }}</text>
+							<text class="cpu-value">{{ process['%CPU'] }}</text>
+						</view>
+						<view class="metric-item">
+							<text class="metric-label">{{ $t('process.memory') }}</text>
+							<text class="memory-value">{{ formatMemoryWithPercent(process.VSZ, process['%MEM']) }}</text>
 						</view>
 					</view>
-					<view class="table-cell cpu">
-						<text class="cpu-value">{{ process['%CPU'] }}</text>
-					</view>
-					<view class="table-cell memory">
-						<text class="memory-value">{{ formatMemoryWithPercent(process.VSZ, process['%MEM']) }}</text>
-					</view>
-					<view class="table-cell status">
-						<text class="status-value">{{ getStatusText(process.STAT) }}</text>
-					</view>
-					
+
 					<!-- 展开详情 -->
 					<view v-if="process.expanded" class="process-detail">
 						<view class="detail-section">
@@ -127,7 +121,8 @@ export default {
 					params: [this.session, 'luci', 'getProcessList', {}]
 				},
 				header: {
-					'Content-Type': 'application/json'
+					'Content-Type': 'application/json',
+					'x-uniauth': 'true'
 				},
 				timeout: 10000,
 				success: (res) => {
@@ -311,59 +306,26 @@ export default {
 }
 
 .process-list {
+	padding: 0;
+}
+
+.process-card {
 	background: rgba(255, 255, 255, 0.95);
 	border-radius: 16rpx;
-	overflow: hidden;
+	padding: 30rpx;
+	margin-bottom: 20rpx;
 	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
 }
 
-.table-header {
-	display: flex;
-	background: rgba(0, 122, 255, 0.1);
-	padding: 20rpx 0;
-	border-bottom: 1rpx solid rgba(0, 0, 0, 0.1);
-}
-
-.header-cell {
-	flex: 1;
-	text-align: center;
-	font-size: 26rpx;
-	font-weight: 600;
-	color: #333;
-}
-
-.header-cell.process-name {
-	flex: 2;
-	text-align: left;
-	padding-left: 30rpx;
-}
-
-.process-row {
-	display: flex;
-	border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
-	transition: background-color 0.2s ease;
-}
-
-.process-row:last-child {
-	border-bottom: none;
-}
-
-.process-row:active {
+.process-card:active {
 	background: rgba(0, 122, 255, 0.05);
 }
 
-.table-cell {
-	flex: 1;
-	padding: 20rpx 10rpx;
+.process-card-header {
 	display: flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.table-cell.process-name {
-	flex: 2;
-	justify-content: flex-start;
-	padding-left: 30rpx;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 20rpx;
 }
 
 .process-info {
@@ -384,6 +346,31 @@ export default {
 	color: #666;
 }
 
+.status-chip {
+	font-size: 22rpx;
+	color: #007AFF;
+	background: rgba(0, 122, 255, 0.1);
+	padding: 6rpx 16rpx;
+	border-radius: 20rpx;
+	font-weight: 500;
+}
+
+.process-metrics {
+	display: flex;
+}
+
+.metric-item {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
+
+.metric-label {
+	font-size: 22rpx;
+	color: #999;
+	margin-bottom: 8rpx;
+}
+
 .cpu-value {
 	font-size: 26rpx;
 	font-weight: 600;
@@ -394,12 +381,6 @@ export default {
 	font-size: 26rpx;
 	font-weight: 600;
 	color: #4CD964;
-}
-
-.status-value {
-	font-size: 26rpx;
-	font-weight: 600;
-	color: #007AFF;
 }
 
 .process-detail {

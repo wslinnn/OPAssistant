@@ -21,6 +21,10 @@
 						<text class="item-title">{{ $t('help.q1') }}</text>
 						<text class="item-desc">{{ $t('help.a1') }}</text>
 					</view>
+					<view class="section-item ios-note-item">
+						<text class="item-title">{{ ios_https_title }}</text>
+						<text class="item-desc">{{ ios_https_desc }}</text>
+					</view>
 					<view class="section-item">
 						<text class="item-title">{{ $t('help.q2') }}</text>
 						<text class="item-desc">{{ $t('help.a2') }}</text>
@@ -43,6 +47,17 @@
 export default {
 	data() {
 		return {
+		}
+	},
+	computed: {
+		is_en() {
+			return this.$i18n && this.$i18n.locale === 'en'
+		},
+		ios_https_title() {
+			return this.is_en ? 'Q: Why is HTTPS management not supported on iOS?' : 'Q: 为什么 iOS 不支持 HTTPS 管理？'
+		},
+		ios_https_desc() {
+			return this.is_en ? 'A: Due to iOS certificate trust restrictions, HTTPS management may fail for self-signed certificates. Please use HTTP management on iOS.' : 'A: 由于 iOS 对证书信任限制，使用自签名证书时 HTTPS 管理可能失败。iOS 端请使用 HTTP 方式管理。'
 		}
 	},
 	onLoad() {
@@ -131,5 +146,10 @@ export default {
 	color: #666;
 	line-height: 1.6;
 	display: block;
+}
+
+.ios-note-item {
+	background: #f1f7ff;
+	border: 2rpx solid #d7e7ff;
 }
 </style> 

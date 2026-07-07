@@ -26,6 +26,8 @@
 export default {
 	data() {
 		return {
+			navRetryTimer1: null,
+			navRetryTimer2: null,
 			appList: [
 				{
 					name: this.$t('apps.route'),
@@ -56,13 +58,54 @@ export default {
 		}
 	},
 	onLoad() {
-		uni.setNavigationBarTitle({
-			title: this.$t('apps.title')
-		})
-		
+		this.applyNavigationBar()
+
 		console.log("插件管理页面加载")
 	},
+	onShow() {
+		this.applyNavigationBar()
+	},
+	onTabItemTap() {
+		this.applyNavigationBar()
+	},
+	onHide() {
+		this.clearNavRetryTimer()
+	},
+	onUnload() {
+		this.clearNavRetryTimer()
+	},
 	methods: {
+		applyNavigationBar() {
+			const title = this.$t('apps.title') || 'App Center'
+			const apply = () => {
+				uni.setNavigationBarTitle({ title })
+				uni.setNavigationBarColor({
+					frontColor: '#000000',
+					backgroundColor: '#F8F8F8'
+				})
+			}
+			apply()
+			this.$nextTick(() => {
+				apply()
+			})
+			this.clearNavRetryTimer()
+			this.navRetryTimer1 = setTimeout(() => {
+				apply()
+			}, 80)
+			this.navRetryTimer2 = setTimeout(() => {
+				apply()
+			}, 220)
+		},
+		clearNavRetryTimer() {
+			if (this.navRetryTimer1) {
+				clearTimeout(this.navRetryTimer1)
+				this.navRetryTimer1 = null
+			}
+			if (this.navRetryTimer2) {
+				clearTimeout(this.navRetryTimer2)
+				this.navRetryTimer2 = null
+			}
+		},
 		goBack() {
 			uni.reLaunch({
 				url: '/pages/device_list'
