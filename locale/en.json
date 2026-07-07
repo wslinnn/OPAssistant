@@ -4,8 +4,6 @@
     "add_device": "Add Device",
     "edit_device": "Edit Device",
     "empty_message": "No devices yet, please add OpenWrt device first,You need to ensure that the current device can access the OpenWrt device through a browser.",
-    "help_feedback": "Help",
-    "about": "About",
     "settings": "Settings",
     "language_settings": "Language Settings",
     "host_address": "Host",
@@ -246,33 +244,6 @@
     "confirm_factory_reset": "Confirm Factory Reset",
     "confirm_factory_reset_content": "Are you sure you want to factory reset the device?",
     "confirm_factory_reset_text": "Confirm"
-  },
-  "help": {
-    "title": "Help",
-    "usage_scenarios": "Usage Scenarios",
-    "supported_version": "1. Supported OpenWrt Version",
-    "supported_version_desc": "OpenWrt 21.02 and above, luci2.0 version",
-    "supported_devices": "2. Supported Devices",
-    "supported_devices_desc": "All OpenWrt devices",
-    "faq": "FAQ",
-    "q1": "Q: What to do if connection fails?",
-    "a1": "A: Please check if the network is normal first, ensure that the device can access the LuCI interface through browser, and confirm that the OpenWrt version is 21.02 or above.",
-    "q2": "Q: Is IPv6 access supported?",
-    "a2": "A: Yes",
-    "q3": "Q: How are username and password stored?",
-    "a3": "A: This application does not report any information to cloud servers. Username and password information are saved locally. Using this application indicates agreement to the username and password storage policy.",
-    "q4": "Q: Is remote management supported?",
-    "a4": "A: Yes, note that the firewall needs to be closed, as long as the browser can manage the interface"
-  },
-  "about": {
-    "title": "About",
-    "version_info": "Version Info",
-    "version_number": "Version",
-    "developer_info": "Developer Info",
-    "author": "Author",
-    "author_name": "destan19(TT)",
-    "introduction": "Introduction",
-    "introduction_desc": "Full-stack developer with over 10 years of network communication development experience"
   },
   "user_info": {
     "title": "My Info"

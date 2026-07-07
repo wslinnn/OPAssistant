@@ -4,8 +4,6 @@
     "add_device": "添加设备",
     "edit_device": "编辑设备",
     "empty_message": "暂无设备，请先点击右上角添加OpenWrt设备，您需要确保当前设备可以浏览器访问OpenWrt设备",
-    "help_feedback": "帮助",
-    "about": "关于",
     "settings": "设置",
     "language_settings": "语言设置",
     "host_address": "主机地址",
@@ -244,33 +242,6 @@
     "confirm_factory_reset": "确认恢复出厂设置",
     "confirm_factory_reset_content": "确定要恢复出厂设置吗？",
     "confirm_factory_reset_text": "确认"
-  },
-  "help": {
-    "title": "帮助",
-    "usage_scenarios": "使用场景",
-    "supported_version": "1. 支持的OpenWrt版本",
-    "supported_version_desc": "OpenWrt 21.02 及以上版本，LuCI2.0版本，不支持闭源的OpenWrt固件，比如qwrt",
-    "supported_devices": "2. 支持的设备",
-    "supported_devices_desc": "所有OpenWrt设备",
-    "faq": "常见问题",
-    "q1": "Q: 连接失败怎么办？",
-    "a1": "A: 请先检查网络是否正常，保证设备能够通过浏览器访问设备LuCI界面，目前只支持http方式访问，不支持https方式访问",
-    "q2": "Q: 是否支持IPv6访问？",
-    "a2": "A: 支持",
-    "q3": "Q: 用户名和密码如何存储？",
-    "a3": "A: 该应用不会上报任何信息到云服务器，用户名和密码信息都保存到本地，使用该应用表示同意用户名和密码存储策略。",
-    "q4": "Q: 是否支持远程管理?",
-    "a4": "A: 支持，注意需要关闭防火墙，只要保证浏览器可以管理界面即可"
-  },
-  "about": {
-    "title": "关于",
-    "version_info": "版本信息",
-    "version_number": "版本号",
-    "developer_info": "开发者信息",
-    "author": "作者",
-    "author_name": "destan19(TT)",
-    "introduction": "介绍",
-    "introduction_desc": "全栈开发程序员，十多年网络通信开发经验"
   },
   "user_info": {
     "title": "我的信息"

@@ -13,21 +13,11 @@
 		
 		<uni-popup ref="menuPopup" type="top" :mask-click="true">
 			<view class="menu-content">
-				<view class="menu-item" @click="navigateToHelp">
-	
-					<text class="menu-item-text">{{ $t('device_list.help_feedback') }}</text>
-					<image class="menu-item-arrow" src="/static/right.png" mode="widthFix" style="width: 32rpx; height: 32rpx;" />
-				</view>
 				<view class="menu-item" @click="navigateToSettings">
 				
 				<text class="menu-item-text">{{ $t('device_list.language_settings') }}</text>
 				<image class="menu-item-arrow" src="/static/right.png" mode="widthFix" style="width: 32rpx; height: 32rpx;" />
 			</view>
-				<view class="menu-item" @click="navigateToAbout">
-			
-					<text class="menu-item-text">{{ $t('device_list.about') }}</text>
-					<image class="menu-item-arrow" src="/static/right.png" mode="widthFix" style="width: 32rpx; height: 32rpx;" />
-				</view>
 			
 			</view>
 		</uni-popup>
@@ -532,19 +522,6 @@
 				this.$refs.menuPopup.open()
 			},
 
-			navigateToHelp() {
-				uni.navigateTo({
-					url: '/pages/help/index'
-				})
-				this.$refs.menuPopup.close()
-			},
-
-			navigateToAbout() {
-				uni.navigateTo({
-					url: '/pages/about/index'
-				})
-				this.$refs.menuPopup.close()
-			},
 
 			navigateToSettings() {
 				uni.navigateTo({

@@ -100,22 +100,6 @@
 		    }
 		},
 		{
-		    "path" : "pages/help/index",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%help.title%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
-		    "path" : "pages/about/index",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%about.title%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
 		    "path" : "pages/language/index",
 		    "style" :                                                                                    
 		    {
