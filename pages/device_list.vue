@@ -55,23 +55,23 @@
 					</view>
 			
 				
-			<!-- 		<view class="form-item">
-						<text class="label">{{ $t('device_list.protocol') }}:</text>
-						<view class="protocol-selector">
-							<view 
-								:class="['protocol-option', deviceForm.useHttps ? '' : 'active']" 
-								@click="deviceForm.useHttps = false"
-							>
-								<text>HTTP</text>
-							</view>
-							<view 
-								:class="['protocol-option', deviceForm.useHttps ? 'active' : '']" 
-								@click="deviceForm.useHttps = true"
-							>
-								<text>HTTPS</text>
-							</view>
+			<view class="form-item">
+					<text class="label">{{ $t('device_list.protocol') }}:</text>
+					<view class="protocol-selector">
+						<view
+							:class="['protocol-option', deviceForm.useHttps ? '' : 'active']"
+							@click="deviceForm.useHttps = false"
+						>
+							<text>{{ $t('device_list.protocol_http') }}</text>
 						</view>
-					</view> -->
+						<view
+							:class="['protocol-option', deviceForm.useHttps ? 'active' : '']"
+							@click="deviceForm.useHttps = true"
+						>
+							<text>{{ $t('device_list.protocol_https') }}</text>
+						</view>
+					</view>
+				</view>
 					<view class="form-item">
 						<text class="label">{{ $t('device_list.username_default') }}:</text>
 						<input class="input" v-model="deviceForm.username" :placeholder="$t('device_list.username_placeholder')" />
