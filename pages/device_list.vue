@@ -562,6 +562,7 @@
 <style scoped>
 .container {
 	padding: 10rpx;
+	padding-top: var(--status-bar-height);
 	background-color: #f5f5f5;
 	min-height: 100vh;
 }

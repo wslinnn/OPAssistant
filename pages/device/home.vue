@@ -918,7 +918,6 @@
 		padding: 20rpx 0;
 		padding-top: calc(10rpx + 5px);
 		padding-bottom: calc(10rpx + 5px);
-		margin-top: 10px;
 		margin-bottom: 4rpx;
 	}
 	.content-scroll {

@@ -97,6 +97,15 @@ export default {
     this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
     this.loadData()
   },
+  onShow() {
+    uni.setNavigationBarTitle({
+      title: this.$t('client.title')
+    })
+    uni.setNavigationBarColor({
+      frontColor: '#000000',
+      backgroundColor: '#F8F8F8'
+    })
+  },
   methods: {
     goBack() {
       uni.reLaunch({ url: '/pages/device_list' })
