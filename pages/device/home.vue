@@ -1,18 +1,8 @@
 <template>
 	<view class="container">
-		<view v-if="loading" class="loading-overlay">
-			<view class="loading-content">
-				<view class="loading-spinner"></view>
-				<text class="loading-text">{{ $t('home.loading') }}</text>
-			</view>
-		</view>
+		<oa-loading v-if="loading" overlay :text="$t('home.loading')" />
 
-		<view class="nav-header">
-			<view class="back-btn home-nav-back" @click="goBack">
-				<image class="back-icon" src="/static/back.png" mode="widthFix" />
-			</view>
-			<text class="nav-title">{{ truncatedModel || $t('home.openwrt_device') }}</text>
-		</view>
+		<oa-nav-header :title="truncatedModel || $t('home.openwrt_device')" show-back @back="goBack" />
 
 		<scroll-view scroll-y="true" class="content-scroll">
 			<!-- 系统状态 -->
@@ -159,6 +149,7 @@
 
 <script>
 	import DeviceManager from '@/utils/deviceManager.js'
+	import { OA_ECHART } from '@/utils/echart-theme.js'
 	// #ifdef MP
 	const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
 	// #endif
@@ -260,13 +251,6 @@
 		},
 		onLoad() {
 			this.updateTabBarText()
-			uni.setNavigationBarTitle({
-				title: this.$t('home.title')
-			})
-			uni.setNavigationBarColor({
-				frontColor: '#000000',
-				backgroundColor: '#F8F8F8'
-			})
 			this.deviceInfo = DeviceManager.getCurrentDevice()
 			this.session = this.deviceInfo.sysauth
 			const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
@@ -276,13 +260,6 @@
 			this.startAutoRefresh()
 		},
 		onShow() {
-			uni.setNavigationBarTitle({
-				title: this.$t('home.title')
-			})
-			uni.setNavigationBarColor({
-				frontColor: '#000000',
-				backgroundColor: '#F8F8F8'
-			})
 			this.startAutoRefresh()
 		},
 		onHide() {
@@ -338,8 +315,8 @@
 						roundCap: true,
 						silent: true,
 						data: [
-							{ value: v, itemStyle: { color: '#2196F3', borderRadius: 8 } },
-							{ value: 100 - v, itemStyle: { color: '#e8e8e8' } }
+							{ value: v, itemStyle: { color: OA_ECHART.ringMain, borderRadius: 8 } },
+							{ value: 100 - v, itemStyle: { color: OA_ECHART.ringBg } }
 						],
 						label: { show: false },
 						labelLine: { show: false }
@@ -359,8 +336,8 @@
 						roundCap: true,
 						silent: true,
 						data: [
-							{ value: v, itemStyle: { color: '#2196F3', borderRadius: 8 } },
-							{ value: 100 - v, itemStyle: { color: '#e8e8e8' } }
+							{ value: v, itemStyle: { color: OA_ECHART.ringMain, borderRadius: 8 } },
+							{ value: 100 - v, itemStyle: { color: OA_ECHART.ringBg } }
 						],
 						label: { show: false },
 						labelLine: { show: false }
@@ -428,7 +405,7 @@
 						trigger: 'axis',
 						axisPointer: { type: 'cross' },
 						backgroundColor: 'rgba(0, 0, 0, 0.8)',
-						borderColor: '#4facfe',
+						borderColor: OA_ECHART.tooltipBorder,
 						borderWidth: 1,
 						textStyle: { color: '#fff', fontSize: 12 },
 						formatter: (params) => {
@@ -443,8 +420,8 @@
 						boundaryGap: false,
 						data: xAxisData,
 						axisLabel: { show: false },
-						axisTick: { show: true, length: 4, lineStyle: { color: '#cbd5e1' } },
-						axisLine: { lineStyle: { color: '#e5e7eb' } },
+						axisTick: { show: true, length: 4, lineStyle: { color: OA_ECHART.axisLine } },
+						axisLine: { lineStyle: { color: OA_ECHART.axisLine } },
 						splitLine: { show: false }
 					},
 					yAxis: {
@@ -458,13 +435,13 @@
 							inside: true,
 							align: 'left',
 							margin: 8,
-							color: '#64748b',
+							color: OA_ECHART.axisLabel,
 							fontSize: 10,
 							formatter: (val) => this.formatQuickBandwidthAxis(val)
 						},
-						splitLine: { show: true, lineStyle: { color: '#eef2f7', type: 'dashed' } },
-						axisLine: { show: true, lineStyle: { color: '#e5e7eb' } },
-						axisTick: { show: true, length: 4, lineStyle: { color: '#cbd5e1' } }
+						splitLine: { show: true, lineStyle: { color: OA_ECHART.splitLine, type: 'dashed' } },
+						axisLine: { show: true, lineStyle: { color: OA_ECHART.axisLine } },
+						axisTick: { show: true, length: 4, lineStyle: { color: OA_ECHART.axisLine } }
 					},
 					series: [
 						{
@@ -475,7 +452,7 @@
 							showSymbol: false,
 							symbol: 'none',
 							animation: false,
-							lineStyle: { color: '#4facfe', width: 1.2 },
+							lineStyle: { color: OA_ECHART.inband, width: 1.2 },
 							areaStyle: {
 								color: {
 									type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
@@ -494,7 +471,7 @@
 							showSymbol: false,
 							symbol: 'none',
 							animation: false,
-							lineStyle: { color: '#00c4cc', width: 1.2 },
+							lineStyle: { color: OA_ECHART.outband, width: 1.2 },
 							areaStyle: {
 								color: {
 									type: 'linear', x: 0, y: 0, x2: 0, y2: 1,
@@ -901,8 +878,8 @@
 	@import '@/styles/common.scss';
 
 	.container {
-		padding: 0 15rpx 24rpx;
-		padding-top: var(--status-bar-height);
+		padding: 0 $oa-sp-2 $oa-sp-3;
+		background: $oa-bg;
 		height: 100vh;
 		box-sizing: border-box;
 		display: flex;
@@ -910,39 +887,9 @@
 		overflow: hidden;
 	}
 
-	.nav-header {
-		position: relative;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 20rpx 0;
-		padding-top: calc(10rpx + 5px);
-		padding-bottom: calc(10rpx + 5px);
-		margin-bottom: 4rpx;
-	}
 	.content-scroll {
 		flex: 1;
 		min-height: 0;
-	}
-	.nav-title {
-		font-size: 28rpx;
-		font-weight: 700;
-		color: #000;
-		max-width: 400rpx;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
-	.back-btn {
-		width: 52rpx;
-		height: 52rpx;
-	}
-	.home-nav-back {
-		position: absolute;
-		left: 0;
-		top: 50%;
-		transform: translateY(-50%);
-		z-index: 2;
 	}
 
 	.device-card,
@@ -955,11 +902,11 @@
 	}
 
 	.device-card {
-		background: rgba(255, 255, 255, 0.95);
-		border-radius: 20rpx;
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
 		padding: 24rpx 40rpx;
 		margin-bottom: 13rpx;
-		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+		box-shadow: $oa-shadow-md;
 	}
 	.device-header {
 		margin-bottom: 20rpx;
@@ -967,7 +914,7 @@
 	.device-name {
 		font-size: 32rpx;
 		font-weight: 700;
-		color: #333;
+		color: $oa-text;
 		display: block;
 		margin-bottom: 13rpx;
 		white-space: nowrap;
@@ -977,7 +924,7 @@
 	}
 	.device-version {
 		font-size: 24rpx;
-		color: #666;
+		color: $oa-text-muted;
 		display: block;
 		white-space: nowrap;
 		overflow: hidden;
@@ -997,7 +944,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 8rpx 0;
-		border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+		border-bottom: 1rpx solid $oa-hairline;
 	}
 	.device-card .detail-row {
 		padding: 4rpx 0;
@@ -1007,13 +954,13 @@
 	}
 	.detail-label {
 		font-size: 26rpx;
-		color: #666;
+		color: $oa-text-muted;
 		font-weight: 500;
 	}
 	.detail-value {
 		font-size: 26rpx;
 		font-weight: 610;
-		color: #333;
+		color: $oa-text;
 		text-align: right;
 		max-width: 60%;
 		word-break: break-all;
@@ -1033,15 +980,15 @@
 	.card-title {
 		font-size: 28rpx;
 		font-weight: 600;
-		color: #333;
+		color: $oa-text;
 	}
 
 	.cpu-mem-card {
-		background: rgba(255, 255, 255, 0.95);
-		border-radius: 20rpx;
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
 		padding: 10rpx 40rpx 20rpx;
 		margin-bottom: 13rpx;
-		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+		box-shadow: $oa-shadow-md;
 	}
 	.ring-row {
 		display: flex;
@@ -1085,7 +1032,7 @@
 		transform: translate(-50%, -50%);
 		font-size: 20rpx;
 		font-weight: 400;
-		color: #666;
+		color: $oa-text-muted;
 		line-height: 1;
 		white-space: nowrap;
 	}
@@ -1096,24 +1043,24 @@
 		transform: translate(-50%, -50%);
 		font-size: 24rpx;
 		font-weight: 700;
-		color: #333;
+		color: $oa-text;
 		line-height: 1;
 		white-space: nowrap;
 	}
 	.ring-detail {
 		font-size: 22rpx;
-		color: #888;
+		color: $oa-text-subtle;
 		margin-top: 12rpx;
 		text-align: center;
 		word-break: break-all;
 	}
 
 	.quick-bandwidth-card {
-		background: rgba(255, 255, 255, 0.95);
-		border-radius: 20rpx;
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
 		padding: 24rpx 40rpx 20rpx;
 		margin-bottom: 13rpx;
-		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+		box-shadow: $oa-shadow-md;
 	}
 	.quick-bandwidth-header {
 		display: flex;
@@ -1129,7 +1076,7 @@
 	}
 	.quick-bandwidth-device {
 		font-size: 22rpx;
-		color: #64748b;
+		color: $oa-text-subtle;
 	}
 	.quick-bandwidth-metrics {
 		display: flex;
@@ -1169,11 +1116,11 @@
 	}
 
 	.network-card {
-		background: rgba(255, 255, 255, 0.95);
-		border-radius: 20rpx;
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
 		padding: 24rpx 40rpx;
 		margin-bottom: 13rpx;
-		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+		box-shadow: $oa-shadow-md;
 	}
 	.network-details {
 		display: flex;
@@ -1188,11 +1135,11 @@
 	}
 
 	.disk-card {
-		background: rgba(255, 255, 255, 0.95);
-		border-radius: 20rpx;
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
 		padding: 24rpx 40rpx;
 		margin-bottom: 13rpx;
-		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+		box-shadow: $oa-shadow-md;
 	}
 	.disk-list {
 		display: flex;
@@ -1201,9 +1148,9 @@
 	}
 	.disk-item {
 		padding: 20rpx;
-		background: rgba(0, 0, 0, 0.02);
-		border-radius: 12rpx;
-		border-left: 4rpx solid #2196f3;
+		background: $oa-surface-sunken;
+		border-radius: $oa-radius-md;
+		border-left: 4rpx solid $oa-brand;
 	}
 	.disk-info {
 		margin-bottom: 12rpx;
@@ -1211,7 +1158,7 @@
 	.disk-mount {
 		font-size: 26rpx;
 		font-weight: 700;
-		color: #333;
+		color: $oa-text;
 		line-height: 1.4;
 	}
 	.disk-usage {
@@ -1221,68 +1168,27 @@
 	}
 	.disk-usage-line {
 		font-size: 24rpx;
-		color: #666;
+		color: $oa-text-muted;
 		text-align: right;
 	}
 	.disk-progress-bar {
 		width: 100%;
 		height: 8rpx;
-		background: #f0f0f0;
-		border-radius: 4rpx;
+		background: $oa-surface-sunken;
+		border-radius: $oa-radius-sm;
 		overflow: hidden;
 	}
 	.disk-progress-fill {
 		height: 100%;
-		border-radius: 4rpx;
-		background: linear-gradient(90deg, #4caf50, #8bc34a);
+		border-radius: $oa-radius-sm;
+		background: $oa-success;
 		transition: width 0.3s ease;
 	}
 	.disk-temp-label {
 		font-size: 22rpx;
-		color: #999;
+		color: $oa-text-subtle;
 		font-weight: 400;
 		margin-left: 8rpx;
 	}
 
-	.loading-overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		background: rgba(0, 0, 0, 0.5);
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		z-index: 999;
-	}
-	.loading-content {
-		background: #fff;
-		padding: 40rpx;
-		border-radius: 20rpx;
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		min-width: 300rpx;
-	}
-	.loading-spinner {
-		border: 4rpx solid #f3f3f3;
-		border-top: 4rpx solid #3498db;
-		border-radius: 50%;
-		width: 80rpx;
-		height: 80rpx;
-		animation: spin 1s linear infinite;
-	}
-	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
-	}
-	.loading-text {
-		font-size: 28rpx;
-		margin-top: 20rpx;
-		text-align: center;
-		width: 100%;
-	}
 </style>
