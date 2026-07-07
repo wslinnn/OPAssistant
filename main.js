@@ -45,7 +45,9 @@ let i18nConfig = {
 // #ifndef VUE3
 import Vue from 'vue'
 import VueI18n from 'vue-i18n'
+import VueCompositionAPI from '@vue/composition-api'
 Vue.use(VueI18n)
+Vue.use(VueCompositionAPI)
 const i18nVue2 = new VueI18n(i18nConfig)
 Vue.config.productionTip = false
 App.mpType = 'app'

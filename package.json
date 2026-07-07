@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@vue/composition-api": "^1.7.2",
     "crypto-js": "^4.2.0",
     "echarts": "^5.6.0"
   }

@@ -69,7 +69,7 @@
         <view class="chart-container">
           <view class="chart-wrapper">
             <view class="charts-box">
-              <l-echart ref="loadChartRef" @finished="initLoadChart"></l-echart>
+              <l-echart ref="loadChartRef" @finished="initLoadChart" style="width: 100%; height: 100%;"></l-echart>
             </view>
           </view>
         </view>
@@ -136,7 +136,7 @@
         <view class="chart-container">
           <view class="chart-wrapper">
             <view class="charts-box">
-              <l-echart ref="chartRef" @finished="initChart"></l-echart>
+              <l-echart ref="chartRef" @finished="initChart" style="width: 100%; height: 100%;"></l-echart>
             </view>
           </view>
         </view>
@@ -155,7 +155,12 @@
 
 <script>
 import DeviceManager from '@/utils/deviceManager.js'
-import * as echarts from '@/uni_modules/lime-echart/static/app/echarts.min.js'
+// #ifdef MP
+const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
+// #endif
+// #ifndef MP
+const echarts = null
+// #endif
 import PageTab from '@/components/PageTab.vue'
 
 export default {
