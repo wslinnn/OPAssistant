@@ -9,10 +9,7 @@
       </view>
     </view> -->
 
-    <view class="tab-bar">
-      <view :class="['tab', currentTab === 0 ? 'active' : '']" @click="currentTab = 0">{{ $t('statistics.bandwidth') }}</view>
-      <view :class="['tab', currentTab === 1 ? 'active' : '']" @click="currentTab = 1">{{ $t('statistics.load') }}</view>
-    </view>
+    <page-tab :tabs="tab_list" v-model="currentTab" />
 
     <view v-if="currentTab === 1">
       <view v-if="loadData" class="load-card">
@@ -159,8 +156,18 @@
 <script>
 import DeviceManager from '@/utils/deviceManager.js'
 import * as echarts from '@/uni_modules/lime-echart/static/echarts.min.js'
+import PageTab from '@/components/PageTab.vue'
 
 export default {
+  components: { PageTab },
+  computed: {
+    tab_list() {
+      return [
+        { value: 0, label: this.$t('statistics.bandwidth') },
+        { value: 1, label: this.$t('statistics.load') }
+      ]
+    }
+  },
   data() {
     return {
              currentTab: 0,
@@ -537,6 +544,7 @@ export default {
      uni.setNavigationBarTitle({
        title: this.$t('statistics.title')
      })
+     uni.setNavigationBarColor({ frontColor: '#000000', backgroundColor: '#F8F8F8' })
      
      this.deviceInfo = DeviceManager.getCurrentDevice()
      this.session = this.deviceInfo.sysauth
@@ -554,6 +562,8 @@ export default {
     },
     
     onShow() {
+      uni.setNavigationBarTitle({ title: this.$t('statistics.title') })
+      uni.setNavigationBarColor({ frontColor: '#000000', backgroundColor: '#F8F8F8' })
       this.loadPageData()
       if (this.currentTab === 0) {
         if (this.selectedDevice && !this.timer) {
@@ -618,7 +628,7 @@ export default {
            method: 'call',
            params: [this.session, 'luci-rpc', 'getNetworkDevices', {}]
          },
-         header: { 'Content-Type': 'application/json' },
+         header: { 'Content-Type': 'application/json', 'x-uniauth': 'true' },
          timeout: 3000,
          success: (res) => {
            if (res.data && res.data.result && res.data.result[1]) {
@@ -668,7 +678,7 @@ export default {
            method: 'call',
            params: [this.session, 'luci', 'getRealtimeStats', { mode: 'load' }]
          },
-         header: { 'Content-Type': 'application/json' },
+         header: { 'Content-Type': 'application/json', 'x-uniauth': 'true' },
          timeout: 3000,
          success: (res) => {
            if (res.data && res.data.result && res.data.result[1] && res.data.result[1].result) {
@@ -883,7 +893,7 @@ export default {
            method: 'call',
            params: [this.session, 'luci', 'getRealtimeStats', { mode: 'interface', device: this.selectedDevice }]
          },
-         header: { 'Content-Type': 'application/json' },
+         header: { 'Content-Type': 'application/json', 'x-uniauth': 'true' },
          timeout: 3000,
          success: (res) => {
            if (res.data && res.data.result && res.data.result[1] && res.data.result[1].result) {
