@@ -2,14 +2,7 @@
 <template>
 	<view class="container">
 
-		<!-- <view class="nav-header" style="display: flex; align-items: center; position: relative;">
-			<view class="back-btn" @click="goBack" style="z-index: 2;">
-				<image class="back-icon" src="/static/back.png" mode="widthFix" style="width: 40rpx; height: 40rpx;" />
-			</view>
-			<view style="flex: 1; display: flex; justify-content: center; position: absolute; left: 0; right: 0; pointer-events: none;">
-				<text style="font-size: 32rpx; font-weight: bold; color: #fff;">OpenWrt</text>
-			</view>
-		</view> -->
+		<oa-nav-header :title="$t('network.title')" />
 
 		<page-tab :tabs="tab_list" v-model="currentTab" />
 
@@ -147,14 +140,6 @@
 			}
 		},
 		onLoad() {
-			uni.setNavigationBarTitle({
-				title: this.$t('network.title')
-			})
-			uni.setNavigationBarColor({
-				frontColor: '#000000',
-				backgroundColor: '#F8F8F8'
-			})
-
 			this.deviceInfo = DeviceManager.getCurrentDevice()
 			this.session = this.deviceInfo.sysauth
 			const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
@@ -164,13 +149,6 @@
 			this.loadData()
 		},
 		onShow() {
-			uni.setNavigationBarTitle({
-				title: this.$t('network.title')
-			})
-			uni.setNavigationBarColor({
-				frontColor: '#000000',
-				backgroundColor: '#F8F8F8'
-			})
 		},
 		computed: {
 			tab_list() {
@@ -646,44 +624,16 @@
 @import '@/styles/common.scss';
 
 .container {
-	padding: 20rpx;
-}
-
-.tab-bar {
-	display: flex;
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
-	overflow: hidden;
-	margin-bottom: 30rpx;
-	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
-	padding: 6rpx;
-}
-.tab {
-	flex: 1;
-	text-align: center;
-	padding: 20rpx 12rpx;
-	font-size: 28rpx;
-	color: #666;
-	font-weight: 500;
-	background: transparent;
-	transition: all 0.3s ease;
-	border-radius: 12rpx;
-	margin: 0 3rpx;
-	position: relative;
-}
-.tab.active {
-	color: #4a90e2;
-	background: rgba(255, 255, 255, 0.9);
-	font-weight: 700;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+	padding: 0 $oa-sp-2 $oa-sp-3;
+	background: $oa-bg;
 }
 
 .iface-card {
-	background: rgba(255, 255, 255, 0.98);
-	border-radius: 18rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	margin-bottom: 20rpx;
-	box-shadow: 0 4rpx 14rpx rgba(15, 23, 42, 0.08);
-	border: 1rpx solid #e7edf6;
+	box-shadow: $oa-shadow-md;
+	border: 1rpx solid $oa-hairline;
 	padding: 28rpx;
 }
 .iface-header {
@@ -692,12 +642,12 @@
 	align-items: center;
 	margin-bottom: 12rpx;
 	padding-bottom: 8rpx;
-	border-bottom: 1rpx solid rgba(59, 130, 246, 0.12);
+	border-bottom: 1rpx solid $oa-hairline;
 }
 .iface-title {
 	font-size: 30rpx;
 	font-weight: 600;
-	color: #1f2937;
+	color: $oa-text;
 	max-width: 72%;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -705,10 +655,10 @@
 }
 .iface-proto {
 	font-size: 22rpx;
-	color: #2563eb;
+	color: $oa-brand;
 	font-weight: 600;
-	background: #eaf2ff;
-	border-radius: 999rpx;
+	background: $oa-brand-subtle;
+	border-radius: $oa-radius-full;
 	padding: 4rpx 14rpx;
 }
 .iface-body {
@@ -719,14 +669,14 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 10rpx 0;
-	border-bottom: 1rpx solid rgba(15, 23, 42, 0.06);
+	border-bottom: 1rpx solid $oa-hairline;
 }
 .iface-row:last-child {
 	border-bottom: none;
 }
 .iface-row .label {
 	font-size: 24rpx;
-	color: #6b7280;
+	color: $oa-text-muted;
 	font-weight: 500;
 	min-width: 140rpx;
 	flex-shrink: 0;
@@ -734,7 +684,7 @@
 .iface-row .value {
 	font-size: 24rpx;
 	font-weight: 500;
-	color: #111827;
+	color: $oa-text;
 	text-align: right;
 	max-width: 64%;
 	word-break: break-all;
@@ -758,7 +708,7 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-	color: #1f2937;
+	color: $oa-text;
 }
 .ipv6-eye {
 	width: 34rpx;
@@ -769,10 +719,10 @@
 .ipv6-dialog {
 	width: 660rpx;
 	max-height: 72vh;
-	background: rgba(255, 255, 255, 0.98);
-	border-radius: 20rpx;
-	border: 1rpx solid #e7edf6;
-	box-shadow: 0 10rpx 34rpx rgba(15, 23, 42, 0.16);
+	background: $oa-surface;
+	border-radius: $oa-radius-2xl;
+	border: 1rpx solid $oa-hairline;
+	box-shadow: $oa-shadow-lg;
 	padding: 22rpx 22rpx 20rpx;
 	box-sizing: border-box;
 }
@@ -782,19 +732,19 @@
 	justify-content: space-between;
 	margin-bottom: 18rpx;
 	padding-bottom: 10rpx;
-	border-bottom: 1rpx solid rgba(15, 23, 42, 0.08);
+	border-bottom: 1rpx solid $oa-hairline;
 }
 .ipv6-dialog-title {
 	font-size: 30rpx;
 	font-weight: 600;
-	color: #1f2937;
+	color: $oa-text;
 	padding-right: 10rpx;
 }
 .ipv6-dialog-close {
 	width: 44rpx;
 	height: 44rpx;
-	border-radius: 22rpx;
-	background: #eef2f7;
+	border-radius: $oa-radius-lg;
+	background: $oa-surface-sunken;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -803,7 +753,7 @@
 .ipv6-dialog-close-text {
 	font-size: 30rpx;
 	line-height: 30rpx;
-	color: #64748b;
+	color: $oa-text-subtle;
 	font-weight: 500;
 }
 .ipv6-dialog-scroll {
@@ -819,18 +769,18 @@
 	display: block;
 	font-size: 24rpx;
 	font-weight: 600;
-	color: #2563eb;
+	color: $oa-brand;
 	margin-bottom: 10rpx;
 }
 .ipv6-dialog-list {
-	background: #f8fbff;
-	border: 1rpx solid #e3edf9;
-	border-radius: 14rpx;
+	background: $oa-surface-overlay;
+	border: 1rpx solid $oa-hairline;
+	border-radius: $oa-radius-md;
 	overflow: hidden;
 }
 .ipv6-dialog-item {
 	padding: 16rpx 18rpx;
-	border-bottom: 1rpx solid rgba(15, 23, 42, 0.06);
+	border-bottom: 1rpx solid $oa-hairline;
 }
 .ipv6-dialog-item:last-child {
 	border-bottom: none;
@@ -838,7 +788,7 @@
 .ipv6-dialog-item-text {
 	font-size: 24rpx;
 	font-weight: 500;
-	color: #111827;
+	color: $oa-text;
 	word-break: break-all;
 	line-height: 1.45;
 }
@@ -853,17 +803,17 @@
 	text-align: center;
 	font-size: 24rpx;
 	font-weight: 600;
-	color: #2563eb;
-	background: #eaf2ff;
-	border: 1rpx solid #bfd8ff;
-	border-radius: 999rpx;
+	color: $oa-brand;
+	background: $oa-brand-subtle;
+	border: 1rpx solid $oa-brand-subtle;
+	border-radius: $oa-radius-full;
 }
 .dev-card {
-	background: rgba(255, 255, 255, 0.98);
-	border-radius: 18rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	margin-bottom: 14rpx;
-	box-shadow: 0 4rpx 14rpx rgba(15, 23, 42, 0.08);
-	border: 1rpx solid #e7edf6;
+	box-shadow: $oa-shadow-md;
+	border: 1rpx solid $oa-hairline;
 	padding: 26rpx;
 }
 .dev-header {
@@ -872,12 +822,12 @@
 	align-items: center;
 	margin-bottom: 12rpx;
 	padding-bottom: 8rpx;
-	border-bottom: 1rpx solid rgba(15, 23, 42, 0.06);
+	border-bottom: 1rpx solid $oa-hairline;
 }
 .dev-title {
 	font-size: 30rpx;
 	font-weight: 600;
-	color: #1f2937;
+	color: $oa-text;
 	max-width: 72%;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -887,15 +837,15 @@
 	font-size: 22rpx;
 	font-weight: 600;
 	padding: 4rpx 12rpx;
-	border-radius: 999rpx;
+	border-radius: $oa-radius-full;
 }
 .dev-status.up {
-	color: #16a34a;
-	background: #e9f8ef;
+	color: $oa-success;
+	background: $oa-success-surface;
 }
 .dev-status.down {
-	color: #dc2626;
-	background: #fdecec;
+	color: $oa-danger;
+	background: $oa-danger-surface;
 }
 .dev-body {
 	margin-top: 2rpx;
@@ -905,21 +855,21 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 10rpx 0;
-	border-bottom: 1rpx solid rgba(15, 23, 42, 0.06);
+	border-bottom: 1rpx solid $oa-hairline;
 }
 .dev-row:last-child {
 	border-bottom: none;
 }
 .dev-row .label {
 	font-size: 24rpx;
-	color: #6b7280;
+	color: $oa-text-muted;
 	font-weight: 500;
 	min-width: 140rpx;
 	flex-shrink: 0;
 }
 .dev-row .value {
 	font-size: 24rpx;
-	color: #111827;
+	color: $oa-text;
 	font-weight: 500;
 	text-align: right;
 	max-width: 64%;
@@ -932,18 +882,18 @@
 .dev-group-title {
 	font-size: 24rpx;
 	font-weight: 600;
-	color: #374151;
+	color: $oa-text;
 	margin: 18rpx 0 12rpx 0;
 	padding-left: 12rpx;
-	border-left: 6rpx solid #60a5fa;
+	border-left: 6rpx solid $oa-brand;
 	background: transparent;
 	box-shadow: none;
 }
 .wireless-radio-card {
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 20rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	margin-bottom: 30rpx;
-	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+	box-shadow: $oa-shadow-md;
 	padding: 40rpx;
 }
 .wireless-radio-header {
@@ -955,11 +905,11 @@
 .wireless-radio-title {
 	font-size: 28rpx;
 	font-weight: 700;
-	color: #333;
+	color: $oa-text;
 }
 .wireless-radio-chip {
 	font-size: 22rpx;
-	color: #888;
+	color: $oa-text-subtle;
 }
 .wireless-radio-body {
 	margin-bottom: 0;
@@ -969,18 +919,18 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 8rpx 0;
-	border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+	border-bottom: 1rpx solid $oa-hairline;
 	font-size: 26rpx;
-	color: #666;
+	color: $oa-text-muted;
 }
 .wireless-radio-row:last-child {
 	border-bottom: none;
 }
 .wireless-iface-card {
-	background: rgba(255, 255, 255, 0.9);
-	border-radius: 16rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	margin: 20rpx 0 10rpx 0;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+	box-shadow: $oa-shadow-md;
 	padding: 30rpx;
 }
 .wireless-iface-header {
@@ -992,11 +942,11 @@
 .wireless-iface-title {
 	font-size: 26rpx;
 	font-weight: 700;
-	color: #333;
+	color: $oa-text;
 }
 .wireless-iface-mode {
 	font-size: 22rpx;
-	color: #666;
+	color: $oa-text-muted;
 }
 .wireless-iface-body {
 	margin-top: 4rpx;
@@ -1006,21 +956,21 @@
 	justify-content: space-between;
 	align-items: center;
 	padding: 8rpx 0;
-	border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+	border-bottom: 1rpx solid $oa-hairline;
 	font-size: 26rpx;
-	color: #666;
+	color: $oa-text-muted;
 }
 .wireless-iface-row:last-child {
 	border-bottom: none;
 }
 .wireless-empty {
-	color: #666;
+	color: $oa-text-muted;
 	text-align: center;
 	margin: 40rpx 0;
 	font-size: 28rpx;
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 20rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	padding: 40rpx;
-	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+	box-shadow: $oa-shadow-md;
 }
 </style>

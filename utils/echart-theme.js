@@ -27,5 +27,8 @@ export const OA_ECHART = {
 	ringBg: '#F1F2F5',
 
 	// tooltip
-	tooltipBorder: '#4facfe'
+	tooltipBorder: '#4facfe',
+
+	// 图表 chrome（图例文字 / 轴标签 / 轴线 / 网格，对齐 token）
+	legendText: '#1F2937'
 }

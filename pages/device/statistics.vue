@@ -1,21 +1,11 @@
 <template>
   <view class="container">
-    <!-- <view class="nav-header" style="display: flex; align-items: center; position: relative;">
-      <view class="back-btn" @click="goBack" style="z-index: 2;">
-        <image class="back-icon" src="/static/back.png" mode="widthFix" style="width: 40rpx; height: 40rpx;" />
-      </view>
-      <view style="flex: 1; display: flex; justify-content: center; position: absolute; left: 0; right: 0; pointer-events: none;">
-        <text style="font-size: 32rpx; font-weight: bold; color: #fff;">OpenWrt</text>
-      </view>
-    </view> -->
+    <oa-nav-header :title="$t('statistics.title')" />
 
     <page-tab :tabs="tab_list" v-model="currentTab" />
 
     <view v-if="currentTab === 1">
       <view v-if="loadData" class="load-card">
-        <view class="load-header">
-        </view>
-        
         <view class="load-stats">
           <view class="stat-section">
             <view class="stat-title">{{ $t('statistics.current_load') }}</view>
@@ -96,9 +86,6 @@
       </view>
 
       <view v-if="selectedDevice && bandwidthData" class="bandwidth-card">
-        <view class="bandwidth-header">
-        </view>
-        
         <view class="bandwidth-stats">
           <view class="stat-section">
                   <view class="stat-title">{{ $t('statistics.inbound') }}</view>
@@ -155,6 +142,7 @@
 
 <script>
 import DeviceManager from '@/utils/deviceManager.js'
+import { OA_ECHART } from '@/utils/echart-theme.js'
 // #ifdef MP
 const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
 // #endif
@@ -221,15 +209,15 @@ export default {
              axisPointer: {
                type: 'cross',
                label: {
-                 backgroundColor: '#6a7985'
+                 backgroundColor: OA_ECHART.axisLabel
                },
                crossStyle: {
-                 color: '#6a7985',
+                 color: OA_ECHART.axisLabel,
                  width: 2
                }
              },
              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-             borderColor: '#4facfe',
+             borderColor: OA_ECHART.tooltipBorder,
              borderWidth: 1,
              textStyle: {
                color: '#fff',
@@ -249,7 +237,7 @@ export default {
              data: ['入站', '出站'],
              top: 10,
              textStyle: {
-               color: '#333'
+               color: OA_ECHART.legendText
              }
            },
            grid: {
@@ -265,7 +253,7 @@ export default {
              data: [],
              axisLabel: {
                show: true,
-               color: '#666',
+               color: OA_ECHART.axisLabel,
                fontSize: 10,
                interval: 'auto'
              },
@@ -273,19 +261,19 @@ export default {
                show: true,
                length: 4,
                lineStyle: {
-                 color: '#ddd'
+                 color: OA_ECHART.axisLine
                }
              },
              axisLine: {
                lineStyle: {
-                 color: '#ddd'
+                 color: OA_ECHART.axisLine
                }
              }
            },
            yAxis: {
              type: 'value',
              axisLabel: {
-               color: '#666',
+               color: OA_ECHART.axisLabel,
                fontSize: 10,
                formatter: (value) => {
                  return this.formatBandwidth(value)
@@ -297,19 +285,19 @@ export default {
                show: true,
                length: 4,
                lineStyle: {
-                 color: '#ddd'
+                 color: OA_ECHART.axisLine
                }
              },
              axisLine: {
                show: true,
                lineStyle: {
-                 color: '#ddd'
+                 color: OA_ECHART.axisLine
                }
              },
              splitLine: {
                show: true,
                lineStyle: {
-                 color: '#f0f0f0',
+                 color: OA_ECHART.splitLine,
                  type: 'dashed'
                }
              }
@@ -322,7 +310,7 @@ export default {
                smooth: true,
                animation: false,
                lineStyle: {
-                 color: '#4facfe',
+                 color: OA_ECHART.inband,
                  width: 1
                },
                areaStyle: {
@@ -346,7 +334,7 @@ export default {
                smooth: true,
                animation: false,
                lineStyle: {
-                 color: '#00f2fe',
+                 color: OA_ECHART.outband,
                  width: 1
                },
                areaStyle: {
@@ -373,15 +361,15 @@ export default {
              axisPointer: {
                type: 'cross',
                label: {
-                 backgroundColor: '#6a7985'
+                 backgroundColor: OA_ECHART.axisLabel
                },
                crossStyle: {
-                 color: '#6a7985',
+                 color: OA_ECHART.axisLabel,
                  width: 2
                }
              },
              backgroundColor: 'rgba(0, 0, 0, 0.8)',
-             borderColor: '#ff6b6b',
+             borderColor: OA_ECHART.load1,
              borderWidth: 1,
              textStyle: {
                color: '#fff',
@@ -403,7 +391,7 @@ export default {
              data: ['1分钟', '5分钟', '15分钟'],
              top: 10,
              textStyle: {
-               color: '#333'
+               color: OA_ECHART.legendText
              }
            },
            grid: {
@@ -419,7 +407,7 @@ export default {
              data: [],
              axisLabel: {
                show: true,
-               color: '#666',
+               color: OA_ECHART.axisLabel,
                fontSize: 10,
                interval: 'auto'
              },
@@ -427,19 +415,19 @@ export default {
                show: true,
                length: 4,
                lineStyle: {
-                 color: '#ddd'
+                 color: OA_ECHART.axisLine
                }
              },
              axisLine: {
                lineStyle: {
-                 color: '#ddd'
+                 color: OA_ECHART.axisLine
                }
              }
            },
            yAxis: {
              type: 'value',
              axisLabel: {
-               color: '#666',
+               color: OA_ECHART.axisLabel,
                fontSize: 10,
                show: true,
                inside: true,
@@ -451,19 +439,19 @@ export default {
                show: true,
                length: 4,
                lineStyle: {
-                 color: '#ddd'
+                 color: OA_ECHART.axisLine
                }
              },
              axisLine: {
                show: true,
                lineStyle: {
-                 color: '#ddd'
+                 color: OA_ECHART.axisLine
                }
              },
              splitLine: {
                show: true,
                lineStyle: {
-                 color: '#f0f0f0',
+                 color: OA_ECHART.splitLine,
                  type: 'dashed'
                }
              }
@@ -476,7 +464,7 @@ export default {
                smooth: true,
                animation: false,
                lineStyle: {
-                 color: '#ff6b6b',
+                 color: OA_ECHART.load1,
                  width: 1
                },
                areaStyle: {
@@ -500,7 +488,7 @@ export default {
                smooth: true,
                animation: false,
                lineStyle: {
-                 color: '#4ecdc4',
+                 color: OA_ECHART.load5,
                  width: 1
                },
                areaStyle: {
@@ -524,7 +512,7 @@ export default {
                smooth: true,
                animation: false,
                lineStyle: {
-                 color: '#45b7d1',
+                 color: OA_ECHART.load15,
                  width: 1
                },
                areaStyle: {
@@ -546,11 +534,6 @@ export default {
     }
   },
      onLoad() {
-     uni.setNavigationBarTitle({
-       title: this.$t('statistics.title')
-     })
-     uni.setNavigationBarColor({ frontColor: '#000000', backgroundColor: '#F8F8F8' })
-     
      this.deviceInfo = DeviceManager.getCurrentDevice()
      this.session = this.deviceInfo.sysauth
      const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
@@ -567,8 +550,6 @@ export default {
     },
     
     onShow() {
-      uni.setNavigationBarTitle({ title: this.$t('statistics.title') })
-      uni.setNavigationBarColor({ frontColor: '#000000', backgroundColor: '#F8F8F8' })
       this.loadPageData()
       if (this.currentTab === 0) {
         if (this.selectedDevice && !this.timer) {
@@ -1169,27 +1150,27 @@ export default {
 }
 
 .status-empty {
-  color: #666;
+  color: $oa-text-muted;
   text-align: center;
   margin: 40rpx 0;
   font-size: 28rpx;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20rpx;
+  background: $oa-surface;
+  border-radius: $oa-radius-lg;
   padding: 40rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow: $oa-shadow-md;
 }
 
 .interface-selector {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20rpx;
+  background: $oa-surface;
+  border-radius: $oa-radius-lg;
   padding: 20rpx;
   margin-bottom: 20rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow: $oa-shadow-md;
 }
 
 .selector-label {
   font-size: 28rpx;
-  color: #333;
+  color: $oa-text;
   font-weight: bold;
   margin-bottom: 20rpx;
 }
@@ -1202,16 +1183,16 @@ export default {
 
 .interface-item {
   padding: 15rpx 25rpx;
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 25rpx;
+  background: $oa-hairline;
+  border-radius: $oa-radius-xl;
   font-size: 26rpx;
-  color: #666;
+  color: $oa-text-muted;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .interface-item.active {
-  background: #007AFF;
+  background: $oa-brand;
   color: white;
   font-weight: bold;
 }
@@ -1221,57 +1202,39 @@ export default {
 }
 
  .bandwidth-card {
-   background: rgba(255, 255, 255, 0.95);
-   border-radius: 20rpx;
+   background: $oa-surface;
+   border-radius: $oa-radius-lg;
    padding: 10rpx;
-   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+   box-shadow: $oa-shadow-md;
  }
 
  .load-card {
-   background: rgba(255, 255, 255, 0.95);
-   border-radius: 20rpx;
+   background: $oa-surface;
+   border-radius: $oa-radius-lg;
    padding: 10rpx;
-   box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
- }
-
- .bandwidth-header {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   margin-bottom: 30rpx;
-   padding-bottom: 20rpx;
-   border-bottom: 1rpx solid rgba(0, 0, 0, 0.1);
- }
-
- .load-header {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   margin-bottom: 30rpx;
-   padding-bottom: 20rpx;
-   border-bottom: 1rpx solid rgba(0, 0, 0, 0.1);
+   box-shadow: $oa-shadow-md;
  }
 
  .bandwidth-title {
    font-size: 32rpx;
    font-weight: bold;
-   color: #333;
+   color: $oa-text;
  }
 
  .load-title {
    font-size: 32rpx;
    font-weight: bold;
-   color: #333;
+   color: $oa-text;
  }
 
  .bandwidth-time {
    font-size: 24rpx;
-   color: #666;
+   color: $oa-text-muted;
  }
 
  .load-time {
    font-size: 24rpx;
-   color: #666;
+   color: $oa-text-muted;
  }
 
  .bandwidth-stats {
@@ -1288,8 +1251,8 @@ export default {
 
  .stat-section {
    flex: 1;
-   background: rgba(0, 0, 0, 0.02);
-   border-radius: 15rpx;
+   background: $oa-surface-sunken;
+   border-radius: $oa-radius-md;
    padding: 15rpx;
    min-width: 0;
  }
@@ -1297,7 +1260,7 @@ export default {
  .stat-title {
    font-size: 24rpx;
    font-weight: bold;
-   color: #333;
+   color: $oa-text;
    margin-bottom: 15rpx;
    text-align: center;
  }
@@ -1311,36 +1274,28 @@ export default {
 
  .stat-label {
    font-size: 22rpx;
-   color: #666;
+   color: $oa-text-muted;
  }
 
  .stat-value {
    font-size: 22rpx;
-   color: #333;
+   color: $oa-text;
    font-weight: bold;
  }
 
  .current-value {
-   color: #0066ff !important;
+   color: $oa-brand;
  }
 
  .chart-container {
-   background: rgba(0, 0, 0, 0.02);
-   border-radius: 15rpx;
+   background: $oa-surface-sunken;
+   border-radius: $oa-radius-md;
    padding: 5rpx;
- }
-
- .chart-title {
-   font-size: 28rpx;
-   font-weight: bold;
-   color: #333;
-   text-align: center;
-   margin-bottom: 20rpx;
  }
 
                .chart-wrapper {
       height: 600rpx;
-      background: rgba(255, 255, 255, 0.8);
+      background: $oa-surface;
       border-radius: 10rpx;
       overflow: hidden;
       position: relative;
