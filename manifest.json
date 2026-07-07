@@ -1,14 +1,25 @@
 {
     "name" : "OPAssistant",
-    "appid" : "__UNI__000000",
+    "appid" : "__UNI__4982388",
     "description" : "OpenWrt assistant",
-    "versionName" : "1.0.6",
-    "versionCode" : 106,
+    "versionName" : "1.0.12",
+    "versionCode" : 112,
     "transformPx" : false,
     "app-plus" : {
         "usingComponents" : true,
         "nvueStyleCompiler" : "uni-app",
-        "compilerVersion" : 3,
+        "compilerVersion" : 5.07,
+        "statusbar" : {
+            "immersed" : "supportedDevice",
+            "style" : "dark",
+            "background" : "#F8F8F8"
+        },
+        "safearea" : {
+            "background" : "#FFFFFF",
+            "bottom" : {
+                "offset" : "auto"
+            }
+        },
         "splashscreen" : {
             "alwaysShowBeforeRender" : false,
             "waiting" : false,
@@ -16,7 +27,8 @@
             "delay" : 0
         },
         "ssl" : {
-            "untrustedca" : "accept"
+            "untrustedca" : "accept",
+            "verify" : false
         },
 
         "modules" : {},
@@ -103,5 +115,7 @@
         "enable" : false
     },
     "vueVersion" : "2",
-    "locale" : "zh-Hans"
+    "locale" : "auto",
+    "fallbackLocale" : "en",
+    "darkmode" : false
 }
