@@ -162,6 +162,8 @@
 						return this.$t('device_list.error_auth')
 					case 4002: // 其他错误
 						return this.$t('device_list.error_other')
+					case 4003: // 证书错误（HTTPS 自签证书等）
+						return this.$t('device_list.error_certificate')
 					default:
 						return this.$t('device_list.connection_failed_content')
 				}
@@ -256,7 +258,7 @@
 			
 		
 			validateUsername(username) {
-				const usernameRegex = /^[a-zA-Z0-9]+$/
+				const usernameRegex = /^[a-zA-Z0-9.\-_@]+$/
 				return usernameRegex.test(username)
 			},
 			
@@ -266,7 +268,7 @@
 					return { valid: true, message: '' }
 				}
 				
-				if (password.length > 32) {
+				if (password.length > 64) {
 					return { valid: false, message: this.$t('device_list.password_length_error') }
 				}
 				if (password.includes(' ') || password.includes('\n') || password.includes('\r')) {
@@ -454,7 +456,8 @@
 						params: [device.sysauth, "system", "board", {}]
 					},
 					header: {
-						'Content-Type': 'application/json'
+						'Content-Type': 'application/json',
+						'x-uniauth': 'true'
 					},
 					timeout: 3000,
 					success: (res) => {
@@ -568,25 +571,12 @@
 				this.deleteDevice(this.currentDevice.id)
 			},
 
-			// 格式化设备地址，超过32个字符时隐藏中间部分
+			// 格式化设备地址：仅显示 IP，超过 36 字符按 首19...尾14 截断
 			formatDeviceAddress(device) {
-				const protocol = device.useHttps ? 'https' : 'http'
-				const fullAddress = `${protocol}://${device.ip}:${device.port}`
-				
-				if (fullAddress.length <= 32) {
-					return fullAddress
-				}
-				
-				// 超过32个字符时，隐藏中间部分
-				// 保留协议部分 + 前8个字符 + ... + 后8个字符
-				const protocolPart = `${protocol}://`
-				const remainingLength = 32 - protocolPart.length - 3 // 减去协议和...的长度
-				const startLength = Math.floor(remainingLength / 2)
-				const endLength = remainingLength - startLength
-				
-				const start = fullAddress.substring(protocolPart.length, protocolPart.length + startLength)
-				const end = fullAddress.substring(fullAddress.length - endLength)
-				return `${protocolPart}${start}...${end}`
+				const ip = device && device.ip ? String(device.ip).trim() : ''
+				if (!ip) return '-'
+				if (ip.length <= 36) return ip
+				return ip.substring(0, 19) + '...' + ip.substring(ip.length - 14)
 			}
 		}
 	}
