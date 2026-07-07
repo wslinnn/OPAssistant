@@ -159,7 +159,7 @@
 
 <script>
 	import DeviceManager from '@/utils/deviceManager.js'
-	import * as echarts from '@/uni_modules/lime-echart/static/echarts.min.js'
+	import * as echarts from '@/uni_modules/lime-echart/static/app/echarts.min.js'
 
 	export default {
 		data() {
