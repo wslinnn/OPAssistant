@@ -1,0 +1,17 @@
+# 依赖
+node_modules/
+
+# HBuilderX / uni-app 构建产物
+unpackage/
+.hbuilderx/
+
+# IDE
+.idea/
+.vscode/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
