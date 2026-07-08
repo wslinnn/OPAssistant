@@ -11,13 +11,13 @@
 					<oa-status-badge type="info" :text="iface.proto || '-'" />
 				</view>
 				<view class="iface-row" v-if="iface.mac && iface.mac !== '-'">
-					<text class="label">{{ $t('network.mac') }}：</text><text class="value">{{ iface.mac }}</text>
+					<text class="label">{{ $t('network.mac') }}：</text><oa-copy-text class="value" :text="iface.mac">{{ iface.mac }}</oa-copy-text>
 				</view>
 				<view class="iface-row">
 					<text class="label">{{ $t('network.traffic_rx_tx') }}：</text>
 					<text class="value">{{ formatBytes(iface.rx_bytes) }} / {{ formatBytes(iface.tx_bytes) }}</text>
 				</view>
-				<view class="iface-row" v-if="iface.ipv4"><text class="label">{{ $t('network.ipv4') }}：</text><text class="value">{{ iface.ipv4 }}</text></view>
+				<view class="iface-row" v-if="iface.ipv4"><text class="label">{{ $t('network.ipv4') }}：</text><oa-copy-text class="value" :text="iface.ipv4">{{ iface.ipv4 }}</oa-copy-text></view>
 				<view class="iface-row ipv6-row" v-if="hasIpv6Data(iface)">
 					<text class="label">{{ $t('network.ipv6') }}：</text>
 					<view class="value ipv6-value-wrap">
@@ -32,11 +32,11 @@
 						<image v-if="hasMoreAddress(iface.pdAssignList)" class="ipv6-eye" src="/static/eye.png" mode="aspectFit" @click.stop="showAddressDetail($t('network.ipv6_pd_assign'), iface.pdAssignList)" />
 					</view>
 				</view>
-				<view class="iface-row" v-if="iface.gateway"><text class="label">{{ $t('network.gateway') }}：</text><text class="value">{{ iface.gateway }}</text></view>
+				<view class="iface-row" v-if="iface.gateway"><text class="label">{{ $t('network.gateway') }}：</text><oa-copy-text class="value" :text="iface.gateway">{{ iface.gateway }}</oa-copy-text></view>
 				<view class="iface-row" v-if="iface.dnsList && iface.dnsList.length">
 					<text class="label">{{ $t('network.dns') }}：</text>
 					<view class="value" style="text-align:right;">
-						<view v-for="dns in iface.dnsList" :key="dns">{{ dns }}</view>
+						<oa-copy-text v-for="dns in iface.dnsList" :key="dns" :text="dns" class="dns-line">{{ dns }}</oa-copy-text>
 					</view>
 				</view>
 			</oa-card>
@@ -50,11 +50,11 @@
 					<view slot="actions">
 						<oa-status-badge :type="dev.up ? 'up' : 'down'" :text="dev.up ? $t('network.up') : $t('network.down')" />
 					</view>
-					<view class="dev-row"><text class="label">{{ $t('network.mac') }}：</text><text class="value">{{ dev.macaddr || '-' }}</text></view>
+					<view class="dev-row"><text class="label">{{ $t('network.mac') }}：</text><oa-copy-text class="value" :text="dev.macaddr">{{ dev.macaddr || '-' }}</oa-copy-text></view>
 					<view v-if="group.type === 'bridge' && dev.ports && dev.ports.length" class="dev-row">
-						<text class="label">{{ $t('network.bridge_ports') }}：</text><text class="value">{{ dev.ports.join(', ') }}</text>
+						<text class="label">{{ $t('network.bridge_ports') }}：</text><oa-copy-text class="value" :text="dev.ports.join(', ')">{{ dev.ports.join(', ') }}</oa-copy-text>
 					</view>
-					<view class="dev-row"><text class="label">{{ $t('network.mtu') }}：</text><text class="value">{{ dev.mtu || '-' }}</text></view>
+					<view class="dev-row"><text class="label">{{ $t('network.mtu') }}：</text><oa-copy-text class="value" :text="dev.mtu">{{ dev.mtu || '-' }}</oa-copy-text></view>
 					<view class="dev-row"><text class="label">{{ $t('network.receive') }}：</text><text class="value">{{ formatBytes(dev.rx_bytes) }} ({{ formatPacketCount(dev.rx_packets) }} {{ $t('network.packets') }}.)</text></view>
 					<view class="dev-row"><text class="label">{{ $t('network.send') }}：</text><text class="value">{{ formatBytes(dev.tx_bytes) }} ({{ formatPacketCount(dev.tx_packets) }} {{ $t('network.packets') }}.)</text></view>
 				</oa-card>
@@ -66,16 +66,16 @@
 			<oa-card v-for="radio in wirelessList" :key="radio.name" padding="lg" :divider="true">
 				<view slot="header" class="wireless-radio-title">{{ radio.name }}</view>
 				<view slot="actions" class="wireless-radio-chip">{{ $t('network.chip') }}：{{ radio.chip }}</view>
-				<view class="wireless-radio-row"><text class="label">{{ $t('network.band') }}：</text><text class="value">{{ radio.band }}</text></view>
-				<view class="wireless-radio-row"><text class="label">{{ $t('network.channel') }}：</text><text class="value">{{ radio.channel }}</text></view>
-				<view class="wireless-radio-row"><text class="label">{{ $t('network.protocol') }}：</text><text class="value">802.11{{ radio.protocols }}</text></view>
+				<view class="wireless-radio-row"><text class="label">{{ $t('network.band') }}：</text><oa-copy-text class="value" :text="radio.band">{{ radio.band }}</oa-copy-text></view>
+				<view class="wireless-radio-row"><text class="label">{{ $t('network.channel') }}：</text><oa-copy-text class="value" :text="String(radio.channel)">{{ radio.channel }}</oa-copy-text></view>
+				<view class="wireless-radio-row"><text class="label">{{ $t('network.protocol') }}：</text><oa-copy-text class="value" :text="'802.11' + radio.protocols">802.11{{ radio.protocols }}</oa-copy-text></view>
 				<oa-card v-for="iface in radio.interfaces" :key="iface.ifname" padding="md" :divider="true">
 					<view slot="header" class="wireless-iface-title">{{ $t('network.ssid') }}：{{ iface.ssid || '-' }}</view>
 					<view slot="actions" class="wireless-iface-mode">{{ $t('network.mode') }}：{{ iface.mode || '-' }}</view>
-					<view class="wireless-iface-row"><text class="label">{{ $t('network.bssid') }}：</text><text class="value">{{ iface.bssid }}</text></view>
+					<view class="wireless-iface-row"><text class="label">{{ $t('network.bssid') }}：</text><oa-copy-text class="value" :text="iface.bssid">{{ iface.bssid }}</oa-copy-text></view>
 					<view class="wireless-iface-row"><text class="label">{{ $t('network.signal') }}：</text><text class="value">{{ iface.signal }}</text></view>
 					<view class="wireless-iface-row"><text class="label">{{ $t('network.bitrate') }}：</text><text class="value">{{ iface.bitrate }}</text></view>
-					<view class="wireless-iface-row"><text class="label">{{ $t('network.encryption') }}：</text><text class="value">{{ iface.encryption }}</text></view>
+					<view class="wireless-iface-row"><text class="label">{{ $t('network.encryption') }}：</text><oa-copy-text class="value" :text="iface.encryption">{{ iface.encryption }}</oa-copy-text></view>
 				</oa-card>
 			</oa-card>
 		</view>
@@ -92,7 +92,7 @@
 						<text class="ipv6-dialog-section-title">{{ section.title }}</text>
 						<view class="ipv6-dialog-list">
 							<view v-for="(item, iIdx) in section.list" :key="iIdx" class="ipv6-dialog-item">
-								<text class="ipv6-dialog-item-text">{{ item }}</text>
+								<oa-copy-text class="ipv6-dialog-item-text" :text="item">{{ item }}</oa-copy-text>
 							</view>
 						</view>
 					</view>
