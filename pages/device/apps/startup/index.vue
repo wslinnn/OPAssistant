@@ -2,32 +2,27 @@
 	<view class="container">
 		<oa-loading v-if="loading" overlay :text="$t('startup.loading_startup')" />
 
-		<view v-else class="startup-container">
-
-
-			<view v-if="startupList.length > 0" class="startup-list">
-				<view class="table-header">
-					<view class="header-cell service-name">{{ $t('startup.service_name') }}</view>
-					<view class="header-cell priority">{{ $t('startup.priority') }}</view>
-					<view class="header-cell enabled">{{ $t('startup.enabled') }}</view>
-					<view class="header-cell running">{{ $t('startup.running') }}</view>
-				</view>
-
-				<view v-for="(startup, index) in startupList" :key="startup.key" class="startup-row">
-					<view class="table-cell service-name">
-						<text class="service-name-text">{{ startup.key }}</text>
+		<view v-else>
+			<oa-card v-if="startupList.length > 0" padding="none">
+				<view
+					v-for="(startup, index) in startupList"
+					:key="startup.key"
+					class="startup-item"
+					:class="{ 'startup-item--last': index === startupList.length - 1 }"
+				>
+					<view class="startup-item-head">
+						<text class="startup-name">{{ startup.key }}</text>
+						<view class="startup-badges">
+							<oa-status-badge :type="startup.enabled ? 'up' : 'down'" :text="startup.enabled ? $t('startup.yes') : $t('startup.no')" />
+							<oa-status-badge :type="startup.running ? 'up' : 'down'" :text="startup.running ? $t('startup.running') : $t('startup.stopped')" />
+						</view>
 					</view>
-					<view class="table-cell priority">
-						<text class="priority-value">{{ startup.start || '--' }}</text>
-					</view>
-					<view class="table-cell enabled">
-						<oa-status-badge :type="startup.enabled ? 'up' : 'down'" :text="startup.enabled ? $t('startup.yes') : $t('startup.no')" />
-					</view>
-					<view class="table-cell running">
-						<oa-status-badge :type="startup.running ? 'up' : 'down'" :text="startup.running ? $t('startup.running') : $t('startup.stopped')" />
+					<view class="startup-item-meta">
+						<text class="meta-label">{{ $t('startup.priority') }}</text>
+						<text class="meta-value">{{ startup.start || '--' }}</text>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 
 			<oa-empty v-else :text="$t('startup.no_startup')" />
 
@@ -126,71 +121,52 @@ export default {
 <style scoped lang="scss">
 @import '@/styles/common.scss';
 
-.startup-list {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
-	overflow: hidden;
-	box-shadow: $oa-shadow-md;
-}
-
-.table-header {
-	display: flex;
-	background: $oa-brand-subtle;
-	padding: 20rpx 0;
+.startup-item {
+	padding: $oa-sp-2 $oa-sp-3;
 	border-bottom: 1rpx solid $oa-hairline;
 }
 
-.header-cell {
-	flex: 1;
-	text-align: center;
-	font-size: 26rpx;
-	font-weight: 600;
-	color: $oa-text;
-}
-
-.header-cell.service-name {
-	flex: 2;
-	text-align: left;
-	padding-left: 30rpx;
-}
-
-.startup-row {
-	display: flex;
-	border-bottom: 1rpx solid $oa-hairline;
-	transition: background-color 0.2s ease;
-}
-
-.startup-row:last-child {
+.startup-item--last {
 	border-bottom: none;
 }
 
-.startup-row:hover {
-	background: rgba(14, 132, 181, 0.02);
-}
-
-.table-cell {
-	flex: 1;
-	padding: 20rpx 10rpx;
+.startup-item-head {
 	display: flex;
 	align-items: center;
-	justify-content: center;
+	justify-content: space-between;
+	gap: $oa-sp-2;
+	margin-bottom: $oa-sp-1;
 }
 
-.table-cell.service-name {
-	flex: 2;
-	justify-content: flex-start;
-	padding-left: 30rpx;
+.startup-name {
+	font-size: $oa-fs-body;
+	color: $oa-text;
+	font-weight: 600;
+	flex: 1;
+	min-width: 0;
+	word-break: break-all;
 }
 
-.service-name-text {
-	font-size: 28rpx;
+.startup-badges {
+	display: flex;
+	gap: $oa-sp-1;
+	flex-shrink: 0;
+}
+
+.startup-item-meta {
+	display: flex;
+	align-items: center;
+	gap: $oa-sp-1;
+}
+
+.meta-label {
+	font-size: $oa-fs-caption;
+	color: $oa-text-muted;
+}
+
+.meta-value {
+	font-size: $oa-fs-caption;
 	color: $oa-text;
 	font-weight: 500;
-}
-
-.priority-value {
-	font-size: 26rpx;
-	font-weight: 600;
-	color: $oa-text-muted;
 }
 </style>
