@@ -9,13 +9,13 @@
 			<!-- 进程列表 -->
 			<view v-if="processList.length > 0" class="process-list">
 				<!-- 进程卡片 -->
-				<view v-for="(process, index) in processList" :key="process.PID" class="process-card" @click="toggleProcessDetail(index)">
-					<view class="process-card-header">
-						<view class="process-info">
-							<text class="process-name-text">{{ getProcessName(process.COMMAND) }}</text>
-							<text class="process-pid-text">{{ process.PID }}</text>
-						</view>
-						<text class="status-chip">{{ getStatusText(process.STAT) }}</text>
+				<oa-card v-for="(process, index) in processList" :key="process.PID" padding="lg" :divider="true" @click.native="toggleProcessDetail(index)">
+					<view slot="header" class="process-info">
+						<text class="process-name-text">{{ getProcessName(process.COMMAND) }}</text>
+						<text class="process-pid-text">{{ process.PID }}</text>
+					</view>
+					<view slot="actions">
+						<oa-status-badge type="info" :text="getStatusText(process.STAT)" />
 					</view>
 					<view class="process-metrics">
 						<view class="metric-item">
@@ -30,26 +30,24 @@
 
 					<!-- 展开详情 -->
 					<view v-if="process.expanded" class="process-detail">
-						<view class="detail-section">
-							<view class="detail-row">
-								<text class="detail-label">{{ $t('process.user') }}:</text>
-								<text class="detail-value">{{ process.USER }}</text>
-							</view>
-							<view class="detail-row">
-								<text class="detail-label">{{ $t('process.parent_pid') }}:</text>
-								<text class="detail-value">{{ process.PPID }}</text>
-							</view>
-							<view class="detail-row">
-								<text class="detail-label">{{ $t('process.memory_percent') }}:</text>
-								<text class="detail-value">{{ process['%MEM'] }}</text>
-							</view>
-							<view class="detail-row">
-								<text class="detail-label">{{ $t('process.command') }}:</text>
-								<text class="detail-value command-value">{{ process.COMMAND }}</text>
-							</view>
+						<view class="detail-row">
+							<text class="detail-label">{{ $t('process.user') }}:</text>
+							<text class="detail-value">{{ process.USER }}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">{{ $t('process.parent_pid') }}:</text>
+							<text class="detail-value">{{ process.PPID }}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">{{ $t('process.memory_percent') }}:</text>
+							<text class="detail-value">{{ process['%MEM'] }}</text>
+						</view>
+						<view class="detail-row">
+							<text class="detail-label">{{ $t('process.command') }}:</text>
+							<text class="detail-value command-value">{{ process.COMMAND }}</text>
 						</view>
 					</view>
-				</view>
+				</oa-card>
 			</view>
 
 			<!-- 空状态 -->
@@ -81,13 +79,13 @@ export default {
 		uni.setNavigationBarTitle({
 			title: this.$t('process.title')
 		})
-		
+
 		this.deviceInfo = DeviceManager.getCurrentDevice()
 		this.session = this.deviceInfo.sysauth
 		const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
 		const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
 		this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
-		
+
 		this.loadProcessList()
 		this.startAutoRefresh()
 	},
@@ -101,7 +99,7 @@ export default {
 				this.loading = true
 			}
 			this.error = ''
-			
+
 			uni.request({
 				method: 'POST',
 				url: this.url,
@@ -136,7 +134,7 @@ export default {
 				}
 			})
 		},
-		
+
 		parseProcessList(processes) {
 			try {
 				const expandedStates = {}
@@ -145,7 +143,7 @@ export default {
 						expandedStates[process.PID] = true
 					}
 				})
-				
+
 				this.processList = processes.map(process => {
 					const parsedProcess = {
 						...process,
@@ -154,43 +152,43 @@ export default {
 					}
 					return parsedProcess
 				})
-				
+
 				this.processList.sort((a, b) => b.cpuValue - a.cpuValue)
-				
+
 			} catch (error) {
 				this.error = this.$t('process.parse_failed')
 			}
 		},
-		
+
 		getProcessName(command) {
 			if (!command) return 'Unknown'
-			
+
 			if (command.startsWith('[') && command.endsWith(']')) {
 				return command
 			}
-			
+
 			const parts = command.split(' ')
 			const firstPart = parts[0]
-			
+
 			if (firstPart.includes('/')) {
 				return firstPart.split('/').pop()
 			}
-	
+
 			if (parts.length === 1) {
 				return firstPart
 			}
-			
+
 			return firstPart
 		},
-		
+
 		formatMemoryWithPercent(vsz, memPercent) {
 			let kb = 0
-			
+
 			if (typeof vsz === 'string') {
 				if (vsz.includes('m')) {
 					const match = vsz.match(/(\d+(?:\.\d+)?)/)
 					if (match) {
-						kb = parseFloat(match[1]) * 1024 
+						kb = parseFloat(match[1]) * 1024
 					}
 				} else {
 					kb = parseInt(vsz) || 0
@@ -198,19 +196,19 @@ export default {
 			} else {
 				kb = parseInt(vsz) || 0
 			}
-			
+
 			const mb = (kb / 1024).toFixed(1)
 			return `${mb}MB(${memPercent})`
 		},
-		
+
 		getStatusText(stat) {
 			return stat || 'Unknown'
 		},
-		
+
 		toggleProcessDetail(index) {
 			this.processList[index].expanded = !this.processList[index].expanded
 		},
-		
+
 		startAutoRefresh() {
 			this.refreshTimer = setInterval(() => {
 				if (!this.loading) {
@@ -218,7 +216,7 @@ export default {
 				}
 			}, 3000) // 3秒刷新一次
 		},
-		
+
 		stopAutoRefresh() {
 			if (this.refreshTimer) {
 				clearInterval(this.refreshTimer)
@@ -231,51 +229,6 @@ export default {
 
 <style scoped lang="scss">
 @import '@/styles/common.scss';
-
-.container {
-	padding: 10rpx;
-	padding-top: 20rpx;
-}
-.process-container {
-	padding: 2rpx;
-}
-
-.refresh-section {
-	margin-bottom: 20rpx;
-	text-align: center;
-}
-
-.auto-refresh-info {
-	margin-top: 10rpx;
-}
-
-.auto-refresh-text {
-	font-size: 24rpx;
-	color: $oa-text-subtle;
-}
-
-.process-list {
-	padding: 0;
-}
-
-.process-card {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
-	padding: 30rpx;
-	margin-bottom: 20rpx;
-	box-shadow: $oa-shadow-md;
-}
-
-.process-card:active {
-	background: rgba(14, 132, 181, 0.05);
-}
-
-.process-card-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	margin-bottom: 20rpx;
-}
 
 .process-info {
 	display: flex;
@@ -293,15 +246,6 @@ export default {
 .process-pid-text {
 	font-size: 22rpx;
 	color: $oa-text-muted;
-}
-
-.status-chip {
-	font-size: 22rpx;
-	color: $oa-brand;
-	background: $oa-brand-subtle;
-	padding: 6rpx 16rpx;
-	border-radius: $oa-radius-lg;
-	font-weight: 500;
 }
 
 .process-metrics {
@@ -336,11 +280,7 @@ export default {
 	background: rgba(0, 0, 0, 0.02);
 	border-top: 1rpx solid $oa-hairline;
 	padding: 30rpx;
-	flex: 1 1 100%;
-	order: 1;
-}
-
-.detail-section {
+	margin-top: $oa-sp-2;
 }
 
 .detail-row {
@@ -379,5 +319,4 @@ export default {
 	line-height: 1.4;
 	text-align: left;
 }
-
 </style>

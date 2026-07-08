@@ -12,7 +12,7 @@
 					<view class="header-cell enabled">{{ $t('startup.enabled') }}</view>
 					<view class="header-cell running">{{ $t('startup.running') }}</view>
 				</view>
-				
+
 				<view v-for="(startup, index) in startupList" :key="startup.key" class="startup-row">
 					<view class="table-cell service-name">
 						<text class="service-name-text">{{ startup.key }}</text>
@@ -21,14 +21,10 @@
 						<text class="priority-value">{{ startup.start || '--' }}</text>
 					</view>
 					<view class="table-cell enabled">
-						<text class="status-badge" :class="startup.enabled ? 'enabled' : 'disabled'">
-							{{ startup.enabled ? $t('startup.yes') : $t('startup.no') }}
-						</text>
+						<oa-status-badge :type="startup.enabled ? 'up' : 'down'" :text="startup.enabled ? $t('startup.yes') : $t('startup.no')" />
 					</view>
 					<view class="table-cell running">
-						<text class="status-badge" :class="startup.running ? 'running' : 'stopped'">
-							{{ startup.running ? $t('startup.running') : $t('startup.stopped') }}
-						</text>
+						<oa-status-badge :type="startup.running ? 'up' : 'down'" :text="startup.running ? $t('startup.running') : $t('startup.stopped')" />
 					</view>
 				</view>
 			</view>
@@ -58,7 +54,7 @@ export default {
 		uni.setNavigationBarTitle({
 			title: this.$t('startup.title')
 		})
-		
+
 		this.deviceInfo = DeviceManager.getCurrentDevice()
 		this.session = this.deviceInfo.sysauth
 		const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
@@ -70,7 +66,7 @@ export default {
 		loadStartupList() {
 			this.loading = true
 			this.error = ''
-			
+
 			uni.request({
 				method: 'POST',
 				url: this.url,
@@ -99,11 +95,11 @@ export default {
 				}
 			})
 		},
-		
+
 		parseStartupList(data) {
 			try {
 				this.startupList = []
-				
+
 				for (const [key, value] of Object.entries(data)) {
 					this.startupList.push({
 						key: key,
@@ -112,13 +108,13 @@ export default {
 						running: value.running
 					})
 				}
-				
+
 				this.startupList.sort((a, b) => {
 					const aStart = a.start || 999
 					const bStart = b.start || 999
 					return aStart - bStart
 				})
-				
+
 			} catch (error) {
 				this.error = this.$t('startup.parse_failed')
 			}
@@ -129,37 +125,6 @@ export default {
 
 <style scoped lang="scss">
 @import '@/styles/common.scss';
-
-.container {
-	padding: 10rpx;
-	padding-top: 20rpx;
-}
-.startup-container {
-	padding: 2rpx;
-}
-
-.refresh-section {
-	margin-bottom: 20rpx;
-	text-align: center;
-}
-
-.refresh-btn {
-	background: $oa-brand;
-	color: $oa-on-brand;
-	border: none;
-	border-radius: $oa-radius-md;
-	padding: 20rpx 40rpx;
-	font-size: 28rpx;
-}
-
-.refresh-btn:disabled {
-	background: -surface-sunken;
-}
-
-.refresh-text {
-	color: $oa-on-brand;
-	font-size: 28rpx;
-}
 
 .startup-list {
 	background: $oa-surface;
@@ -228,32 +193,4 @@ export default {
 	font-weight: 600;
 	color: $oa-text-muted;
 }
-
-.status-badge {
-	font-size: 24rpx;
-	font-weight: 600;
-	padding: 6rpx 12rpx;
-	border-radius: 8rpx;
-}
-
-.status-badge.enabled {
-	color: $oa-success;
-	background: $oa-success-surface;
-}
-
-.status-badge.disabled {
-	color: $oa-danger;
-	background: $oa-danger-surface;
-}
-
-.status-badge.running {
-	color: $oa-success;
-	background: $oa-success-surface;
-}
-
-.status-badge.stopped {
-	color: $oa-danger;
-	background: $oa-danger-surface;
-}
-
 </style>

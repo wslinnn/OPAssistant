@@ -6,10 +6,10 @@
       <view :class="['tab', currentTab === 3 ? 'active' : '']" @click="currentTab = 3">{{ $t('client.dhcpv6_allocation') }}</view>
      </view>
     <view v-if="currentTab === 1">
-      <view v-if="loading" class="client-empty">{{ $t('client.wireless_clients_loading') }}</view>
-      <view v-else-if="wirelessClients.length === 0" class="client-empty">{{ $t('client.no_wireless_clients') }}</view>
+      <oa-empty v-if="loading" :text="$t('client.wireless_clients_loading')" />
+      <oa-empty v-else-if="wirelessClients.length === 0" :text="$t('client.no_wireless_clients')" />
       <view v-else>
-        <view v-for="(client, index) in wirelessClients" :key="index" class="client-card" @click="goToDeviceDetail(client, 'wireless')">
+        <oa-card v-for="(client, index) in wirelessClients" :key="index" padding="lg" @click.native="goToDeviceDetail(client, 'wireless')">
           <view class="client-row">
             <text class="label">{{ $t('client.mac') }}：</text>
             <view class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -28,40 +28,32 @@
           <view class="client-row"><text class="label">{{ $t('client.receive_rate') }}：</text><text class="value">{{ formatSingleRate(client, 'rx') }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.transmit_rate') }}：</text><text class="value">{{ formatSingleRate(client, 'tx') }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.interface') }}：</text><view class="value">{{ client.ifname }}<text v-if="wirelessIfBandMap[client.ifname]" class="band-info">{{ $t('client.band_info', { band: wirelessIfBandMap[client.ifname] }) }}</text></view></view>
-        </view>
-      </view>
-      <view v-if="showDetail" class="client-detail-mask" @click="showDetail = false">
-        <view class="client-detail-popup" @click.stop>
-          <view class="client-detail-title">{{ $t('client.client_details') }}</view>
-          <view v-for="(val, key) in detailClient" :key="key" class="client-detail-row">
-            <text class="client-detail-key">{{ key }}</text>：<text class="client-detail-value">{{ val }}</text>
-          </view>
-        </view>
+        </oa-card>
       </view>
     </view>
 
     <view v-else-if="currentTab === 2">
-      <view v-if="dhcpv4List.length === 0" class="client-empty">{{ $t('client.no_dhcpv4_allocation') }}</view>
+      <oa-empty v-if="dhcpv4List.length === 0" :text="$t('client.no_dhcpv4_allocation')" />
       <view v-else>
-        <view v-for="(item, index) in dhcpv4List" :key="index" class="client-card" @click="goToDeviceDetail(item, 'dhcpv4')">
+        <oa-card v-for="(item, index) in dhcpv4List" :key="index" padding="lg" @click.native="goToDeviceDetail(item, 'dhcpv4')">
           <view class="client-row"><text class="label">{{ $t('client.mac') }}：</text><text class="value">{{ item.macaddr }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><text class="value">{{ item.hostname || '-' }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.ip_address') }}：</text><text class="value">{{ item.ipaddr }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.lease_time') }}：</text><text class="value">{{ formatLeaseTime(item.expires) }}</text></view>
-        </view>
+        </oa-card>
       </view>
     </view>
 
     <view v-else-if="currentTab === 3">
-      <view v-if="dhcpv6List.length === 0" class="client-empty">{{ $t('client.no_dhcpv6_allocation') }}</view>
+      <oa-empty v-if="dhcpv6List.length === 0" :text="$t('client.no_dhcpv6_allocation')" />
       <view v-else>
-        <view v-for="(item, index) in dhcpv6List" :key="index" class="client-card" @click="goToDeviceDetail(item, 'dhcpv6')">
+        <oa-card v-for="(item, index) in dhcpv6List" :key="index" padding="lg" @click.native="goToDeviceDetail(item, 'dhcpv6')">
           <view v-if="item.macaddr" class="client-row"><text class="label">{{ $t('client.mac') }}：</text><text class="value">{{ item.macaddr }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><text class="value">{{ item.hostname || '-' }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.ipv6_address') }}：</text><text class="value">{{ item.ip6addr }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.duid') }}：</text><text class="value">{{ item.duid }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.lease_time') }}：</text><text class="value">{{ formatLeaseTime(item.expires) }}</text></view>
-        </view>
+        </oa-card>
       </view>
     </view>
   </view>
@@ -78,8 +70,6 @@ export default {
       deviceInfo: {},
       wirelessClients: [],
       loading: false,
-      showDetail: false,
-      detailClient: {},
       wirelessIfBandMap: {},
       dhcpv4List: [],
       dhcpv6List: []
@@ -240,10 +230,6 @@ export default {
       if (mcsStr) str += ` ${mcsStr}`;
       return str;
     },
-    showClientDetail(client) {
-      this.detailClient = client
-      this.showDetail = true
-    },
     fetchDHCPv4List() {
       this.dhcpv4List = []
       uni.request({
@@ -398,16 +384,7 @@ export default {
 <style scoped lang="scss">
 
 @import '@/styles/common.scss';
-.container {
-	padding: 20rpx;
-}
-.client-card {
-  background: $oa-surface;
-  border-radius: $oa-radius-lg;
-  margin-bottom: 30rpx;
-  box-shadow: $oa-shadow-md;
-  padding: 40rpx;
-}
+
 .client-row {
   display: flex;
   justify-content: space-between;
@@ -433,58 +410,6 @@ export default {
   max-width: 60%;
   word-break: break-all;
   flex: 1;
-}
-.client-empty {
-  color: $oa-text-muted;
-  text-align: center;
-  margin: 40rpx 0;
-  font-size: 28rpx;
-  background: $oa-surface;
-  border-radius: $oa-radius-lg;
-  padding: 40rpx;
-  box-shadow: $oa-shadow-md;
-}
-.client-detail-mask {
-  position: fixed;
-  left: 0; top: 0; right: 0; bottom: 0;
-  background: $oa-scrim;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.client-detail-popup {
-  background: $oa-surface;
-  border-radius: 18rpx;
-  padding: 36rpx 40rpx 28rpx 40rpx;
-  min-width: 400rpx;
-  max-width: 90vw;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: $oa-shadow-lg;
-}
-.client-detail-title {
-  font-size: 30rpx;
-  font-weight: bold;
-  color: $oa-brand;
-  margin-bottom: 18rpx;
-}
-.client-detail-row {
-  font-size: 24rpx;
-  color: $oa-text;
-  margin-bottom: 8rpx;
-  display: flex;
-  flex-wrap: wrap;
-}
-.client-detail-key {
-  color: $oa-text-subtle;
-  min-width: 120rpx;
-  font-weight: 500;
-}
-.client-detail-value {
-  color: $oa-text;
-  font-weight: 500;
-  margin-left: 8rpx;
 }
 
 .band-info {
