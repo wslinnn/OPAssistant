@@ -9,30 +9,12 @@
 					<view slot="actions">
 						<oa-status-badge type="info" :text="getRouteType(route)" />
 					</view>
-					<view class="detail-row" v-if="route.destination">
-						<text class="detail-label">{{ $t('route.destination') }}:</text>
-						<text class="detail-value">{{ route.destination }}</text>
-					</view>
-					<view class="detail-row" v-if="route.gateway">
-						<text class="detail-label">{{ $t('route.gateway') }}:</text>
-						<text class="detail-value">{{ route.gateway }}</text>
-					</view>
-					<view class="detail-row" v-if="route.device">
-						<text class="detail-label">{{ $t('route.device') }}:</text>
-						<text class="detail-value">{{ route.device }}</text>
-					</view>
-					<view class="detail-row" v-if="route.src">
-						<text class="detail-label">{{ $t('route.src') }}:</text>
-						<text class="detail-value">{{ route.src }}</text>
-					</view>
-					<view class="detail-row" v-if="route.scope">
-						<text class="detail-label">{{ $t('route.scope') }}:</text>
-						<text class="detail-value">{{ route.scope }}</text>
-					</view>
-					<view class="detail-row" v-if="route.table">
-						<text class="detail-label">{{ $t('route.table') }}:</text>
-						<text class="detail-value">{{ route.table }}</text>
-					</view>
+					<oa-list-row v-if="route.destination" :label="$t('route.destination')" :value="route.destination" />
+					<oa-list-row v-if="route.gateway" :label="$t('route.gateway')" :value="route.gateway" />
+					<oa-list-row v-if="route.device" :label="$t('route.device')" :value="route.device" />
+					<oa-list-row v-if="route.src" :label="$t('route.src')" :value="route.src" />
+					<oa-list-row v-if="route.scope" :label="$t('route.scope')" :value="route.scope" />
+					<oa-list-row v-if="route.table" :label="$t('route.table')" :value="route.table" :border="false" />
 				</oa-card>
 			</view>
 
@@ -193,35 +175,5 @@ export default {
 	font-size: 24rpx;
 	color: $oa-text-muted;
 	font-weight: 500;
-}
-
-.detail-row {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: $oa-sp-1;
-	padding: 8rpx 0;
-}
-
-.detail-row:last-child {
-	margin-bottom: 0;
-}
-
-.detail-label {
-	font-size: 26rpx;
-	color: $oa-text-muted;
-	font-weight: 500;
-	min-width: 120rpx;
-	flex-shrink: 0;
-}
-
-.detail-value {
-	font-size: 26rpx;
-	color: $oa-text;
-	font-weight: 500;
-	text-align: right;
-	max-width: 60%;
-	word-break: break-all;
-	flex: 1;
 }
 </style>

@@ -30,22 +30,12 @@
 
 					<!-- 展开详情 -->
 					<view v-if="process.expanded" class="process-detail">
-						<view class="detail-row">
-							<text class="detail-label">{{ $t('process.user') }}:</text>
-							<text class="detail-value">{{ process.USER }}</text>
-						</view>
-						<view class="detail-row">
-							<text class="detail-label">{{ $t('process.parent_pid') }}:</text>
-							<text class="detail-value">{{ process.PPID }}</text>
-						</view>
-						<view class="detail-row">
-							<text class="detail-label">{{ $t('process.memory_percent') }}:</text>
-							<text class="detail-value">{{ process['%MEM'] }}</text>
-						</view>
-						<view class="detail-row">
-							<text class="detail-label">{{ $t('process.command') }}:</text>
-							<text class="detail-value command-value">{{ process.COMMAND }}</text>
-						</view>
+						<oa-list-row :label="$t('process.user')" :value="process.USER" />
+						<oa-list-row :label="$t('process.parent_pid')" :value="process.PPID" />
+						<oa-list-row :label="$t('process.memory_percent')" :value="process['%MEM']" />
+						<oa-list-row :label="$t('process.command')" :border="false">
+							<text class="command-text">{{ process.COMMAND }}</text>
+						</oa-list-row>
 					</view>
 				</oa-card>
 			</view>
@@ -283,40 +273,11 @@ export default {
 	margin-top: $oa-sp-2;
 }
 
-.detail-row {
-	display: flex;
-	justify-content: space-between;
-	align-items: flex-start;
-	margin-bottom: $oa-sp-1;
-	padding: 8rpx 0;
-}
-
-.detail-row:last-child {
-	margin-bottom: 0;
-}
-
-.detail-label {
-	font-size: 26rpx;
-	color: $oa-text-muted;
-	font-weight: 500;
-	min-width: 120rpx;
-	flex-shrink: 0;
-}
-
-.detail-value {
-	font-size: 26rpx;
-	color: $oa-text;
-	font-weight: 500;
-	text-align: right;
-	max-width: 60%;
-	word-break: break-all;
-	flex: 1;
-}
-
-.command-value {
+.command-text {
 	font-family: monospace;
 	font-size: 22rpx;
 	line-height: 1.4;
-	text-align: left;
+	text-align: right;
+	word-break: break-all;
 }
 </style>

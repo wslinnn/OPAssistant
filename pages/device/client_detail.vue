@@ -1,83 +1,33 @@
 <template>
   <view class="container">
     <oa-card padding="lg">
-      <view class="info-content">
-        <!-- 无线客户端详情 -->
-        <template v-if="type === 'wireless'">
-          <view class="info-row" v-if="device.hostname">
-            <text class="info-label">{{ $t('client.hostname') }}</text>
-            <text class="info-value">{{ device.hostname }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.mac') }}</text>
-            <text class="info-value">{{ device.mac }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.signal') }}</text>
-            <text class="info-value">{{ device.signal }}dBm</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.connection_time') }}</text>
-            <text class="info-value">{{ formatTime(device.connected_time) }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.receive_rate') }}</text>
-            <text class="info-value">{{ formatSingleRate(device, 'rx') }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.transmit_rate') }}</text>
-            <text class="info-value">{{ formatSingleRate(device, 'tx') }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.interface') }}</text>
-            <text class="info-value">{{ device.ifname }}</text>
-          </view>
-        </template>
+      <!-- 无线客户端详情 -->
+      <template v-if="type === 'wireless'">
+        <oa-list-row v-if="device.hostname" :label="$t('client.hostname')" :value="device.hostname" />
+        <oa-list-row :label="$t('client.mac')" :value="device.mac" />
+        <oa-list-row :label="$t('client.signal')" :value="device.signal + 'dBm'" />
+        <oa-list-row :label="$t('client.connection_time')" :value="formatTime(device.connected_time)" />
+        <oa-list-row :label="$t('client.receive_rate')" :value="formatSingleRate(device, 'rx')" />
+        <oa-list-row :label="$t('client.transmit_rate')" :value="formatSingleRate(device, 'tx')" />
+        <oa-list-row :label="$t('client.interface')" :value="device.ifname" :border="false" />
+      </template>
 
-        <!-- DHCPv4 分配详情 -->
-        <template v-else-if="type === 'dhcpv4'">
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.hostname') }}</text>
-            <text class="info-value">{{ device.hostname || '-' }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.mac') }}</text>
-            <text class="info-value">{{ device.macaddr }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.ip_address') }}</text>
-            <text class="info-value">{{ device.ipaddr }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.lease_time') }}</text>
-            <text class="info-value">{{ formatLeaseTime(device.expires) }}</text>
-          </view>
-        </template>
+      <!-- DHCPv4 分配详情 -->
+      <template v-else-if="type === 'dhcpv4'">
+        <oa-list-row :label="$t('client.hostname')" :value="device.hostname || '-'" />
+        <oa-list-row :label="$t('client.mac')" :value="device.macaddr" />
+        <oa-list-row :label="$t('client.ip_address')" :value="device.ipaddr" />
+        <oa-list-row :label="$t('client.lease_time')" :value="formatLeaseTime(device.expires)" :border="false" />
+      </template>
 
-        <!-- DHCPv6 分配详情 -->
-        <template v-else-if="type === 'dhcpv6'">
-          <view class="info-row" v-if="device.macaddr">
-            <text class="info-label">{{ $t('client.mac') }}</text>
-            <text class="info-value">{{ device.macaddr }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.hostname') }}</text>
-            <text class="info-value">{{ device.hostname || '-' }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.ipv6_address') }}</text>
-            <text class="info-value">{{ device.ip6addr }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.duid') }}</text>
-            <text class="info-value">{{ device.duid }}</text>
-          </view>
-          <view class="info-row">
-            <text class="info-label">{{ $t('client.lease_time') }}</text>
-            <text class="info-value">{{ formatLeaseTime(device.expires) }}</text>
-          </view>
-        </template>
-      </view>
+      <!-- DHCPv6 分配详情 -->
+      <template v-else-if="type === 'dhcpv6'">
+        <oa-list-row v-if="device.macaddr" :label="$t('client.mac')" :value="device.macaddr" />
+        <oa-list-row :label="$t('client.hostname')" :value="device.hostname || '-'" />
+        <oa-list-row :label="$t('client.ipv6_address')" :value="device.ip6addr" />
+        <oa-list-row :label="$t('client.duid')" :value="device.duid" />
+        <oa-list-row :label="$t('client.lease_time')" :value="formatLeaseTime(device.expires)" :border="false" />
+      </template>
     </oa-card>
   </view>
 </template>
@@ -156,38 +106,4 @@ export default {
 
 <style scoped lang="scss">
 @import '@/styles/common.scss';
-
-.info-content {
-  display: flex;
-  flex-direction: column;
-  gap: 16rpx;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12rpx 0;
-  border-bottom: 1rpx solid $oa-hairline;
-}
-
-.info-row:last-child {
-  border-bottom: none;
-}
-
-.info-label {
-  font-size: 28rpx;
-  color: $oa-text-muted;
-  font-weight: 500;
-  min-width: 120rpx;
-}
-
-.info-value {
-  font-size: 28rpx;
-  color: $oa-text;
-  font-weight: 600;
-  text-align: right;
-  flex: 1;
-  word-break: break-all;
-}
 </style>
