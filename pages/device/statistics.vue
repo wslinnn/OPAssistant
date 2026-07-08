@@ -3,7 +3,7 @@
     <page-tab :tabs="tab_list" v-model="currentTab" />
 
     <view v-if="currentTab === 1">
-      <view v-if="loadData" class="load-card">
+      <oa-card v-if="loadData" padding="md">
         <view class="load-stats">
           <view class="stat-section">
             <view class="stat-title">{{ $t('statistics.current_load') }}</view>
@@ -56,16 +56,14 @@
 
         <view class="chart-container">
           <view class="chart-wrapper">
-            <view class="charts-box">
+            <view class="charts-box chart-box">
               <l-echart ref="loadChartRef" @finished="initLoadChart" style="width: 100%; height: 100%;"></l-echart>
             </view>
           </view>
         </view>
-      </view>
+      </oa-card>
 
-      <view v-else class="status-empty">
-        {{ $t('statistics.loading_load') }}
-      </view>
+      <oa-empty v-else :text="$t('statistics.loading_load')" />
     </view>
 
     <view v-else-if="currentTab === 0">
@@ -83,7 +81,7 @@
         </view>
       </view>
 
-      <view v-if="selectedDevice && bandwidthData" class="bandwidth-card">
+      <oa-card v-if="selectedDevice && bandwidthData" padding="md">
         <view class="bandwidth-stats">
           <view class="stat-section">
                   <view class="stat-title">{{ $t('statistics.inbound') }}</view>
@@ -120,20 +118,16 @@
 
         <view class="chart-container">
           <view class="chart-wrapper">
-            <view class="charts-box">
+            <view class="charts-box chart-box">
               <l-echart ref="chartRef" @finished="initChart" style="width: 100%; height: 100%;"></l-echart>
             </view>
           </view>
         </view>
-      </view>
+      </oa-card>
 
-      <view v-else-if="selectedDevice && !bandwidthData" class="status-empty">
-        {{ $t('statistics.loading_bandwidth') }}
-      </view>
+      <oa-empty v-else-if="selectedDevice && !bandwidthData" :text="$t('statistics.loading_bandwidth')" />
 
-      <view v-else class="status-empty">
-        {{ $t('statistics.select_interface_first') }}
-      </view>
+      <oa-empty v-else :text="$t('statistics.select_interface_first')" />
     </view>
   </view>
 </template>
@@ -1157,21 +1151,6 @@ export default {
 
 @import '@/styles/common.scss';
 
-.container {
-	padding: 20rpx;
-}
-
-.status-empty {
-  color: $oa-text-muted;
-  text-align: center;
-  margin: 40rpx 0;
-  font-size: 28rpx;
-  background: $oa-surface;
-  border-radius: $oa-radius-lg;
-  padding: 40rpx;
-  box-shadow: $oa-shadow-md;
-}
-
 .interface-selector {
   background: $oa-surface;
   border-radius: $oa-radius-lg;
@@ -1212,42 +1191,6 @@ export default {
 .interface-item:active {
   transform: scale(0.95);
 }
-
- .bandwidth-card {
-   background: $oa-surface;
-   border-radius: $oa-radius-lg;
-   padding: 10rpx;
-   box-shadow: $oa-shadow-md;
- }
-
- .load-card {
-   background: $oa-surface;
-   border-radius: $oa-radius-lg;
-   padding: 10rpx;
-   box-shadow: $oa-shadow-md;
- }
-
- .bandwidth-title {
-   font-size: 32rpx;
-   font-weight: bold;
-   color: $oa-text;
- }
-
- .load-title {
-   font-size: 32rpx;
-   font-weight: bold;
-   color: $oa-text;
- }
-
- .bandwidth-time {
-   font-size: 24rpx;
-   color: $oa-text-muted;
- }
-
- .load-time {
-   font-size: 24rpx;
-   color: $oa-text-muted;
- }
 
  .bandwidth-stats {
    display: flex;
@@ -1317,9 +1260,4 @@ export default {
       width: 100%;
       height: 100%;
     }
-
-   .chart-canvas {
-     width: 100%;
-     height: 100%;
-   }
 </style>

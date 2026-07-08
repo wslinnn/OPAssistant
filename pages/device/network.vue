@@ -5,96 +5,84 @@
 		<page-tab :tabs="tab_list" v-model="currentTab" />
 
 		<view v-if="currentTab === 0">
-			<view v-for="iface in interfaceList" :key="iface.name" class="iface-card">
-				<view class="iface-header">
-					<view class="iface-title">{{ iface.name.toUpperCase() }}<span v-if="iface.l3_device">({{ iface.l3_device }})</span></view>
-					<view class="iface-proto">{{ iface.proto || '-' }}</view>
+			<oa-card v-for="iface in interfaceList" :key="iface.name" padding="lg" :divider="true">
+				<view slot="header" class="iface-title">{{ iface.name.toUpperCase() }}<span v-if="iface.l3_device">({{ iface.l3_device }})</span></view>
+				<view slot="actions">
+					<oa-status-badge type="info" :text="iface.proto || '-'" />
 				</view>
-				<view class="iface-body">
-					<view class="iface-row" v-if="iface.mac && iface.mac !== '-'">
-						<text class="label">{{ $t('network.mac') }}：</text><text class="value">{{ iface.mac }}</text>
-					</view>
-					<view class="iface-row">
-						<text class="label">{{ $t('network.traffic_rx_tx') }}：</text>
-						<text class="value">{{ formatBytes(iface.rx_bytes) }} / {{ formatBytes(iface.tx_bytes) }}</text>
-					</view>
-					<view class="iface-row" v-if="iface.ipv4"><text class="label">{{ $t('network.ipv4') }}：</text><text class="value">{{ iface.ipv4 }}</text></view>
-					<view class="iface-row ipv6-row" v-if="hasIpv6Data(iface)">
-						<text class="label">{{ $t('network.ipv6') }}：</text>
-						<view class="value ipv6-value-wrap">
-							<text class="ipv6-text">{{ getShortAddress(iface.ipv6List) }}</text>
-							<image v-if="hasIpv6MoreDetail(iface)" class="ipv6-eye" src="/static/eye.png" mode="aspectFit" @click.stop="showIpv6Detail(iface)" />
-						</view>
-					</view>
-					<view class="iface-row ipv6-row" v-if="iface.pdAssignList && iface.pdAssignList.length">
-						<text class="label">{{ $t('network.ipv6_pd_assign') }}：</text>
-						<view class="value ipv6-value-wrap">
-							<text class="ipv6-text">{{ getShortAddress(iface.pdAssignList) }}</text>
-							<image v-if="hasMoreAddress(iface.pdAssignList)" class="ipv6-eye" src="/static/eye.png" mode="aspectFit" @click.stop="showAddressDetail($t('network.ipv6_pd_assign'), iface.pdAssignList)" />
-						</view>
-					</view>
-					<view class="iface-row" v-if="iface.gateway"><text class="label">{{ $t('network.gateway') }}：</text><text class="value">{{ iface.gateway }}</text></view>
-					<view class="iface-row" v-if="iface.dnsList && iface.dnsList.length">
-						<text class="label">{{ $t('network.dns') }}：</text>
-						<view class="value" style="text-align:right;">
-							<view v-for="dns in iface.dnsList" :key="dns">{{ dns }}</view>
-						</view>
+				<view class="iface-row" v-if="iface.mac && iface.mac !== '-'">
+					<text class="label">{{ $t('network.mac') }}：</text><text class="value">{{ iface.mac }}</text>
+				</view>
+				<view class="iface-row">
+					<text class="label">{{ $t('network.traffic_rx_tx') }}：</text>
+					<text class="value">{{ formatBytes(iface.rx_bytes) }} / {{ formatBytes(iface.tx_bytes) }}</text>
+				</view>
+				<view class="iface-row" v-if="iface.ipv4"><text class="label">{{ $t('network.ipv4') }}：</text><text class="value">{{ iface.ipv4 }}</text></view>
+				<view class="iface-row ipv6-row" v-if="hasIpv6Data(iface)">
+					<text class="label">{{ $t('network.ipv6') }}：</text>
+					<view class="value ipv6-value-wrap">
+						<text class="ipv6-text">{{ getShortAddress(iface.ipv6List) }}</text>
+						<image v-if="hasIpv6MoreDetail(iface)" class="ipv6-eye" src="/static/eye.png" mode="aspectFit" @click.stop="showIpv6Detail(iface)" />
 					</view>
 				</view>
-			</view>
+				<view class="iface-row ipv6-row" v-if="iface.pdAssignList && iface.pdAssignList.length">
+					<text class="label">{{ $t('network.ipv6_pd_assign') }}：</text>
+					<view class="value ipv6-value-wrap">
+						<text class="ipv6-text">{{ getShortAddress(iface.pdAssignList) }}</text>
+						<image v-if="hasMoreAddress(iface.pdAssignList)" class="ipv6-eye" src="/static/eye.png" mode="aspectFit" @click.stop="showAddressDetail($t('network.ipv6_pd_assign'), iface.pdAssignList)" />
+					</view>
+				</view>
+				<view class="iface-row" v-if="iface.gateway"><text class="label">{{ $t('network.gateway') }}：</text><text class="value">{{ iface.gateway }}</text></view>
+				<view class="iface-row" v-if="iface.dnsList && iface.dnsList.length">
+					<text class="label">{{ $t('network.dns') }}：</text>
+					<view class="value" style="text-align:right;">
+						<view v-for="dns in iface.dnsList" :key="dns">{{ dns }}</view>
+					</view>
+				</view>
+			</oa-card>
 		</view>
 
 		<view v-else-if="currentTab === 1">
 			<view v-for="group in deviceGroups" :key="group.type" class="dev-group">
 				<view class="dev-group-title">{{ group.label }} ({{ group.count }})</view>
-				<view v-for="dev in group.devices" :key="dev.name" class="dev-card">
-					<view class="dev-header">
-						<view class="dev-title">{{ dev.name }}</view>
-						<view class="dev-status" :class="dev.up ? 'up' : 'down'">{{ dev.up ? $t('network.up') : $t('network.down') }}</view>
+				<oa-card v-for="dev in group.devices" :key="dev.name" padding="lg" :divider="true">
+					<view slot="header" class="dev-title">{{ dev.name }}</view>
+					<view slot="actions">
+						<oa-status-badge :type="dev.up ? 'up' : 'down'" :text="dev.up ? $t('network.up') : $t('network.down')" />
 					</view>
-					<view class="dev-body">
-						<view class="dev-row"><text class="label">{{ $t('network.mac') }}：</text><text class="value">{{ dev.macaddr || '-' }}</text></view>
-						<view v-if="group.type === 'bridge' && dev.ports && dev.ports.length" class="dev-row">
-							<text class="label">{{ $t('network.bridge_ports') }}：</text><text class="value">{{ dev.ports.join(', ') }}</text>
-						</view>
-						<view class="dev-row"><text class="label">{{ $t('network.mtu') }}：</text><text class="value">{{ dev.mtu || '-' }}</text></view>
-						<view class="dev-row"><text class="label">{{ $t('network.receive') }}：</text><text class="value">{{ formatBytes(dev.rx_bytes) }} ({{ formatPacketCount(dev.rx_packets) }} {{ $t('network.packets') }}.)</text></view>
-						<view class="dev-row"><text class="label">{{ $t('network.send') }}：</text><text class="value">{{ formatBytes(dev.tx_bytes) }} ({{ formatPacketCount(dev.tx_packets) }} {{ $t('network.packets') }}.)</text></view>
+					<view class="dev-row"><text class="label">{{ $t('network.mac') }}：</text><text class="value">{{ dev.macaddr || '-' }}</text></view>
+					<view v-if="group.type === 'bridge' && dev.ports && dev.ports.length" class="dev-row">
+						<text class="label">{{ $t('network.bridge_ports') }}：</text><text class="value">{{ dev.ports.join(', ') }}</text>
 					</view>
-				</view>
+					<view class="dev-row"><text class="label">{{ $t('network.mtu') }}：</text><text class="value">{{ dev.mtu || '-' }}</text></view>
+					<view class="dev-row"><text class="label">{{ $t('network.receive') }}：</text><text class="value">{{ formatBytes(dev.rx_bytes) }} ({{ formatPacketCount(dev.rx_packets) }} {{ $t('network.packets') }}.)</text></view>
+					<view class="dev-row"><text class="label">{{ $t('network.send') }}：</text><text class="value">{{ formatBytes(dev.tx_bytes) }} ({{ formatPacketCount(dev.tx_packets) }} {{ $t('network.packets') }}.)</text></view>
+				</oa-card>
 			</view>
 		</view>
 
 		<view v-else-if="currentTab === 2">
-			<view v-if="wirelessList.length === 0" class="wireless-empty">{{ $t('network.wireless_loading') }}</view>
-			<view v-for="radio in wirelessList" :key="radio.name" class="wireless-radio-card">
-				<view class="wireless-radio-header">
-					<view class="wireless-radio-title">{{ radio.name }}</view>
-					<view class="wireless-radio-chip">{{ $t('network.chip') }}：{{ radio.chip }}</view>
-				</view>
-				<view class="wireless-radio-body">
-					<view class="wireless-radio-row"><text class="label">{{ $t('network.band') }}：</text><text class="value">{{ radio.band }}</text></view>
-					<view class="wireless-radio-row"><text class="label">{{ $t('network.channel') }}：</text><text class="value">{{ radio.channel }}</text></view>
-					<view class="wireless-radio-row"><text class="label">{{ $t('network.protocol') }}：</text><text class="value">802.11{{ radio.protocols }}</text></view>
-				</view>
-				<view v-for="iface in radio.interfaces" :key="iface.ifname" class="wireless-iface-card">
-					<view class="wireless-iface-header">
-						<view class="wireless-iface-title">{{ $t('network.ssid') }}：{{ iface.ssid || '-' }}</view>
-						<view class="wireless-iface-mode">{{ $t('network.mode') }}：{{ iface.mode || '-' }}</view>
-					</view>
-					<view class="wireless-iface-body">
-						<view class="wireless-iface-row"><text class="label">{{ $t('network.bssid') }}：</text><text class="value">{{ iface.bssid }}</text></view>
-						<view class="wireless-iface-row"><text class="label">{{ $t('network.signal') }}：</text><text class="value">{{ iface.signal }}</text></view>
-						<view class="wireless-iface-row"><text class="label">{{ $t('network.bitrate') }}：</text><text class="value">{{ iface.bitrate }}</text></view>
-						<view class="wireless-iface-row"><text class="label">{{ $t('network.encryption') }}：</text><text class="value">{{ iface.encryption }}</text></view>
-					</view>
-				</view>
-			</view>
+			<oa-empty v-if="wirelessList.length === 0" :text="$t('network.wireless_loading')" />
+			<oa-card v-for="radio in wirelessList" :key="radio.name" padding="lg" :divider="true">
+				<view slot="header" class="wireless-radio-title">{{ radio.name }}</view>
+				<view slot="actions" class="wireless-radio-chip">{{ $t('network.chip') }}：{{ radio.chip }}</view>
+				<view class="wireless-radio-row"><text class="label">{{ $t('network.band') }}：</text><text class="value">{{ radio.band }}</text></view>
+				<view class="wireless-radio-row"><text class="label">{{ $t('network.channel') }}：</text><text class="value">{{ radio.channel }}</text></view>
+				<view class="wireless-radio-row"><text class="label">{{ $t('network.protocol') }}：</text><text class="value">802.11{{ radio.protocols }}</text></view>
+				<oa-card v-for="iface in radio.interfaces" :key="iface.ifname" padding="md" :divider="true">
+					<view slot="header" class="wireless-iface-title">{{ $t('network.ssid') }}：{{ iface.ssid || '-' }}</view>
+					<view slot="actions" class="wireless-iface-mode">{{ $t('network.mode') }}：{{ iface.mode || '-' }}</view>
+					<view class="wireless-iface-row"><text class="label">{{ $t('network.bssid') }}：</text><text class="value">{{ iface.bssid }}</text></view>
+					<view class="wireless-iface-row"><text class="label">{{ $t('network.signal') }}：</text><text class="value">{{ iface.signal }}</text></view>
+					<view class="wireless-iface-row"><text class="label">{{ $t('network.bitrate') }}：</text><text class="value">{{ iface.bitrate }}</text></view>
+					<view class="wireless-iface-row"><text class="label">{{ $t('network.encryption') }}：</text><text class="value">{{ iface.encryption }}</text></view>
+				</oa-card>
+			</oa-card>
 		</view>
 
 		<!-- IPv6 详情弹窗（短地址 + 眼睛图标触发） -->
 		<uni-popup ref="ipv6DialogPopup" type="center" :mask-click="true">
-			<view class="ipv6-dialog">
+			<view class="ipv6-dialog popup">
 				<view class="ipv6-dialog-header">
 					<text class="ipv6-dialog-title">{{ ipv6Dialog.title }}</text>
 					<view class="ipv6-dialog-close" @click="closeIpv6Dialog"><text class="ipv6-dialog-close-text">X</text></view>
@@ -635,27 +623,6 @@
 
 @import '@/styles/common.scss';
 
-.container {
-	padding: 0 $oa-sp-2 $oa-sp-3;
-	background: $oa-bg;
-}
-
-.iface-card {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
-	margin-bottom: 20rpx;
-	box-shadow: $oa-shadow-md;
-	border: 1rpx solid $oa-hairline;
-	padding: 28rpx;
-}
-.iface-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 12rpx;
-	padding-bottom: 8rpx;
-	border-bottom: 1rpx solid $oa-hairline;
-}
 .iface-title {
 	font-size: 30rpx;
 	font-weight: 600;
@@ -664,17 +631,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-}
-.iface-proto {
-	font-size: 22rpx;
-	color: $oa-brand;
-	font-weight: 600;
-	background: $oa-brand-subtle;
-	border-radius: $oa-radius-full;
-	padding: 4rpx 14rpx;
-}
-.iface-body {
-	margin-bottom: 0;
 }
 .iface-row {
 	display: flex;
@@ -731,11 +687,7 @@
 .ipv6-dialog {
 	width: 660rpx;
 	max-height: 72vh;
-	background: $oa-surface;
-	border-radius: $oa-radius-2xl;
 	border: 1rpx solid $oa-hairline;
-	box-shadow: $oa-shadow-lg;
-	padding: 22rpx 22rpx 20rpx;
 	box-sizing: border-box;
 }
 .ipv6-dialog-header {
@@ -820,22 +772,6 @@
 	border: 1rpx solid $oa-brand-subtle;
 	border-radius: $oa-radius-full;
 }
-.dev-card {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
-	margin-bottom: 14rpx;
-	box-shadow: $oa-shadow-md;
-	border: 1rpx solid $oa-hairline;
-	padding: 26rpx;
-}
-.dev-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 12rpx;
-	padding-bottom: 8rpx;
-	border-bottom: 1rpx solid $oa-hairline;
-}
 .dev-title {
 	font-size: 30rpx;
 	font-weight: 600;
@@ -844,23 +780,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
-}
-.dev-status {
-	font-size: 22rpx;
-	font-weight: 600;
-	padding: 4rpx 12rpx;
-	border-radius: $oa-radius-full;
-}
-.dev-status.up {
-	color: $oa-success;
-	background: $oa-success-surface;
-}
-.dev-status.down {
-	color: $oa-danger;
-	background: $oa-danger-surface;
-}
-.dev-body {
-	margin-top: 2rpx;
 }
 .dev-row {
 	display: flex;
@@ -901,19 +820,6 @@
 	background: transparent;
 	box-shadow: none;
 }
-.wireless-radio-card {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
-	margin-bottom: 30rpx;
-	box-shadow: $oa-shadow-md;
-	padding: 40rpx;
-}
-.wireless-radio-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 8rpx;
-}
 .wireless-radio-title {
 	font-size: 28rpx;
 	font-weight: 700;
@@ -922,9 +828,6 @@
 .wireless-radio-chip {
 	font-size: 22rpx;
 	color: $oa-text-subtle;
-}
-.wireless-radio-body {
-	margin-bottom: 0;
 }
 .wireless-radio-row {
 	display: flex;
@@ -938,19 +841,6 @@
 .wireless-radio-row:last-child {
 	border-bottom: none;
 }
-.wireless-iface-card {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
-	margin: 20rpx 0 10rpx 0;
-	box-shadow: $oa-shadow-md;
-	padding: 30rpx;
-}
-.wireless-iface-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 8rpx;
-}
 .wireless-iface-title {
 	font-size: 26rpx;
 	font-weight: 700;
@@ -959,9 +849,6 @@
 .wireless-iface-mode {
 	font-size: 22rpx;
 	color: $oa-text-muted;
-}
-.wireless-iface-body {
-	margin-top: 4rpx;
 }
 .wireless-iface-row {
 	display: flex;
@@ -974,15 +861,5 @@
 }
 .wireless-iface-row:last-child {
 	border-bottom: none;
-}
-.wireless-empty {
-	color: $oa-text-muted;
-	text-align: center;
-	margin: 40rpx 0;
-	font-size: 28rpx;
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
-	padding: 40rpx;
-	box-shadow: $oa-shadow-md;
 }
 </style>
