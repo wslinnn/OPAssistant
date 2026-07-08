@@ -30,8 +30,8 @@
 
 					<!-- 展开详情 -->
 					<view v-if="process.expanded" class="process-detail">
-						<oa-list-row :label="$t('process.user')" :value="process.USER" />
-						<oa-list-row :label="$t('process.parent_pid')" :value="process.PPID" />
+						<oa-list-row :label="$t('process.user')" :value="process.USER" copyable />
+						<oa-list-row :label="$t('process.parent_pid')" :value="process.PPID" copyable />
 						<oa-list-row :label="$t('process.memory_percent')" :value="process['%MEM']" />
 						<oa-list-row :label="$t('process.command')" :border="false">
 							<oa-copy-text class="command-text" :text="process.COMMAND">{{ process.COMMAND }}</oa-copy-text>

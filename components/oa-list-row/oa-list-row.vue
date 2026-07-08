@@ -3,7 +3,8 @@
 		<text v-if="label" class="oa-row__label" :style="{ width: labelWidth }">{{ label }}</text>
 		<view class="oa-row__value">
 			<slot>
-				<text class="oa-row__text">{{ value }}</text>
+				<oa-copy-text v-if="copyable" class="oa-row__text" :text="String(value)">{{ value }}</oa-copy-text>
+				<text v-else class="oa-row__text">{{ value }}</text>
 			</slot>
 		</view>
 		<view v-if="arrow" class="oa-row__arrow" />
@@ -19,7 +20,8 @@ export default {
 		value: { type: [String, Number], default: '' },
 		labelWidth: { type: String, default: '140rpx' },
 		border: { type: Boolean, default: true },
-		arrow: { type: Boolean, default: false }
+		arrow: { type: Boolean, default: false },
+		copyable: { type: Boolean, default: false }
 	}
 }
 </script>

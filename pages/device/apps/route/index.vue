@@ -9,12 +9,12 @@
 					<view slot="actions">
 						<oa-status-badge type="info" :text="getRouteType(route)" />
 					</view>
-					<oa-list-row v-if="route.destination" :label="$t('route.destination')" :value="route.destination" />
-					<oa-list-row v-if="route.gateway" :label="$t('route.gateway')" :value="route.gateway" />
-					<oa-list-row v-if="route.device" :label="$t('route.device')" :value="route.device" />
-					<oa-list-row v-if="route.src" :label="$t('route.src')" :value="route.src" />
-					<oa-list-row v-if="route.scope" :label="$t('route.scope')" :value="route.scope" />
-					<oa-list-row v-if="route.table" :label="$t('route.table')" :value="route.table" :border="false" />
+					<oa-list-row v-if="route.destination" :label="$t('route.destination')" :value="route.destination" copyable />
+					<oa-list-row v-if="route.gateway" :label="$t('route.gateway')" :value="route.gateway" copyable />
+					<oa-list-row v-if="route.device" :label="$t('route.device')" :value="route.device" copyable />
+					<oa-list-row v-if="route.src" :label="$t('route.src')" :value="route.src" copyable />
+					<oa-list-row v-if="route.scope" :label="$t('route.scope')" :value="route.scope" copyable />
+					<oa-list-row v-if="route.table" :label="$t('route.table')" :value="route.table" :border="false" copyable />
 				</oa-card>
 			</view>
 

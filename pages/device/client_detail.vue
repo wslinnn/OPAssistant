@@ -3,29 +3,29 @@
     <oa-card padding="lg">
       <!-- 无线客户端详情 -->
       <template v-if="type === 'wireless'">
-        <oa-list-row v-if="device.hostname" :label="$t('client.hostname')" :value="device.hostname" />
-        <oa-list-row :label="$t('client.mac')" :value="device.mac" />
+        <oa-list-row v-if="device.hostname" :label="$t('client.hostname')" :value="device.hostname" copyable />
+        <oa-list-row :label="$t('client.mac')" :value="device.mac" copyable />
         <oa-list-row :label="$t('client.signal')" :value="device.signal + 'dBm'" />
         <oa-list-row :label="$t('client.connection_time')" :value="formatTime(device.connected_time)" />
         <oa-list-row :label="$t('client.receive_rate')" :value="formatSingleRate(device, 'rx')" />
         <oa-list-row :label="$t('client.transmit_rate')" :value="formatSingleRate(device, 'tx')" />
-        <oa-list-row :label="$t('client.interface')" :value="device.ifname" :border="false" />
+        <oa-list-row :label="$t('client.interface')" :value="device.ifname" :border="false" copyable />
       </template>
 
       <!-- DHCPv4 分配详情 -->
       <template v-else-if="type === 'dhcpv4'">
-        <oa-list-row :label="$t('client.hostname')" :value="device.hostname || '-'" />
-        <oa-list-row :label="$t('client.mac')" :value="device.macaddr" />
-        <oa-list-row :label="$t('client.ip_address')" :value="device.ipaddr" />
+        <oa-list-row :label="$t('client.hostname')" :value="device.hostname || '-'" copyable />
+        <oa-list-row :label="$t('client.mac')" :value="device.macaddr" copyable />
+        <oa-list-row :label="$t('client.ip_address')" :value="device.ipaddr" copyable />
         <oa-list-row :label="$t('client.lease_time')" :value="formatLeaseTime(device.expires)" :border="false" />
       </template>
 
       <!-- DHCPv6 分配详情 -->
       <template v-else-if="type === 'dhcpv6'">
-        <oa-list-row v-if="device.macaddr" :label="$t('client.mac')" :value="device.macaddr" />
-        <oa-list-row :label="$t('client.hostname')" :value="device.hostname || '-'" />
-        <oa-list-row :label="$t('client.ipv6_address')" :value="device.ip6addr" />
-        <oa-list-row :label="$t('client.duid')" :value="device.duid" />
+        <oa-list-row v-if="device.macaddr" :label="$t('client.mac')" :value="device.macaddr" copyable />
+        <oa-list-row :label="$t('client.hostname')" :value="device.hostname || '-'" copyable />
+        <oa-list-row :label="$t('client.ipv6_address')" :value="device.ip6addr" copyable />
+        <oa-list-row :label="$t('client.duid')" :value="device.duid" copyable />
         <oa-list-row :label="$t('client.lease_time')" :value="formatLeaseTime(device.expires)" :border="false" />
       </template>
     </oa-card>
