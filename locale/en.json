@@ -66,6 +66,7 @@
     "openwrt": "OpenWrt",
     "version_info": "Version Info",
     "system_status": "System Status",
+    "model": "Model",
     "system_name": "System Name",
     "hostname": "Hostname",
     "architecture": "Architecture",

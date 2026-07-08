@@ -13,16 +13,20 @@
 				</view>
 				<view class="device-details">
 					<view class="detail-row">
+						<text class="detail-label">{{ $t('home.model') }}</text>
+						<text class="detail-value">{{ deviceInfo.model || '--' }}</text>
+					</view>
+					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.hostname') }}</text>
 						<text class="detail-value">{{ systemStatus.hostname || '--' }}</text>
 					</view>
-					<view class="detail-row" v-if="truncatedVersion">
+					<view class="detail-row" v-if="deviceInfo.version">
 						<text class="detail-label">{{ $t('home.version_info') }}</text>
-						<text class="detail-value">{{ truncatedVersion }}</text>
+						<text class="detail-value">{{ deviceInfo.version }}</text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.architecture') }}</text>
-						<text class="detail-value">{{ truncatedArchitecture }}</text>
+						<text class="detail-value">{{ systemStatus.architecture }}</text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.target_platform') }}</text>
@@ -212,14 +216,6 @@
 			truncatedModel() {
 				const model = this.deviceInfo.model || this.$t('home.openwrt_device')
 				return model.length > 20 ? model.substring(0, 20) + '...' : model
-			},
-			truncatedVersion() {
-				const version = this.deviceInfo.version || this.$t('home.version_info')
-				return version.length > 24 ? version.substring(0, 24) + '...' : version
-			},
-			truncatedArchitecture() {
-				const arch = this.systemStatus.architecture || '--'
-				return arch.length > 32 ? arch.substring(0, 32) + '...' : arch
 			},
 			overlayDisk() {
 				return this.diskInfo.find(t => t.mount === '/overlay') || null
@@ -576,14 +572,9 @@
 				const n = val / Math.pow(1024, i)
 				return i === 1 ? Math.round(n) + ' ' + units[i] : n.toFixed(1) + ' ' + units[i]
 			},
-			truncateString(str) {
-				const max = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 32
-				return !str || str.length <= max ? str : str.substring(0, max) + '...'
-			},
 			diskMountDisplay(disk) {
 				if (!disk) return ''
-				const text = disk.mount + ' (' + (disk.device || '') + ')'
-				return this.truncateString(text, 32)
+				return disk.mount + ' (' + (disk.device || '') + ')'
 			},
 
 			// ===== 状态数据采集 =====
@@ -852,8 +843,8 @@
 					const usedSize = totalSize - freeSize
 					const usagePercent = totalSize > 0 ? Math.round((usedSize / totalSize) * 100) : 0
 					return {
-						device: this.truncateString(mount.device || '--'),
-						mount: this.truncateString(mount.mount || '--'),
+						device: mount.device || '--',
+						mount: mount.mount || '--',
 						totalSize: this.formatBytes(totalSize),
 						usedSize: this.formatBytes(usedSize),
 						freeSize: this.formatBytes(freeSize),
@@ -901,26 +892,6 @@
 	.device-header {
 		margin-bottom: 20rpx;
 	}
-	.device-name {
-		font-size: 32rpx;
-		font-weight: 700;
-		color: $oa-text;
-		display: block;
-		margin-bottom: 13rpx;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: 100%;
-	}
-	.device-version {
-		font-size: 24rpx;
-		color: $oa-text-muted;
-		display: block;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-width: 100%;
-	}
 	.device-details {
 		display: flex;
 		flex-direction: column;
@@ -932,7 +903,7 @@
 	.detail-row {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		padding: 8rpx 0;
 		border-bottom: 1rpx solid $oa-hairline;
 	}
@@ -1150,6 +1121,7 @@
 		font-weight: 700;
 		color: $oa-text;
 		line-height: 1.4;
+		word-break: break-all;
 	}
 	.disk-usage {
 		display: flex;

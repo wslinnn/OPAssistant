@@ -27,7 +27,7 @@ export default {
 <style scoped lang="scss">
 .oa-row {
 	display: flex;
-	align-items: center;
+	align-items: flex-start;
 	padding: $oa-sp-1 0;
 }
 .oa-row--border {

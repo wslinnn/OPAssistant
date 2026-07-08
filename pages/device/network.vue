@@ -624,13 +624,12 @@
 @import '@/styles/common.scss';
 
 .iface-title {
+	flex: 1;
+	min-width: 0;
 	font-size: 30rpx;
 	font-weight: 600;
 	color: $oa-text;
-	max-width: 72%;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	word-break: break-all;
 }
 .iface-row {
 	display: flex;
@@ -773,13 +772,12 @@
 	border-radius: $oa-radius-full;
 }
 .dev-title {
+	flex: 1;
+	min-width: 0;
 	font-size: 30rpx;
 	font-weight: 600;
 	color: $oa-text;
-	max-width: 72%;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
+	word-break: break-all;
 }
 .dev-row {
 	display: flex;

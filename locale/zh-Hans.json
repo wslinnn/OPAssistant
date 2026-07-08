@@ -66,6 +66,7 @@
     "openwrt": "OpenWrt",
     "version_info": "版本信息",
     "system_status": "系统状态",
+    "model": "设备型号",
     "system_name": "系统名称",
     "hostname": "主机名",
     "architecture": "架构",
