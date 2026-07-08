@@ -39,6 +39,7 @@ export default {
 	font-size: $oa-fs-body;
 	font-weight: 500;
 	line-height: 1.2;
+	box-sizing: border-box;
 	transition: transform 0.15s ease, background 0.15s ease;
 }
 .oa-btn:active { transform: scale(0.95); }
