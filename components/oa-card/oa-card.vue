@@ -1,6 +1,6 @@
 <template>
 	<view :class="['oa-card', padClass]">
-		<view v-if="title || subtitle || $slots.header || $slots.actions" class="oa-card__head">
+		<view v-if="title || subtitle || $slots.header || $slots.actions" :class="['oa-card__head', divider ? 'oa-card__head--divider' : '']">
 			<slot name="header">
 				<view class="oa-card__titlewrap">
 					<text v-if="title" class="oa-card__title">{{ title }}</text>
@@ -18,13 +18,14 @@
 </template>
 
 <script>
-// 通用卡片：surface 底 + radius-lg + shadow-md。padding 可调
+// 通用卡片：surface 底 + radius-lg + shadow-md。padding 可调，divider 控制头部 hairline
 export default {
 	name: 'oa-card',
 	props: {
 		title: { type: String, default: '' },
 		subtitle: { type: String, default: '' },
-		padding: { type: String, default: 'lg' } // lg / md / sm / none
+		padding: { type: String, default: 'lg' }, // lg / md / sm / none
+		divider: { type: Boolean, default: false } // 头部底部 hairline 分隔线
 	},
 	computed: {
 		padClass() { return `oa-card--pad-${this.padding}` }
@@ -50,6 +51,10 @@ export default {
 	align-items: center;
 	justify-content: space-between;
 	margin-bottom: $oa-sp-2;
+}
+.oa-card__head--divider {
+	border-bottom: 1rpx solid $oa-hairline;
+	padding-bottom: $oa-sp-2;
 }
 .oa-card__titlewrap {
 	display: flex;
