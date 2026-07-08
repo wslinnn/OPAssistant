@@ -1,4 +1,7 @@
 {
+  "common": {
+    "copied": "Copied"
+  },
   "device_list": {
     "title": "Devices",
     "add_device": "Add Device",

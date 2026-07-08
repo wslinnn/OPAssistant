@@ -1,4 +1,7 @@
 {
+  "common": {
+    "copied": "已复制"
+  },
   "device_list": {
     "title": "设备列表",
     "add_device": "添加设备",

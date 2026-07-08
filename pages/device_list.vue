@@ -28,7 +28,7 @@
 						<image class="device-icon" src="/static/openwrt.png" mode="widthFix" />
 						<view class="device-info">
 							<text class="device-name">{{item.name}}</text>
-							<text class="device-address">{{formatDeviceAddress(item)}}</text>
+							<oa-copy-text class="device-address" :text="item.ip">{{formatDeviceAddress(item)}}</oa-copy-text>
 						</view>
 						<view class="more-btn" @click.stop="showDeviceMenu(item)">
 							<image class="more-icon" src="/static/more.png" mode="widthFix" />

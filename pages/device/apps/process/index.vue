@@ -34,7 +34,7 @@
 						<oa-list-row :label="$t('process.parent_pid')" :value="process.PPID" />
 						<oa-list-row :label="$t('process.memory_percent')" :value="process['%MEM']" />
 						<oa-list-row :label="$t('process.command')" :border="false">
-							<text class="command-text">{{ process.COMMAND }}</text>
+							<oa-copy-text class="command-text" :text="process.COMMAND">{{ process.COMMAND }}</oa-copy-text>
 						</oa-list-row>
 					</view>
 				</oa-card>

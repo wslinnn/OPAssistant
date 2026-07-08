@@ -10,7 +10,7 @@
             <text class="label">{{ $t('client.mac') }}：</text>
             <view class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
               <view style="flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
-                {{ client.mac }}
+                <oa-copy-text :text="client.mac">{{ client.mac }}</oa-copy-text>
               </view>
               <image class="kick-btn" src="/static/remove1.png" mode="widthFix" style="width: 40rpx; height: 40rpx;" @click.stop="kickClient(client)" />
             </view>
