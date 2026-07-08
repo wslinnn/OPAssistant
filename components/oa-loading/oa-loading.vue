@@ -29,7 +29,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .oa-loading__mask {
 	position: fixed;
 	left: 0; top: 0; right: 0; bottom: 0;

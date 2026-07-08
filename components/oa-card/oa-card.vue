@@ -32,7 +32,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .oa-card {
 	background: $oa-surface;
 	border-radius: $oa-radius-lg;

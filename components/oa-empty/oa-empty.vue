@@ -17,7 +17,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .oa-empty {
 	display: flex;
 	flex-direction: column;

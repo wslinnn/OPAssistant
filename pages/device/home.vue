@@ -873,7 +873,7 @@
 	}
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 
 	@import '@/styles/common.scss';
 
@@ -1168,7 +1168,7 @@
 	}
 	.disk-usage-line {
 		font-size: 24rpx;
-		color: $oa-text-muted;
+		color: $oa-text;
 		text-align: right;
 	}
 	.disk-progress-bar {

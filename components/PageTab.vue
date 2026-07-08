@@ -41,7 +41,7 @@
 	}
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 	.page-tab {
 		display: flex;
 		background: rgba(255, 255, 255, 0.95);

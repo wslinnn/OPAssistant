@@ -81,7 +81,7 @@
 	}
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 	@import '@/styles/common.scss';
 
 	.container {

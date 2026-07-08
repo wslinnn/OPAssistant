@@ -145,7 +145,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 @import '@/styles/common.scss';
 
 .app-grid {
@@ -179,9 +179,9 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	background: linear-gradient(135deg, #b6dad7 0%, #29d476 100%);
-	border-radius: 20rpx;
-	box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.1);
+	background: $oa-brand;
+	border-radius: $oa-radius-lg;
+	box-shadow: $oa-shadow-sm;
 }
 
 .icon-image {
@@ -196,7 +196,7 @@ export default {
 
 .name-text {
 	font-size: 22rpx;
-	color: #fff;
+	color: $oa-text;
 	font-weight: 400;
 	line-height: 1.3;
 	word-break: break-all;

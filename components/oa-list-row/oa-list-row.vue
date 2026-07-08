@@ -24,7 +24,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .oa-row {
 	display: flex;
 	align-items: center;

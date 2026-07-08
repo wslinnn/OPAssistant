@@ -32,7 +32,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .oa-nav {
 	padding-top: var(--status-bar-height);
 	background: $oa-bg;

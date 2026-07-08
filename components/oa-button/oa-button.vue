@@ -29,7 +29,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .oa-btn {
 	display: inline-flex;
 	align-items: center;

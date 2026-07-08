@@ -15,7 +15,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .oa-badge {
 	display: inline-flex;
 	align-items: center;

@@ -559,7 +559,7 @@
 	}
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .container {
 	padding: 10rpx;
 	padding-top: var(--status-bar-height);
@@ -626,15 +626,14 @@
 
 /* 设备卡片样式 */
 .device-card {
-	background: rgba(99, 77, 221, 0.15);
-	border-radius: 16rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	margin-bottom: 20rpx;
 	padding: 30rpx 20rpx;
-	box-shadow: 0 4rpx 15rpx rgba(99, 77, 221, 0.1);
+	box-shadow: $oa-shadow-md;
 	min-height: 120rpx;
 	position: relative;
-	backdrop-filter: blur(10rpx);
-	border: 1rpx solid rgba(255, 255, 255, 0.2);
+	border: 1rpx solid $oa-hairline;
 }
 
 .card-content {
@@ -659,17 +658,15 @@
 .device-name {
 	font-size: 34rpx;
 	font-weight: bold;
-	color: #333333;
+	color: $oa-text;
 	margin-bottom: 15rpx;
 	line-height: 1.3;
-	text-shadow: 0 1rpx 2rpx rgba(255, 255, 255, 0.5);
 }
 
 .device-address {
 	font-size: 28rpx;
-	color: #666666;
+	color: $oa-text-muted;
 	line-height: 1.3;
-	text-shadow: 0 1rpx 2rpx rgba(255, 255, 255, 0.3);
 }
 
 .more-btn {
