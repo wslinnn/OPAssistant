@@ -4,6 +4,8 @@ import Crypto from './crypto.js'
 const DEVICE_LIST_KEY = 'device_list'
 const CURRENT_DEVICE_KEY = 'current_device'
 
+let _pluginsCache = null  // 已装 luci 插件探测缓存（会话级，切设备清空）
+
 const ERROR_CODES = {
 	NETWORK_ERROR: 4000,
 	AUTH_ERROR: 4001,
@@ -145,6 +147,7 @@ class DeviceManager {
 	 */
 	static setCurrentDevice(device) {
 		try {
+			_pluginsCache = null  // 切设备清空插件探测缓存
 			const deviceToStore = { ...device }
 			deviceToStore.password = Crypto.encrypt(device.password)
 			console.log("set current device password is " + deviceToStore.password);
@@ -179,6 +182,43 @@ class DeviceManager {
 			console.error('Failed to clear current device:', e)
 			return false
 		}
+	}
+
+	// 已装 luci 插件探测：uci get config 存在即视为已装。并行探测，会话级缓存
+	static async getInstalledPlugins(configNames) {
+		const names = configNames || ['arpbind', 'autoreboot', 'wolplus', 'cifs-mount', 'samba4', 'upnpd', 'usb_printer', 'passwall2']
+		if (_pluginsCache) return _pluginsCache
+		const device = this.getCurrentDevice()
+		const map = {}
+		if (!device || !device.sysauth) {
+			_pluginsCache = map
+			return map
+		}
+		const protocol = device.useHttps ? 'https' : 'http'
+		const host = this.formatHostForUrl(device.ip)
+		const url = `${protocol}://${host}:${device.port}/ubus`
+		const session = device.sysauth
+		await Promise.all(names.map((name) => new Promise((resolve) => {
+			uni.request({
+				method: 'POST',
+				url,
+				data: { jsonrpc: '2.0', id: 1, method: 'call', params: [session, 'uci', 'get', { config: name }] },
+				header: { 'Content-Type': 'application/json', 'x-uniauth': 'true' },
+				timeout: 4000,
+				success: (res) => {
+					const r = res.data && res.data.result
+					map[name] = !!(r && r[0] === 0 && r[1])
+				},
+				fail: () => { map[name] = false },
+				complete: () => resolve()
+			})
+		})))
+		_pluginsCache = map
+		return map
+	}
+
+	static clearPluginsCache() {
+		_pluginsCache = null
 	}
 
 	static getSysauth(cookieString) {

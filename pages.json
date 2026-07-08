@@ -101,6 +101,38 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/plugins/arpbind/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%arpbind.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/device/plugins/wolplus/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%wolplus.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/device/plugins/autoreboot/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%autoreboot.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/device/plugins/cifs-mount/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%cifs.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
 		    "path" : "pages/language/index",
 		    "style" :                                                                                    
 		    {
