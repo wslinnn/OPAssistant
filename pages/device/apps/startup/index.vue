@@ -10,16 +10,10 @@
 					class="startup-item"
 					:class="{ 'startup-item--last': index === startupList.length - 1 }"
 				>
-					<view class="startup-item-head">
+					<view class="startup-dot" :class="dotClass(startup)"></view>
+					<view class="startup-main">
 						<text class="startup-name">{{ startup.key }}</text>
-						<view class="startup-badges">
-							<oa-status-badge :type="startup.enabled ? 'up' : 'down'" :text="startup.enabled ? $t('startup.yes') : $t('startup.no')" />
-							<oa-status-badge :type="startup.running ? 'up' : 'down'" :text="startup.running ? $t('startup.running') : $t('startup.stopped')" />
-						</view>
-					</view>
-					<view class="startup-item-meta">
-						<text class="meta-label">{{ $t('startup.priority') }}</text>
-						<text class="meta-value">{{ startup.start || '--' }}</text>
+						<text class="startup-sub">{{ statusText(startup) }} · {{ $t('startup.priority') }} {{ startup.start || '--' }}</text>
 					</view>
 				</view>
 			</oa-card>
@@ -58,6 +52,16 @@ export default {
 		this.loadStartupList()
 	},
 	methods: {
+		dotClass(startup) {
+			if (startup.running) return 'startup-dot--running'
+			if (startup.enabled) return 'startup-dot--stopped'
+			return 'startup-dot--disabled'
+		},
+		statusText(startup) {
+			if (startup.running) return this.$t('startup.running')
+			if (startup.enabled) return this.$t('startup.stopped')
+			return this.$t('startup.disabled')
+		},
 		loadStartupList() {
 			this.loading = true
 			this.error = ''
@@ -122,6 +126,9 @@ export default {
 @import '@/styles/common.scss';
 
 .startup-item {
+	display: flex;
+	align-items: center;
+	gap: $oa-sp-2;
 	padding: $oa-sp-2 $oa-sp-3;
 	border-bottom: 1rpx solid $oa-hairline;
 }
@@ -130,43 +137,44 @@ export default {
 	border-bottom: none;
 }
 
-.startup-item-head {
+.startup-dot {
+	width: 16rpx;
+	height: 16rpx;
+	border-radius: 50%;
+	flex-shrink: 0;
+	box-sizing: border-box;
+}
+
+.startup-dot--running {
+	background: $oa-success;
+}
+
+.startup-dot--stopped {
+	background: $oa-text-subtle;
+}
+
+.startup-dot--disabled {
+	background: transparent;
+	border: 2rpx solid $oa-text-subtle;
+}
+
+.startup-main {
+	flex: 1;
+	min-width: 0;
 	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: $oa-sp-2;
-	margin-bottom: $oa-sp-1;
+	flex-direction: column;
+	gap: 4rpx;
 }
 
 .startup-name {
 	font-size: $oa-fs-body;
 	color: $oa-text;
 	font-weight: 600;
-	flex: 1;
-	min-width: 0;
 	word-break: break-all;
 }
 
-.startup-badges {
-	display: flex;
-	gap: $oa-sp-1;
-	flex-shrink: 0;
-}
-
-.startup-item-meta {
-	display: flex;
-	align-items: center;
-	gap: $oa-sp-1;
-}
-
-.meta-label {
+.startup-sub {
 	font-size: $oa-fs-caption;
 	color: $oa-text-muted;
-}
-
-.meta-value {
-	font-size: $oa-fs-caption;
-	color: $oa-text;
-	font-weight: 500;
 }
 </style>

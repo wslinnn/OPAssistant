@@ -326,7 +326,8 @@
     "running": "运行",
     "yes": "是",
     "no": "否",
-    "stopped": "停止"
+    "stopped": "停止",
+    "disabled": "已禁用"
   },
   "apps": {
     "title": "应用中心",

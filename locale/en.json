@@ -347,6 +347,7 @@
     "running": "Running",
     "yes": "Yes",
     "no": "No",
-    "stopped": "Stopped"
+    "stopped": "Stopped",
+    "disabled": "Disabled"
   }
 }
