@@ -2,10 +2,11 @@
 	<view class="container">
 		<oa-loading v-if="loading" overlay :text="$t('home.loading')" />
 
-		<oa-nav-header :title="truncatedModel || $t('home.openwrt_device')" show-back @back="goBack" />
+		<view class="sticky-header">
+			<oa-nav-header :title="truncatedModel || $t('home.openwrt_device')" show-back @back="goBack" />
+		</view>
 
-		<scroll-view scroll-y="true" class="content-scroll">
-			<!-- 系统状态 -->
+		<!-- 系统状态 -->
 			<view class="device-card">
 				<view class="device-header">
 					<text class="card-title">{{ $t('home.system_status') }}</text>
@@ -143,7 +144,6 @@
 					</view>
 				</view>
 			</view>
-		</scroll-view>
 	</view>
 </template>
 
@@ -880,25 +880,15 @@
 	.container {
 		padding: 0 $oa-sp-2 $oa-sp-3;
 		background: $oa-bg;
-		height: 100vh;
+		min-height: 100vh;
 		box-sizing: border-box;
-		display: flex;
-		flex-direction: column;
-		overflow: hidden;
 	}
 
-	.content-scroll {
-		flex: 1;
-		min-height: 0;
-	}
-
-	.device-card,
-	.cpu-mem-card,
-	.quick-bandwidth-card,
-	.network-card,
-	.disk-card {
-		margin-left: 3px;
-		margin-right: 3px;
+	.sticky-header {
+		position: sticky;
+		top: 0;
+		z-index: 10;
+		background: $oa-bg;
 	}
 
 	.device-card {
