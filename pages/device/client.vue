@@ -17,13 +17,13 @@
           </view>
           <view v-if="client.hostname" class="client-row">
             <text class="label">{{ $t('client.hostname') }}：</text>
-            <text class="value">{{ client.hostname }}</text>
+            <oa-copy-text class="value" :text="client.hostname">{{ client.hostname }}</oa-copy-text>
           </view>
           <view class="client-row"><text class="label">{{ $t('client.signal') }}：</text><text class="value">{{ client.signal }}dBm</text></view>
           <view class="client-row"><text class="label">{{ $t('client.connection_time') }}：</text><text class="value">{{ formatTime(client.connected_time) }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.receive_rate') }}：</text><text class="value">{{ formatSingleRate(client, 'rx') }}</text></view>
           <view class="client-row"><text class="label">{{ $t('client.transmit_rate') }}：</text><text class="value">{{ formatSingleRate(client, 'tx') }}</text></view>
-          <view class="client-row"><text class="label">{{ $t('client.interface') }}：</text><view class="value">{{ client.ifname }}<text v-if="wirelessIfBandMap[client.ifname]" class="band-info">{{ $t('client.band_info', { band: wirelessIfBandMap[client.ifname] }) }}</text></view></view>
+          <view class="client-row"><text class="label">{{ $t('client.interface') }}：</text><oa-copy-text class="value" :text="client.ifname">{{ client.ifname }}<text v-if="wirelessIfBandMap[client.ifname]" class="band-info">{{ $t('client.band_info', { band: wirelessIfBandMap[client.ifname] }) }}</text></oa-copy-text></view>
         </oa-card>
       </view>
     </view>
@@ -32,9 +32,9 @@
       <oa-empty v-if="dhcpv4List.length === 0" :text="$t('client.no_dhcpv4_allocation')" />
       <view v-else>
         <oa-card v-for="(item, index) in dhcpv4List" :key="index" padding="lg" @click.native="goToDeviceDetail(item, 'dhcpv4')">
-          <view class="client-row"><text class="label">{{ $t('client.mac') }}：</text><text class="value">{{ item.macaddr }}</text></view>
-          <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><text class="value">{{ item.hostname || '-' }}</text></view>
-          <view class="client-row"><text class="label">{{ $t('client.ip_address') }}：</text><text class="value">{{ item.ipaddr }}</text></view>
+          <view class="client-row"><text class="label">{{ $t('client.mac') }}：</text><oa-copy-text class="value" :text="item.macaddr">{{ item.macaddr }}</oa-copy-text></view>
+          <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><oa-copy-text class="value" :text="item.hostname">{{ item.hostname || '-' }}</oa-copy-text></view>
+          <view class="client-row"><text class="label">{{ $t('client.ip_address') }}：</text><oa-copy-text class="value" :text="item.ipaddr">{{ item.ipaddr }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.lease_time') }}：</text><text class="value">{{ formatLeaseTime(item.expires) }}</text></view>
         </oa-card>
       </view>
@@ -44,10 +44,10 @@
       <oa-empty v-if="dhcpv6List.length === 0" :text="$t('client.no_dhcpv6_allocation')" />
       <view v-else>
         <oa-card v-for="(item, index) in dhcpv6List" :key="index" padding="lg" @click.native="goToDeviceDetail(item, 'dhcpv6')">
-          <view v-if="item.macaddr" class="client-row"><text class="label">{{ $t('client.mac') }}：</text><text class="value">{{ item.macaddr }}</text></view>
-          <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><text class="value">{{ item.hostname || '-' }}</text></view>
-          <view class="client-row"><text class="label">{{ $t('client.ipv6_address') }}：</text><text class="value">{{ item.ip6addr }}</text></view>
-          <view class="client-row"><text class="label">{{ $t('client.duid') }}：</text><text class="value">{{ item.duid }}</text></view>
+          <view v-if="item.macaddr" class="client-row"><text class="label">{{ $t('client.mac') }}：</text><oa-copy-text class="value" :text="item.macaddr">{{ item.macaddr }}</oa-copy-text></view>
+          <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><oa-copy-text class="value" :text="item.hostname">{{ item.hostname || '-' }}</oa-copy-text></view>
+          <view class="client-row"><text class="label">{{ $t('client.ipv6_address') }}：</text><oa-copy-text class="value" :text="item.ip6addr">{{ item.ip6addr }}</oa-copy-text></view>
+          <view class="client-row"><text class="label">{{ $t('client.duid') }}：</text><oa-copy-text class="value" :text="item.duid">{{ item.duid }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.lease_time') }}：</text><text class="value">{{ formatLeaseTime(item.expires) }}</text></view>
         </oa-card>
       </view>

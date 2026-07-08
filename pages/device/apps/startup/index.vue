@@ -11,7 +11,7 @@
 					:class="{ 'startup-item--last': index === startupList.length - 1 }"
 				>
 					<view class="startup-main">
-						<text class="startup-name">{{ startup.key }}</text>
+						<oa-copy-text class="startup-name" :text="startup.key">{{ startup.key }}</oa-copy-text>
 						<text class="startup-sub">{{ $t('startup.priority') }} {{ startup.start || '--' }}</text>
 					</view>
 					<oa-status-badge :type="statusType(startup)" :text="statusText(startup)" />

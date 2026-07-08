@@ -27,7 +27,7 @@
 					<view class="card-content">
 						<image class="device-icon" src="/static/openwrt.png" mode="widthFix" />
 						<view class="device-info">
-							<text class="device-name">{{item.name}}</text>
+							<oa-copy-text class="device-name" :text="item.name">{{item.name}}</oa-copy-text>
 							<oa-copy-text class="device-address" :text="item.ip">{{formatDeviceAddress(item)}}</oa-copy-text>
 						</view>
 						<view class="more-btn" @click.stop="showDeviceMenu(item)">
