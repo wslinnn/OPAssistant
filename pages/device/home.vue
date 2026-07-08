@@ -14,23 +14,23 @@
 				<view class="device-details">
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.model') }}</text>
-						<text class="detail-value">{{ deviceInfo.model || '--' }}</text>
+						<oa-copy-text class="detail-value" :text="deviceInfo.model">{{ deviceInfo.model || '--' }}</oa-copy-text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.hostname') }}</text>
-						<text class="detail-value">{{ systemStatus.hostname || '--' }}</text>
+						<oa-copy-text class="detail-value" :text="systemStatus.hostname">{{ systemStatus.hostname || '--' }}</oa-copy-text>
 					</view>
 					<view class="detail-row" v-if="deviceInfo.version">
 						<text class="detail-label">{{ $t('home.version_info') }}</text>
-						<text class="detail-value">{{ deviceInfo.version }}</text>
+						<oa-copy-text class="detail-value" :text="deviceInfo.version">{{ deviceInfo.version }}</oa-copy-text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.architecture') }}</text>
-						<text class="detail-value">{{ systemStatus.architecture }}</text>
+						<oa-copy-text class="detail-value" :text="systemStatus.architecture">{{ systemStatus.architecture }}</oa-copy-text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.target_platform') }}</text>
-						<text class="detail-value">{{ systemStatus.target || '--' }}</text>
+						<oa-copy-text class="detail-value" :text="systemStatus.target">{{ systemStatus.target || '--' }}</oa-copy-text>
 					</view>
 					<view class="detail-row" v-if="systemStatus.temperature && systemStatus.temperature !== '--'">
 						<text class="detail-label">{{ $t('home.temperature') }}</text>
@@ -106,19 +106,19 @@
 				<view class="network-details">
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.wan_ip') }}</text>
-						<text class="detail-value">{{ networkStatus.wanIp || '--' }}</text>
+						<oa-copy-text class="detail-value" :text="networkStatus.wanIp">{{ networkStatus.wanIp || '--' }}</oa-copy-text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.lan_ip') }}</text>
-						<text class="detail-value">{{ networkStatus.lanIp || '--' }}</text>
+						<oa-copy-text class="detail-value" :text="networkStatus.lanIp">{{ networkStatus.lanIp || '--' }}</oa-copy-text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.gateway') }}</text>
-						<text class="detail-value">{{ networkStatus.gateway || '--' }}</text>
+						<oa-copy-text class="detail-value" :text="networkStatus.gateway">{{ networkStatus.gateway || '--' }}</oa-copy-text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.dns') }}</text>
-						<text class="detail-value">{{ networkStatus.dns || '--' }}</text>
+						<oa-copy-text class="detail-value" :text="networkStatus.dns">{{ networkStatus.dns || '--' }}</oa-copy-text>
 					</view>
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.connections') }}</text>
@@ -135,9 +135,9 @@
 				<view class="disk-list">
 					<view class="disk-item" v-for="(disk, index) in diskInfo" :key="index">
 						<view class="disk-info">
-							<text class="disk-mount">
+							<oa-copy-text class="disk-mount" :text="diskMountDisplay(disk)">
 								{{ diskMountDisplay(disk) }}<text v-if="disk.mount === '/tmp' && disk.device !== 'tmpfs'" class="disk-temp-label">{{ $t('home.temp_space') }}</text>
-							</text>
+							</oa-copy-text>
 						</view>
 						<view class="disk-usage">
 							<text class="disk-usage-line">{{ disk.usedSize }} / {{ disk.totalSize }} ({{ disk.usagePercent }}%)</text>
