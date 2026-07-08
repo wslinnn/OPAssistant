@@ -1,13 +1,5 @@
 <template>
 	<view class="container">
-		<!-- <view class="nav-header" style="display: flex; align-items: center; position: relative;">
-			<view class="back-btn" @click="goBack" style="z-index: 2;">
-				<image class="back-icon" src="/static/back.png" mode="widthFix" style="width: 40rpx; height: 40rpx;" />
-			</view>
-			<view style="flex: 1; display: flex; justify-content: center; position: absolute; left: 0; right: 0; pointer-events: none;">
-				<text style="font-size: 32rpx; font-weight: bold; color: #fff;">OpenWrt</text>
-			</view>
-		</view> -->
 		<view class="app-grid">
 			<view class="app-item" v-for="(app, index) in appList" :key="index" @click="onPluginClick(app)">
 				<view class="app-icon">

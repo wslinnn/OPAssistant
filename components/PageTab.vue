@@ -44,24 +44,24 @@
 <style scoped lang="scss">
 	.page-tab {
 		display: flex;
-		background: rgba(255, 255, 255, 0.95);
-		border-radius: 12rpx;
-		margin: 20rpx;
+		background: $oa-surface;
+		border-radius: $oa-radius-md;
+		margin: $oa-sp-2;
 		overflow: hidden;
-		box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.08);
+		box-shadow: $oa-shadow-sm;
 	}
 	.tab {
 		flex: 1;
 		text-align: center;
-		padding: 20rpx 0;
-		font-size: 28rpx;
-		color: #666;
+		padding: $oa-sp-2 0;
+		font-size: $oa-fs-body;
+		color: $oa-text-muted;
 		border-bottom: 4rpx solid transparent;
 		transition: all 0.2s;
 	}
 	.tab.active {
-		color: #007aff;
+		color: $oa-brand;
 		font-weight: 600;
-		border-bottom-color: #007aff;
+		border-bottom-color: $oa-brand;
 	}
 </style>
