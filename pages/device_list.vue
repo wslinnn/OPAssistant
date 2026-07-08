@@ -775,6 +775,7 @@
 	background-color: #fff;
 	border-radius: 20rpx;
 	padding: 20rpx;
+	margin-top: calc(var(--status-bar-height) + 80rpx);
 }
 
 .menu-item {
