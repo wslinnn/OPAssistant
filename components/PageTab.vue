@@ -56,12 +56,12 @@
 		padding: $oa-sp-2 0;
 		font-size: $oa-fs-body;
 		color: $oa-text-muted;
-		border-bottom: 4rpx solid transparent;
+		border-radius: $oa-radius-md;
 		transition: all 0.2s;
 	}
 	.tab.active {
 		color: $oa-brand;
 		font-weight: 600;
-		border-bottom-color: $oa-brand;
+		background: $oa-brand-subtle;
 	}
 </style>

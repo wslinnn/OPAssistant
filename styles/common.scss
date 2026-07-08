@@ -55,33 +55,3 @@
     }
 }
 
-/* 页签（待 B5c client.vue 迁移 page-tab 后删除）*/
-.tab-bar {
-    display: flex;
-    background: $oa-surface;
-    border-radius: $oa-radius-lg;
-    overflow: hidden;
-    margin-bottom: 30rpx;
-    box-shadow: $oa-shadow-md;
-    padding: 6rpx;
-}
-
-.tab {
-    flex: 1;
-    text-align: center;
-    padding: 20rpx 12rpx;
-    font-size: $oa-fs-body;
-    color: $oa-text-muted;
-    font-weight: 500;
-    background: transparent;
-    transition: all 0.15s ease;
-    border-radius: $oa-radius-md;
-    margin: 0 3rpx;
-    position: relative;
-}
-
-.tab.active {
-    color: $oa-brand;
-    background: $oa-brand-subtle;
-    font-weight: bold;
-}

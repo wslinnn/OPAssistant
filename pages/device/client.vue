@@ -1,10 +1,6 @@
 <template>
   <view class="container">
-     <view class="tab-bar">
-      <view :class="['tab', currentTab === 1 ? 'active' : '']" @click="currentTab = 1">{{ $t('client.wireless_clients') }}</view>
-      <view :class="['tab', currentTab === 2 ? 'active' : '']" @click="currentTab = 2">{{ $t('client.dhcpv4_allocation') }}</view>
-      <view :class="['tab', currentTab === 3 ? 'active' : '']" @click="currentTab = 3">{{ $t('client.dhcpv6_allocation') }}</view>
-     </view>
+     <page-tab :tabs="tab_list" v-model="currentTab" />
     <view v-if="currentTab === 1">
       <oa-empty v-if="loading" :text="$t('client.wireless_clients_loading')" />
       <oa-empty v-else-if="wirelessClients.length === 0" :text="$t('client.no_wireless_clients')" />
@@ -61,7 +57,18 @@
 
 <script>
 import DeviceManager from '@/utils/deviceManager.js'
+import PageTab from '@/components/PageTab.vue'
 export default {
+  components: { PageTab },
+  computed: {
+    tab_list() {
+      return [
+        { value: 1, label: this.$t('client.wireless_clients') },
+        { value: 2, label: this.$t('client.dhcpv4_allocation') },
+        { value: 3, label: this.$t('client.dhcpv6_allocation') }
+      ]
+    }
+  },
   data() {
     return {
       currentTab: 1,
