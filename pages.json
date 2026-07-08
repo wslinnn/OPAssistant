@@ -6,8 +6,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%device_list.title%",
-		        "enablePullDownRefresh": false,
-		        "navigationStyle": "custom"
+		        "enablePullDownRefresh": false
 		    }
 		},
 		{
@@ -24,8 +23,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%network.title%",
-		        "enablePullDownRefresh": false,
-			"navigationStyle": "custom"
+		        "enablePullDownRefresh": false
 		    }
 		},
 		{
@@ -33,8 +31,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%statistics.title%",
-		        "enablePullDownRefresh": false,
-			"navigationStyle": "custom"
+		        "enablePullDownRefresh": false
 		    }
 		},
 		{

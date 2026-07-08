@@ -1,7 +1,5 @@
 <template>
   <view class="container">
-    <oa-nav-header :title="$t('statistics.title')" />
-
     <page-tab :tabs="tab_list" v-model="currentTab" />
 
     <view v-if="currentTab === 1">
@@ -534,6 +532,13 @@ export default {
     }
   },
      onLoad() {
+     uni.setNavigationBarTitle({
+       title: this.$t('statistics.title')
+     })
+     uni.setNavigationBarColor({
+       frontColor: '#000000',
+       backgroundColor: '#F8F8F8'
+     })
      this.deviceInfo = DeviceManager.getCurrentDevice()
      this.session = this.deviceInfo.sysauth
      const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
@@ -550,6 +555,13 @@ export default {
     },
     
     onShow() {
+      uni.setNavigationBarTitle({
+        title: this.$t('statistics.title')
+      })
+      uni.setNavigationBarColor({
+        frontColor: '#000000',
+        backgroundColor: '#F8F8F8'
+      })
       this.loadPageData()
       if (this.currentTab === 0) {
         if (this.selectedDevice && !this.timer) {

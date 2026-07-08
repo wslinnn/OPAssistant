@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<view class="header">
-			<view class="menu-btn" @click="showMenu" style="margin-top: 18rpx;">
+			<view class="menu-btn" @click="showMenu">
 				<image class="menu-icon" src="/static/menu.png" mode="widthFix" style="width: 50rpx; height: 50rpx;" />
 			</view>
 			<view class="header-actions">
@@ -562,8 +562,7 @@
 <style scoped lang="scss">
 .container {
 	padding: 10rpx;
-	padding-top: var(--status-bar-height);
-	background-color: #f5f5f5;
+	background-color: $oa-bg;
 	min-height: 100vh;
 }
 
@@ -775,7 +774,7 @@
 	background-color: #fff;
 	border-radius: 20rpx;
 	padding: 20rpx;
-	margin-top: calc(var(--status-bar-height) + 80rpx);
+	margin-top: calc(var(--status-bar-height) + 88rpx);
 }
 
 .menu-item {

@@ -2,8 +2,6 @@
 <template>
 	<view class="container">
 
-		<oa-nav-header :title="$t('network.title')" />
-
 		<page-tab :tabs="tab_list" v-model="currentTab" />
 
 		<view v-if="currentTab === 0">
@@ -140,6 +138,13 @@
 			}
 		},
 		onLoad() {
+			uni.setNavigationBarTitle({
+				title: this.$t('network.title')
+			})
+			uni.setNavigationBarColor({
+				frontColor: '#000000',
+				backgroundColor: '#F8F8F8'
+			})
 			this.deviceInfo = DeviceManager.getCurrentDevice()
 			this.session = this.deviceInfo.sysauth
 			const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
@@ -149,6 +154,13 @@
 			this.loadData()
 		},
 		onShow() {
+			uni.setNavigationBarTitle({
+				title: this.$t('network.title')
+			})
+			uni.setNavigationBarColor({
+				frontColor: '#000000',
+				backgroundColor: '#F8F8F8'
+			})
 		},
 		computed: {
 			tab_list() {
