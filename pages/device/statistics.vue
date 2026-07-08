@@ -67,19 +67,10 @@
     </view>
 
     <view v-else-if="currentTab === 0">
-      <view class="interface-selector">
+      <oa-card padding="md">
         <view class="selector-label">{{ $t('statistics.select_interface') }}：</view>
-        <view class="interface-list">
-          <view 
-            v-for="(device, index) in deviceList" 
-            :key="index"
-            :class="['interface-item', selectedDevice === device.name ? 'active' : '']"
-            @click="selectDevice(device.name)"
-          >
-            {{ device.name }}
-          </view>
-        </view>
-      </view>
+        <oa-segmented :value="selectedDevice" :options="interfaceOptions" @change="selectDevice" />
+      </oa-card>
 
       <oa-card v-if="selectedDevice && bandwidthData" padding="md">
         <view class="bandwidth-stats">
@@ -151,6 +142,9 @@ export default {
         { value: 0, label: this.$t('statistics.bandwidth') },
         { value: 1, label: this.$t('statistics.load') }
       ]
+    },
+    interfaceOptions() {
+      return this.deviceList.map(d => ({ value: d.name, label: d.name }))
     }
   },
   data() {
@@ -1151,45 +1145,11 @@ export default {
 
 @import '@/styles/common.scss';
 
-.interface-selector {
-  background: $oa-surface;
-  border-radius: $oa-radius-lg;
-  padding: 20rpx;
-  margin-bottom: 20rpx;
-  box-shadow: $oa-shadow-md;
-}
-
 .selector-label {
   font-size: 28rpx;
   color: $oa-text;
   font-weight: bold;
   margin-bottom: 20rpx;
-}
-
-.interface-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15rpx;
-}
-
-.interface-item {
-  padding: 15rpx 25rpx;
-  background: $oa-hairline;
-  border-radius: $oa-radius-xl;
-  font-size: 26rpx;
-  color: $oa-text-muted;
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.interface-item.active {
-  background: $oa-brand;
-  color: white;
-  font-weight: bold;
-}
-
-.interface-item:active {
-  transform: scale(0.95);
 }
 
  .bandwidth-stats {

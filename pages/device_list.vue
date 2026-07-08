@@ -10,22 +10,18 @@
 				</view>
 			</view>
 		</view>
-		
+
 		<uni-popup ref="menuPopup" type="top" :mask-click="true">
 			<view class="menu-content">
 				<view class="menu-item" @click="navigateToSettings">
-				
-				<text class="menu-item-text">{{ $t('device_list.language_settings') }}</text>
-				<image class="menu-item-arrow" src="/static/right.png" mode="widthFix" style="width: 32rpx; height: 32rpx;" />
-			</view>
-			
+					<text class="menu-item-text">{{ $t('device_list.language_settings') }}</text>
+					<image class="menu-item-arrow" src="/static/right.png" mode="widthFix" style="width: 32rpx; height: 32rpx;" />
+				</view>
 			</view>
 		</uni-popup>
-		
-			<view class="device-list-container">
-			<view v-if="deviceList.length === 0" class="empty-state">
-				<text class="empty-text">{{ $t('device_list.empty_message') }}</text>
-			</view>
+
+		<view class="device-list-container">
+			<oa-empty v-if="deviceList.length === 0" :text="$t('device_list.empty_message')" />
 			<view v-else :key="index" v-for="(item, index) in deviceList">
 				<view class="device-card" @click="onCardClickHandle(item)">
 					<view class="card-content">
@@ -41,37 +37,21 @@
 				</view>
 			</view>
 		</view>
-	
+
 		<uni-popup ref="devicePopup" type="center" :mask-click="false">
-			<view class="popup-content">
+			<view class="popup-content popup">
 				<view class="popup-header">
 					<text class="popup-title">{{isEdit ? $t('device_list.edit_device_popup') : $t('device_list.add_device_popup')}}</text>
 				</view>
 				<view class="form-content">
-				
 					<view class="form-item">
 						<text class="label">{{ $t('device_list.host_address') }}:</text>
 						<input class="input" v-model="deviceForm.ip" :placeholder="$t('device_list.host_placeholder')" />
 					</view>
-			
-				
-			<view class="form-item">
-					<text class="label">{{ $t('device_list.protocol') }}:</text>
-					<view class="protocol-selector">
-						<view
-							:class="['protocol-option', deviceForm.useHttps ? '' : 'active']"
-							@click="deviceForm.useHttps = false"
-						>
-							<text>{{ $t('device_list.protocol_http') }}</text>
-						</view>
-						<view
-							:class="['protocol-option', deviceForm.useHttps ? 'active' : '']"
-							@click="deviceForm.useHttps = true"
-						>
-							<text>{{ $t('device_list.protocol_https') }}</text>
-						</view>
+					<view class="form-item">
+						<text class="label">{{ $t('device_list.protocol') }}:</text>
+						<oa-segmented :options="protocolOptions" v-model="deviceForm.useHttps" equal />
 					</view>
-				</view>
 					<view class="form-item">
 						<text class="label">{{ $t('device_list.username_default') }}:</text>
 						<input class="input" v-model="deviceForm.username" :placeholder="$t('device_list.username_placeholder')" />
@@ -90,12 +70,12 @@
 					</view>
 				</view>
 				<view class="popup-actions">
-					<button class="popup-btn cancel-btn" @click="closePopup">{{ $t('device_list.cancel') }}</button>
-					<button class="popup-btn confirm-btn" @click="saveDevice">{{ $t('device_list.confirm') }}</button>
+					<oa-button type="neutral" block @click="closePopup">{{ $t('device_list.cancel') }}</oa-button>
+					<oa-button type="primary" block @click="saveDevice">{{ $t('device_list.confirm') }}</oa-button>
 				</view>
 			</view>
 		</uni-popup>
-		
+
 		<!-- 设备操作菜单弹窗 -->
 		<uni-popup ref="deviceMenuPopup" type="bottom" :mask-click="true">
 			<view class="device-menu-content">
@@ -114,7 +94,7 @@
 
 <script>
 	import DeviceManager from '@/utils/deviceManager.js'
-	
+
 	export default {
 		data() {
 			return {
@@ -132,11 +112,19 @@
 				currentDevice: null // 当前选中的设备
 			}
 		},
+		computed: {
+			protocolOptions() {
+				return [
+					{ value: false, label: this.$t('device_list.protocol_http') },
+					{ value: true, label: this.$t('device_list.protocol_https') }
+				]
+			}
+		},
 		onLoad() {
 			uni.setNavigationBarTitle({
 				title: this.$t('device_list.title')
 			})
-			
+
 			this.loadDeviceList()
 		},
 		onShow() {
@@ -158,18 +146,18 @@
 						return this.$t('device_list.connection_failed_content')
 				}
 			},
-			
+
 			loadDeviceList() {
 				const deviceList = DeviceManager.getDeviceList()
 				if (deviceList.length === 0) {
-		
+
 					DeviceManager.initTestData()
 					this.deviceList = DeviceManager.getDeviceList()
 				} else {
 					this.deviceList = deviceList
 				}
 			},
-			
+
 
 
 			addDevice() {
@@ -178,8 +166,8 @@
 				this.resetDeviceForm()
 				this.$refs.devicePopup.open()
 			},
-			
-	
+
+
 			editDevice(device) {
 				this.isEdit = true
 				this.editDeviceId = device.id
@@ -188,8 +176,8 @@
 				this.deviceForm = { ...decryptedDevice }
 				this.$refs.devicePopup.open()
 			},
-			
-		
+
+
 			deleteDevice(deviceId) {
 				uni.showModal({
 					title: this.$t('device_list.delete_confirm_title'),
@@ -214,8 +202,8 @@
 					}
 				})
 			},
-			
-	
+
+
 			resetDeviceForm() {
 				this.deviceForm = {
 					name: 'OpenWrt',
@@ -226,38 +214,38 @@
 					useHttps: false
 				}
 			},
-			
-		
+
+
 			validateIP(host) {
 				// 长度限制：不超过64个字符
 				if (!host || host.length === 0 || host.length > 64) {
 					return false
 				}
-				
+
 				// 允许的字符：字母、数字、点号、冒号、连字符
 				// 这些字符涵盖了IPv4、IPv6和域名的所有有效字符
 				const allowedCharsRegex = /^[a-zA-Z0-9.:-]+$/
 				return allowedCharsRegex.test(host)
 			},
-			
-			
+
+
 			validatePort(port) {
 				const portNum = parseInt(port)
 				return portNum >= 1 && portNum <= 65535
 			},
-			
-		
+
+
 			validateUsername(username) {
 				const usernameRegex = /^[a-zA-Z0-9.\-_@]+$/
 				return usernameRegex.test(username)
 			},
-			
+
 			validatePassword(password) {
-		
+
 				if (password === '') {
 					return { valid: true, message: '' }
 				}
-				
+
 				if (password.length > 64) {
 					return { valid: false, message: this.$t('device_list.password_length_error') }
 				}
@@ -269,18 +257,18 @@
 				if (!passwordRegex.test(password)) {
 					return { valid: false, message: this.$t('device_list.password_char_error') }
 				}
-				
+
 				return { valid: true, message: '' }
 			},
-			
+
 			// 验证备注长度
 			validateName(name) {
 				return name.length <= 64
 			},
-			
-	
+
+
 			saveDevice() {
-			
+
 				if (!this.deviceForm.ip) {
 					uni.showToast({
 						title: this.$t('device_list.host_required'),
@@ -295,8 +283,8 @@
 					})
 					return
 				}
-				
-		
+
+
 				if (!this.deviceForm.port) {
 					uni.showToast({
 						title: this.$t('device_list.port_required'),
@@ -311,8 +299,8 @@
 					})
 					return
 				}
-				
-		
+
+
 				if (!this.deviceForm.username) {
 					uni.showToast({
 						title: this.$t('device_list.username_required'),
@@ -327,8 +315,8 @@
 					})
 					return
 				}
-				
-		
+
+
 				const passwordValidation = this.validatePassword(this.deviceForm.password)
 				if (!passwordValidation.valid) {
 					uni.showToast({
@@ -337,7 +325,7 @@
 					})
 					return
 				}
-			
+
 				if (!this.deviceForm.name) {
 					uni.showToast({
 						title: this.$t('device_list.remark_required'),
@@ -352,18 +340,18 @@
 					})
 					return
 				}
-				
+
 				let success = false
 				if (this.isEdit) {
-			
+
 					this.deviceForm.sysauth = null
 					this.deviceForm.online = false
 					success = DeviceManager.updateDevice(this.editDeviceId, this.deviceForm)
 				} else {
-		
+
 					success = DeviceManager.addDevice(this.deviceForm)
 				}
-				
+
 				if (success) {
 					this.loadDeviceList()
 					this.closePopup()
@@ -380,14 +368,14 @@
 					})
 				}
 			},
-			
-		
+
+
 			closePopup() {
 				this.$refs.devicePopup.close()
 				this.resetDeviceForm()
 			},
-			
-		
+
+
 			formatTime(timeString) {
 				if (!timeString) return ''
 				const date = new Date(timeString)
@@ -396,25 +384,25 @@
 				return date.toLocaleString(locale === 'en' ? 'en-US' : 'zh-CN')
 			},
 
-			
-	
+
+
 			onCardClickHandle(device) {
-		
+
 				uni.showLoading({
 							title: this.$t('device_list.connecting')
 						})
-				
+
 				DeviceManager.checkAndLoginDevice(device, (loginResult) => {
 					console.log("check and login device")
 
 					if (loginResult.success) {
 						console.log("loginResult.success = " + loginResult.success)
 						console.log("loginResult.sysauth = " + loginResult.sysauth)
-						
+
 						const updatedDevice = { ...device, sysauth: loginResult.sysauth, online: true }
 						DeviceManager.setCurrentDevice(updatedDevice)
-			
-						
+
+
 						// 跳转前校验 session 有效性
 						this.checkSessionValidity(updatedDevice)
 					} else {
@@ -429,7 +417,7 @@
 					}
 				})
 			},
-			
+
 			// 检查session是否有效
 			checkSessionValidity(device) {
 				const protocol = device.useHttps ? 'https' : 'http'
@@ -452,25 +440,25 @@
 					timeout: 3000,
 					success: (res) => {
 						console.log("checkSessionValidity session检查响应:", JSON.stringify(res))
-						
-				
+
+
 						if (res.statusCode === 200 && res.data && res.data.result && res.data.result[0] === 0) {
-					
+
 							uni.hideLoading()
 							uni.showToast({
 								title: this.$t('device_list.connection_success'),
 								icon: 'success',
 								duration: 1000
 							})
-							
-							
+
+
 							setTimeout(() => {
 								uni.reLaunch({
 									url: '/pages/device/home'
 								})
 							}, 500)
 							console.log("session valid, jump to home page")
-							
+
 						} else {
 							this.reLoginDevice(device)
 						}
@@ -483,23 +471,23 @@
 					}
 				})
 		},
-		
+
 		reLoginDevice(device) {
 				const deviceWithoutSession = { ...device, sysauth: null }
 				DeviceManager.loginDevice(deviceWithoutSession, (loginResult) => {
 					if (loginResult.success) {
-				
+
 						const updatedDevice = { ...device, sysauth: loginResult.sysauth, online: true }
 						DeviceManager.setCurrentDevice(updatedDevice)
-						
+
 						uni.hideLoading()
 						uni.showToast({
 							title: this.$t('device_list.login_success'),
 							icon: 'success',
 							duration: 1000
 						})
-						
-						
+
+
 						setTimeout(() => {
 							uni.reLaunch({
 								url: '/pages/device/home'
@@ -560,11 +548,7 @@
 </script>
 
 <style scoped lang="scss">
-.container {
-	padding: 10rpx;
-	background-color: $oa-bg;
-	min-height: 100vh;
-}
+@import '@/styles/common.scss';
 
 .header {
 	display: flex;
@@ -602,27 +586,7 @@
 	height: 55rpx;
 }
 
-.device-list-container {
-	padding: 2rpx;
-}
-
-.device-list {
-	display: flex;
-	flex-direction: column;
-	gap: 20rpx;
-}
-
-.empty-state {
-	text-align: center;
-	padding: 100rpx 0;
-}
-
-.empty-text {
-	color: $oa-text-subtle;
-	font-size: 20rpx;
-}
-
-/* 设备卡片样式 */
+/* 设备卡片样式（页面特有）*/
 .device-card {
 	background: $oa-surface;
 	border-radius: $oa-radius-lg;
@@ -679,11 +643,7 @@
 }
 
 .popup-content {
-	background-color: white;
-	border-radius: 20rpx;
 	width: 600rpx;
-	padding: 30rpx;
-	box-shadow: $oa-shadow-lg;
 }
 
 .popup-header {
@@ -710,63 +670,6 @@
 	font-size: 26rpx;
 	color: $oa-text;
 	margin-bottom: 8rpx;
-}
-
-.input {
-	width: 100%;
-	height: 70rpx;
-	border: 2rpx solid $oa-hairline;
-	border-radius: 8rpx;
-	padding: 0 20rpx;
-	font-size: 26rpx;
-	box-sizing: border-box;
-}
-
-.popup-actions {
-	display: flex;
-	justify-content: space-between;
-	gap: 20rpx;
-}
-
-.popup-btn {
-	flex: 1;
-	height: 70rpx;
-	border-radius: 8rpx;
-	font-size: 26rpx;
-	border: none;
-}
-
-.cancel-btn {
-	background-color: $oa-surface-sunken;
-	color: $oa-text-muted;
-}
-
-.confirm-btn {
-	background-color: $oa-brand;
-	color: white;
-}
-
-.protocol-selector {
-	display: flex;
-	gap: 10rpx;
-}
-
-.protocol-option {
-	flex: 1;
-	text-align: center;
-	padding: 15rpx;
-	border: 2rpx solid $oa-hairline;
-	border-radius: 8rpx;
-	font-size: 26rpx;
-	color: $oa-text-muted;
-	background-color: $oa-surface-sunken;
-	transition: all 0.3s ease;
-}
-
-.protocol-option.active {
-	background-color: $oa-brand;
-	color: white;
-	border-color: $oa-brand;
 }
 
 /* 菜单弹窗样式 */
