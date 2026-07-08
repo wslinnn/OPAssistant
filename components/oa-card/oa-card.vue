@@ -38,6 +38,7 @@ export default {
 	border-radius: $oa-radius-lg;
 	box-shadow: $oa-shadow-md;
 	box-sizing: border-box;
+	margin-bottom: $oa-sp-3;
 }
 .oa-card--pad-lg { padding: $oa-sp-3; }
 .oa-card--pad-md { padding: $oa-sp-2; }
