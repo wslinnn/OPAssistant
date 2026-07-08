@@ -1,4 +1,4 @@
-	<template>
+<template>
 	<view class="container">
 
 		<view v-if="showProgress" class="progress-overlay">
@@ -10,18 +10,20 @@
 			</view>
 		</view>
 
-		<view class="reset-card">
-			<view class="reset-icon">
-				<image src="/static/reset.png" mode="aspectFit" class="app-icon-image" />
+		<oa-card padding="none">
+			<view class="reset-body">
+				<view class="reset-icon">
+					<image src="/static/reset.png" mode="aspectFit" class="app-icon-image" />
+				</view>
+				<text class="reset-title">{{ $t('factory_reset.factory_reset_title') }}</text>
+				<text class="reset-desc">{{ $t('factory_reset.factory_reset_desc') }}</text>
+
+				<oa-button type="negative" block :disabled="resetting" @click="confirmReset">
+					<text v-if="!resetting">{{ $t('factory_reset.factory_reset_btn') }}</text>
+					<text v-else>{{ $t('factory_reset.resetting') }}</text>
+				</oa-button>
 			</view>
-			<text class="reset-title">{{ $t('factory_reset.factory_reset_title') }}</text>
-			<text class="reset-desc">{{ $t('factory_reset.factory_reset_desc') }}</text>
-			
-			<button class="reset-btn" @click="confirmReset" :disabled="resetting">
-				<text v-if="!resetting" class="reset-btn-text">{{ $t('factory_reset.factory_reset_btn') }}</text>
-				<text v-else class="reset-btn-text">{{ $t('factory_reset.resetting') }}</text>
-			</button>
-		</view>
+		</oa-card>
 	</view>
 </template>
 
@@ -45,7 +47,7 @@ export default {
 		uni.setNavigationBarTitle({
 			title: this.$t('factory_reset.title')
 		})
-		
+
 		this.deviceInfo = DeviceManager.getCurrentDevice()
 		this.session = this.deviceInfo.sysauth
 		const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
@@ -53,11 +55,11 @@ export default {
 		this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
 	},
 	onUnload() {
-	
+
 		this.clearCountdown()
 	},
 	methods: {
-	
+
 		confirmReset() {
 			uni.showModal({
 				title: this.$t('factory_reset.confirm_factory_reset'),
@@ -71,7 +73,7 @@ export default {
 				}
 			})
 		},
-		
+
 
 		executeReset() {
 			this.resetting = true
@@ -101,40 +103,40 @@ export default {
 					console.log('reset:', err)
 				},
 				complete: () => {
-				
+
 					this.showProgress = true
 					this.startCountdown()
 				}
 			})
 		},
-		
+
 
 		startCountdown() {
 			this.countdown = 60
 			this.updateCountdownText()
-			
+
 			this.countdownTimer = setInterval(() => {
 				this.countdown--
 				this.updateCountdownText()
-				
+
 				if (this.countdown <= 0) {
 					this.clearCountdown()
-			
+
 					uni.reLaunch({
 						url: '/pages/device_list'
 					})
 				}
 			}, 1000)
 		},
-		
-	
+
+
 		clearCountdown() {
 			if (this.countdownTimer) {
 				clearInterval(this.countdownTimer)
 				this.countdownTimer = null
 			}
 		},
-		
+
 
 		updateCountdownText() {
 			this.countdownText = `${this.countdown}${this.$t('factory_reset.seconds')}`
@@ -145,12 +147,6 @@ export default {
 
 <style scoped lang="scss">
 @import '@/styles/common.scss';
-
-.container {
-	padding: 5rpx;
-}
-
-
 
 .progress-overlay {
 	position: fixed;
@@ -212,14 +208,11 @@ export default {
 	display: block;
 }
 
-.reset-card {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
+.reset-body {
 	padding: 60rpx 40rpx;
-	margin-top: 50rpx;
 	text-align: center;
-	box-shadow: $oa-shadow-md;
 }
+
 .reset-icon {
 	width: 200rpx;
 	height: 200rpx;
@@ -227,9 +220,7 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-
 	border-radius: $oa-radius-lg;
-
 }
 
 .app-icon-image {
@@ -252,28 +243,4 @@ export default {
 	display: block;
 	margin-bottom: 50rpx;
 }
-
-.reset-btn {
-	background: linear-gradient(135deg, $oa-danger 0%, mix($oa-surface, $oa-danger, 20%) 100%);
-	color: white;
-	border: none;
-	border-radius: $oa-radius-xl;
-	font-size: 20rpx;
-	box-shadow: 0 8rpx 24rpx rgba($oa-danger, 0.3);
-	transition: all 0.3s ease;
-}
-
-.reset-btn:active {
-	transform: scale(0.95);
-}
-
-.reset-btn:disabled {
-	opacity: 0.6;
-	transform: none;
-}
-
-.reset-btn-text {
-	font-size: 32rpx;
-	font-weight: bold;
-}
-</style> 
+</style>

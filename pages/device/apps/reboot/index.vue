@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-	
+
 		<view v-if="showProgress" class="progress-overlay">
 			<view class="progress-content">
 				<view class="progress-spinner"></view>
@@ -10,18 +10,20 @@
 			</view>
 		</view>
 
-		<view class="reboot-card">
-			<view class="reboot-icon">
-				<image src="/static/reboot.png" mode="aspectFit" class="app-icon-image" />
+		<oa-card padding="none">
+			<view class="reboot-body">
+				<view class="reboot-icon">
+					<image src="/static/reboot.png" mode="aspectFit" class="app-icon-image" />
+				</view>
+				<text class="reboot-title">{{ $t('reboot.device_restart') }}</text>
+				<text class="reboot-desc">{{ $t('reboot.restart_desc') }}</text>
+
+				<oa-button type="negative" block :disabled="rebooting" @click="confirmReboot">
+					<text v-if="!rebooting">{{ $t('reboot.restart_device') }}</text>
+					<text v-else>{{ $t('reboot.restarting') }}</text>
+				</oa-button>
 			</view>
-			<text class="reboot-title">{{ $t('reboot.device_restart') }}</text>
-			<text class="reboot-desc">{{ $t('reboot.restart_desc') }}</text>
-			
-			<button class="reboot-btn" @click="confirmReboot" :disabled="rebooting">
-				<text v-if="!rebooting" class="reboot-btn-text">{{ $t('reboot.restart_device') }}</text>
-				<text v-else class="reboot-btn-text">{{ $t('reboot.restarting') }}</text>
-			</button>
-		</view>
+		</oa-card>
 	</view>
 </template>
 
@@ -45,7 +47,7 @@ export default {
 		uni.setNavigationBarTitle({
 			title: this.$t('reboot.title')
 		})
-		
+
 		this.deviceInfo = DeviceManager.getCurrentDevice()
 		this.session = this.deviceInfo.sysauth
 		const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
@@ -53,7 +55,7 @@ export default {
 		this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
 	},
 	onUnload() {
-	
+
 		this.clearCountdown()
 	},
 	methods: {
@@ -71,11 +73,11 @@ export default {
 				}
 			})
 		},
-		
-	
+
+
 		executeReboot() {
 			this.rebooting = true
-	
+
 			uni.request({
 				method: 'POST',
 				url: this.url,
@@ -97,7 +99,7 @@ export default {
 					console.log('reboot:', err)
 				},
 				complete: () => {
-				
+
 					this.showProgress = true
 					this.startCountdown()
 				}
@@ -107,29 +109,29 @@ export default {
 		startCountdown() {
 			this.countdown = 60
 			this.updateCountdownText()
-			
+
 			this.countdownTimer = setInterval(() => {
 				this.countdown--
 				this.updateCountdownText()
-				
+
 				if (this.countdown <= 0) {
 					this.clearCountdown()
-		
+
 					uni.reLaunch({
 						url: '/pages/device_list'
 					})
 				}
 			}, 1000)
 		},
-		
-	
+
+
 		clearCountdown() {
 			if (this.countdownTimer) {
 				clearInterval(this.countdownTimer)
 				this.countdownTimer = null
 			}
 		},
-		
+
 
 		updateCountdownText() {
 			this.countdownText = `${this.countdown}${this.$t('reboot.seconds')}`
@@ -140,10 +142,6 @@ export default {
 
 <style scoped lang="scss">
 @import '@/styles/common.scss';
-
-.container {
-	padding: 5rpx;
-}
 
 .progress-overlay {
 	position: fixed;
@@ -205,14 +203,9 @@ export default {
 	display: block;
 }
 
-
-.reboot-card {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
+.reboot-body {
 	padding: 60rpx 40rpx;
-	margin-top: 50rpx;
 	text-align: center;
-	box-shadow: $oa-shadow-md;
 }
 
 .reboot-icon {
@@ -222,9 +215,7 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-
 	border-radius: $oa-radius-lg;
-
 }
 
 .app-icon-image {
@@ -246,29 +237,5 @@ export default {
 	line-height: 1.5;
 	display: block;
 	margin-bottom: 50rpx;
-}
-
-.reboot-btn {
-	background: linear-gradient(135deg, $oa-danger 0%, mix($oa-surface, $oa-danger, 20%) 100%);
-	color: white;
-	border: none;
-	border-radius: $oa-radius-xl;
-	font-size: 20rpx;
-	box-shadow: 0 8rpx 24rpx rgba($oa-danger, 0.3);
-	transition: all 0.3s ease;
-}
-
-.reboot-btn:active {
-	transform: scale(0.95);
-}
-
-.reboot-btn:disabled {
-	opacity: 0.6;
-	transform: none;
-}
-
-.reboot-btn-text {
-	font-size: 32rpx;
-	font-weight: bold;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <view class="info-card">
+    <oa-card padding="lg">
       <view class="info-content">
         <!-- 无线客户端详情 -->
         <template v-if="type === 'wireless'">
@@ -78,7 +78,7 @@
           </view>
         </template>
       </view>
-    </view>
+    </oa-card>
   </view>
 </template>
 
@@ -156,17 +156,6 @@ export default {
 
 <style scoped lang="scss">
 @import '@/styles/common.scss';
-
-.container {
-  padding: 20rpx;
-}
-
-.info-card {
-  background: $oa-surface;
-  border-radius: $oa-radius-lg;
-  padding: 20rpx;
-  box-shadow: $oa-shadow-md;
-}
 
 .info-content {
   display: flex;

@@ -1,27 +1,23 @@
 <template>
 	<view class="container">
-		<view class="settings-card">
-			<view class="settings-content">
-				<view class="settings-section">
-					<view class="language-title-row">
-						<view class="language-icon-wrap">
-							<text class="language-icon-text">文A</text>
-						</view>
-						<text class="section-title">{{ $t('device_list.language_settings') }}</text>
-					</view>
-
-					<view class="select-row">
-						<text class="select-label">{{ $t('language.current_language') }}</text>
-						<picker class="language-picker" :range="languageList" range-key="label" :value="languageIndex" @change="onLanguageChange">
-							<view class="picker-inner">
-								<text class="picker-text">{{ languageList[languageIndex].label }}</text>
-								<text class="picker-arrow">▼</text>
-							</view>
-						</picker>
-					</view>
+		<oa-card padding="lg">
+			<view class="language-title-row">
+				<view class="language-icon-wrap">
+					<text class="language-icon-text">文A</text>
 				</view>
+				<text class="section-title">{{ $t('device_list.language_settings') }}</text>
 			</view>
-		</view>
+
+			<view class="select-row">
+				<text class="select-label">{{ $t('language.current_language') }}</text>
+				<picker class="language-picker" :range="languageList" range-key="label" :value="languageIndex" @change="onLanguageChange">
+					<view class="picker-inner">
+						<text class="picker-text">{{ languageList[languageIndex].label }}</text>
+						<text class="picker-arrow">▼</text>
+					</view>
+				</picker>
+			</view>
+		</oa-card>
 	</view>
 </template>
 
@@ -83,30 +79,6 @@
 
 <style scoped lang="scss">
 	@import '@/styles/common.scss';
-
-	.container {
-		padding: 15rpx;
-	}
-
-	.settings-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 40rpx;
-		margin-top: 30rpx;
-		box-shadow: $oa-shadow-md;
-	}
-
-	.settings-content {
-		text-align: left;
-	}
-
-	.settings-section {
-		margin-bottom: 0;
-	}
-
-	.section-header {
-		margin-bottom: 28rpx;
-	}
 
 	.language-title-row {
 		display: flex;

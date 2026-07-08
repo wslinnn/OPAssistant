@@ -1,15 +1,17 @@
 <template>
 	<view class="container">
-		<view class="user-card">
-			<view class="user-icon">👤</view>
-			<text class="user-title">{{ $t('user_info.title') }}</text>
-		</view>
+		<oa-card padding="none">
+			<view class="user-head">
+				<view class="user-icon">👤</view>
+				<text class="user-title">{{ $t('user_info.title') }}</text>
+			</view>
+		</oa-card>
 
-		<view class="settings-card">
+		<oa-card padding="lg">
 			<view class="lang-row" @click="goLanguage">
 				<oa-list-row :label="$t('language.title')" :value="currentLanguageLabel" arrow :border="false" />
 			</view>
-		</view>
+		</oa-card>
 	</view>
 </template>
 
@@ -41,19 +43,9 @@
 <style scoped lang="scss">
 	@import '@/styles/common.scss';
 
-	.container {
-		min-height: 100vh;
-		background: $oa-bg;
-		padding: $oa-sp-2;
-	}
-
-	.user-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
+	.user-head {
 		padding: 60rpx 40rpx;
-		margin-top: 50rpx;
 		text-align: center;
-		box-shadow: $oa-shadow-md;
 	}
 
 	.user-icon {
@@ -66,14 +58,6 @@
 		font-weight: bold;
 		color: $oa-text;
 		display: block;
-	}
-
-	.settings-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx;
-		margin-top: 30rpx;
-		box-shadow: $oa-shadow-md;
 	}
 
 	.lang-row:active {
