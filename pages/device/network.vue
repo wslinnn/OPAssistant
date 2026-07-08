@@ -542,7 +542,9 @@
 				}
 			},
 			hasMoreAddress(arr) {
-				return Array.isArray(arr) && arr.length > 1
+				if (!Array.isArray(arr) || arr.length === 0) return false
+				if (arr.length > 1) return true
+				return String(arr[0] || '').length > 30
 			},
 			showAddressDetail(title, list) {
 				if (Array.isArray(list) && list.length !== 0) {

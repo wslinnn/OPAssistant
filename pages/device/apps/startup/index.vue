@@ -10,11 +10,11 @@
 					class="startup-item"
 					:class="{ 'startup-item--last': index === startupList.length - 1 }"
 				>
-					<view class="startup-dot" :class="dotClass(startup)"></view>
 					<view class="startup-main">
 						<text class="startup-name">{{ startup.key }}</text>
-						<text class="startup-sub">{{ statusText(startup) }} · {{ $t('startup.priority') }} {{ startup.start || '--' }}</text>
+						<text class="startup-sub">{{ $t('startup.priority') }} {{ startup.start || '--' }}</text>
 					</view>
+					<oa-status-badge :type="statusType(startup)" :text="statusText(startup)" />
 				</view>
 			</oa-card>
 
@@ -52,10 +52,10 @@ export default {
 		this.loadStartupList()
 	},
 	methods: {
-		dotClass(startup) {
-			if (startup.running) return 'startup-dot--running'
-			if (startup.enabled) return 'startup-dot--stopped'
-			return 'startup-dot--disabled'
+		statusType(startup) {
+			if (startup.running) return 'up'
+			if (startup.enabled) return 'warn'
+			return 'neutral'
 		},
 		statusText(startup) {
 			if (startup.running) return this.$t('startup.running')
@@ -128,6 +128,7 @@ export default {
 .startup-item {
 	display: flex;
 	align-items: center;
+	justify-content: space-between;
 	gap: $oa-sp-2;
 	padding: $oa-sp-2 $oa-sp-3;
 	border-bottom: 1rpx solid $oa-hairline;
@@ -135,27 +136,6 @@ export default {
 
 .startup-item--last {
 	border-bottom: none;
-}
-
-.startup-dot {
-	width: 16rpx;
-	height: 16rpx;
-	border-radius: 50%;
-	flex-shrink: 0;
-	box-sizing: border-box;
-}
-
-.startup-dot--running {
-	background: $oa-success;
-}
-
-.startup-dot--stopped {
-	background: $oa-text-subtle;
-}
-
-.startup-dot--disabled {
-	background: transparent;
-	border: 2rpx solid $oa-text-subtle;
 }
 
 .startup-main {
