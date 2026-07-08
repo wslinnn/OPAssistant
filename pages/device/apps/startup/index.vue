@@ -1,11 +1,6 @@
 <template>
 	<view class="container">
-		<view v-if="loading" class="loading-overlay">
-			<view class="loading-content">
-				<view class="loading-spinner"></view>
-				<text class="loading-text">{{ $t('startup.loading_startup') }}</text>
-			</view>
-		</view>
+		<oa-loading v-if="loading" overlay :text="$t('startup.loading_startup')" />
 
 		<view v-else class="startup-container">
 
@@ -38,13 +33,9 @@
 				</view>
 			</view>
 
-			<view v-else class="empty-state">
-				<text class="empty-text">{{ $t('startup.no_startup') }}</text>
-			</view>
+			<oa-empty v-else :text="$t('startup.no_startup')" />
 
-			<view v-if="error" class="error-state">
-				<text class="error-text">{{ error }}</text>
-			</view>
+			<oa-empty v-if="error" :text="error" />
 		</view>
 	</view>
 </template>
@@ -139,51 +130,10 @@ export default {
 <style scoped lang="scss">
 @import '@/styles/common.scss';
 
-.loading-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0, 0, 0, 0.5);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	z-index: 9999;
-}
-
-.loading-content {
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
-	padding: 40rpx;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.loading-spinner {
-	width: 60rpx;
-	height: 60rpx;
-	border: 4rpx solid #f3f3f3;
-	border-top: 4rpx solid #007AFF;
-	border-radius: 50%;
-	animation: spin 1s linear infinite;
-	margin-bottom: 20rpx;
-}
-
-@keyframes spin {
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
-}
 .container {
 	padding: 10rpx;
 	padding-top: 20rpx;
 }
-.loading-text {
-	font-size: 28rpx;
-	color: #666;
-}
-
 .startup-container {
 	padding: 2rpx;
 }
@@ -194,35 +144,35 @@ export default {
 }
 
 .refresh-btn {
-	background: #007AFF;
-	color: white;
+	background: $oa-brand;
+	color: $oa-on-brand;
 	border: none;
-	border-radius: 12rpx;
+	border-radius: $oa-radius-md;
 	padding: 20rpx 40rpx;
 	font-size: 28rpx;
 }
 
 .refresh-btn:disabled {
-	background: #ccc;
+	background: -surface-sunken;
 }
 
 .refresh-text {
-	color: white;
+	color: $oa-on-brand;
 	font-size: 28rpx;
 }
 
 .startup-list {
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	overflow: hidden;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+	box-shadow: $oa-shadow-md;
 }
 
 .table-header {
 	display: flex;
-	background: rgba(0, 122, 255, 0.1);
+	background: $oa-brand-subtle;
 	padding: 20rpx 0;
-	border-bottom: 1rpx solid rgba(0, 0, 0, 0.1);
+	border-bottom: 1rpx solid $oa-hairline;
 }
 
 .header-cell {
@@ -230,7 +180,7 @@ export default {
 	text-align: center;
 	font-size: 26rpx;
 	font-weight: 600;
-	color: #333;
+	color: $oa-text;
 }
 
 .header-cell.service-name {
@@ -241,7 +191,7 @@ export default {
 
 .startup-row {
 	display: flex;
-	border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+	border-bottom: 1rpx solid $oa-hairline;
 	transition: background-color 0.2s ease;
 }
 
@@ -250,7 +200,7 @@ export default {
 }
 
 .startup-row:hover {
-	background: rgba(0, 122, 255, 0.02);
+	background: rgba(14, 132, 181, 0.02);
 }
 
 .table-cell {
@@ -269,14 +219,14 @@ export default {
 
 .service-name-text {
 	font-size: 28rpx;
-	color: #333;
+	color: $oa-text;
 	font-weight: 500;
 }
 
 .priority-value {
 	font-size: 26rpx;
 	font-weight: 600;
-	color: #666;
+	color: $oa-text-muted;
 }
 
 .status-badge {
@@ -287,56 +237,23 @@ export default {
 }
 
 .status-badge.enabled {
-	color: #4CD964;
-	background: rgba(76, 217, 100, 0.1);
+	color: $oa-success;
+	background: $oa-success-surface;
 }
 
 .status-badge.disabled {
-	color: #FF3B30;
-	background: rgba(255, 59, 48, 0.1);
+	color: $oa-danger;
+	background: $oa-danger-surface;
 }
 
 .status-badge.running {
-	color: #4CD964;
-	background: rgba(76, 217, 100, 0.1);
+	color: $oa-success;
+	background: $oa-success-surface;
 }
 
 .status-badge.stopped {
-	color: #FF3B30;
-	background: rgba(255, 59, 48, 0.1);
+	color: $oa-danger;
+	background: $oa-danger-surface;
 }
 
-.empty-state {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 80rpx 0;
-	margin: 20rpx;
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
-}
-
-.empty-text {
-	font-size: 28rpx;
-	color: #999;
-}
-
-.error-state {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	padding: 80rpx 0;
-	margin: 20rpx;
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
-}
-
-.error-text {
-	font-size: 28rpx;
-	color: #FF3B30;
-	text-align: center;
-}
 </style>

@@ -151,8 +151,8 @@ export default {
 .app-grid {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
-	gap: 30rpx;
-	padding: 50rpx 20rpx;
+	gap: $oa-sp-3;
+	padding: $oa-sp-5 $oa-sp-2;
 }
 
 .app-item {

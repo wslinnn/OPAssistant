@@ -402,10 +402,10 @@ export default {
 	padding: 20rpx;
 }
 .client-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20rpx;
+  background: $oa-surface;
+  border-radius: $oa-radius-lg;
   margin-bottom: 30rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow: $oa-shadow-md;
   padding: 40rpx;
 }
 .client-row {
@@ -413,14 +413,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 8rpx 0;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1rpx solid $oa-hairline;
 }
 .client-row:last-child {
   border-bottom: none;
 }
 .label {
   font-size: 26rpx;
-  color: #666;
+  color: $oa-text-muted;
   font-weight: 500;
   min-width: 120rpx;
   flex-shrink: 0;
@@ -428,66 +428,67 @@ export default {
 .value {
   font-size: 26rpx;
   font-weight: bold;
-  color: #333;
+  color: $oa-text;
   text-align: right;
   max-width: 60%;
   word-break: break-all;
   flex: 1;
 }
 .client-empty {
-  color: #666;
+  color: $oa-text-muted;
   text-align: center;
   margin: 40rpx 0;
   font-size: 28rpx;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20rpx;
+  background: $oa-surface;
+  border-radius: $oa-radius-lg;
   padding: 40rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+  box-shadow: $oa-shadow-md;
 }
 .client-detail-mask {
   position: fixed;
   left: 0; top: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
+  background: $oa-scrim;
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .client-detail-popup {
-  background: #fff;
+  background: $oa-surface;
   border-radius: 18rpx;
   padding: 36rpx 40rpx 28rpx 40rpx;
   min-width: 400rpx;
   max-width: 90vw;
   max-height: 80vh;
   overflow-y: auto;
+  box-shadow: $oa-shadow-lg;
 }
 .client-detail-title {
   font-size: 30rpx;
   font-weight: bold;
-  color: #2563eb;
+  color: $oa-brand;
   margin-bottom: 18rpx;
 }
 .client-detail-row {
   font-size: 24rpx;
-  color: #333;
+  color: $oa-text;
   margin-bottom: 8rpx;
   display: flex;
   flex-wrap: wrap;
 }
 .client-detail-key {
-  color: #888;
+  color: $oa-text-subtle;
   min-width: 120rpx;
   font-weight: 500;
 }
 .client-detail-value {
-  color: #222;
+  color: $oa-text;
   font-weight: 500;
   margin-left: 8rpx;
 }
 
 .band-info {
-  color: #666;
+  color: $oa-text-muted;
   font-size: 24rpx;
   margin-left: 4rpx;
   font-weight: normal;

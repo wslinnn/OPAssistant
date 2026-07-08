@@ -151,7 +151,7 @@ export default {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.8);
+	background: $oa-scrim;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -159,17 +159,17 @@ export default {
 }
 
 .progress-content {
-	background: white;
+	background: $oa-surface;
 	padding: 60rpx 40rpx;
-	border-radius: 20rpx;
+	border-radius: $oa-radius-2xl;
 	text-align: center;
 	width: 80%;
 	max-width: 80%;
 }
 
 .progress-spinner {
-	border: 6rpx solid #f3f3f3;
-	border-top: 6rpx solid #667eea;
+	border: 6rpx solid $oa-surface-sunken;
+	border-top: 6rpx solid $oa-brand;
 	border-radius: 50%;
 	width: 100rpx;
 	height: 100rpx;
@@ -185,14 +185,14 @@ export default {
 .progress-title {
 	font-size: 36rpx;
 	font-weight: bold;
-	color: #333;
+	color: $oa-text;
 	display: block;
 	margin-bottom: 20rpx;
 }
 
 .progress-desc {
 	font-size: 28rpx;
-	color: #666;
+	color: $oa-text-muted;
 	display: block;
 	margin-bottom: 30rpx;
 	line-height: 1.5;
@@ -201,18 +201,18 @@ export default {
 .progress-countdown {
 	font-size: 32rpx;
 	font-weight: bold;
-	color: #667eea;
+	color: $oa-brand;
 	display: block;
 }
 
 
 .reboot-card {
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 20rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	padding: 60rpx 40rpx;
 	margin-top: 50rpx;
 	text-align: center;
-	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+	box-shadow: $oa-shadow-md;
 }
 
 .reboot-icon {
@@ -223,7 +223,7 @@ export default {
 	align-items: center;
 	justify-content: center;
 
-	border-radius: 20rpx;
+	border-radius: $oa-radius-lg;
 
 }
 
@@ -235,26 +235,26 @@ export default {
 .reboot-title {
 	font-size: 36rpx;
 	font-weight: bold;
-	color: #333;
+	color: $oa-text;
 	display: block;
 	margin-bottom: 20rpx;
 }
 
 .reboot-desc {
 	font-size: 28rpx;
-	color: #666;
+	color: $oa-text-muted;
 	line-height: 1.5;
 	display: block;
 	margin-bottom: 50rpx;
 }
 
 .reboot-btn {
-	background: linear-gradient(135deg, #ff3b30 0%, #ff6b6b 100%);
+	background: linear-gradient(135deg, $oa-danger 0%, mix($oa-surface, $oa-danger, 20%) 100%);
 	color: white;
 	border: none;
-	border-radius: 25rpx;
+	border-radius: $oa-radius-xl;
 	font-size: 20rpx;
-	box-shadow: 0 8rpx 24rpx rgba(255, 59, 48, 0.3);
+	box-shadow: 0 8rpx 24rpx rgba($oa-danger, 0.3);
 	transition: all 0.3s ease;
 }
 

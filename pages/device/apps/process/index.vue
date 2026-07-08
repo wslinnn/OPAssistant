@@ -1,12 +1,7 @@
 <template>
 	<view class="container">
 		<!-- 加载状态 -->
-		<view v-if="loading" class="loading-overlay">
-			<view class="loading-content">
-				<view class="loading-spinner"></view>
-				<text class="loading-text">{{ $t('process.loading_processes') }}</text>
-			</view>
-		</view>
+		<oa-loading v-if="loading" overlay :text="$t('process.loading_processes')" />
 
 		<!-- 进程列表内容 -->
 		<view v-else class="process-container">
@@ -58,14 +53,10 @@
 			</view>
 
 			<!-- 空状态 -->
-			<view v-else class="empty-state">
-				<text class="empty-text">{{ $t('process.no_processes') }}</text>
-			</view>
+			<oa-empty v-else :text="$t('process.no_processes')" />
 
 			<!-- 错误状态 -->
-			<view v-if="error" class="error-state">
-				<text class="error-text">{{ error }}</text>
-			</view>
+			<oa-empty v-if="error" :text="error" />
 		</view>
 	</view>
 </template>
@@ -241,48 +232,6 @@ export default {
 <style scoped lang="scss">
 @import '@/styles/common.scss';
 
-.loading-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0, 0, 0, 0.5);
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	z-index: 9999;
-}
-
-.loading-content {
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
-	padding: 40rpx;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-}
-
-.loading-spinner {
-	width: 60rpx;
-	height: 60rpx;
-	border: 4rpx solid #f3f3f3;
-	border-top: 4rpx solid #007AFF;
-	border-radius: 50%;
-	animation: spin 1s linear infinite;
-	margin-bottom: 20rpx;
-}
-
-@keyframes spin {
-	0% { transform: rotate(0deg); }
-	100% { transform: rotate(360deg); }
-}
-
-.loading-text {
-	font-size: 28rpx;
-	color: #666;
-}
-
 .container {
 	padding: 10rpx;
 	padding-top: 20rpx;
@@ -302,7 +251,7 @@ export default {
 
 .auto-refresh-text {
 	font-size: 24rpx;
-	color: #999;
+	color: $oa-text-subtle;
 }
 
 .process-list {
@@ -310,15 +259,15 @@ export default {
 }
 
 .process-card {
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
 	padding: 30rpx;
 	margin-bottom: 20rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
+	box-shadow: $oa-shadow-md;
 }
 
 .process-card:active {
-	background: rgba(0, 122, 255, 0.05);
+	background: rgba(14, 132, 181, 0.05);
 }
 
 .process-card-header {
@@ -336,22 +285,22 @@ export default {
 
 .process-name-text {
 	font-size: 28rpx;
-	color: #333;
+	color: $oa-text;
 	font-weight: 600;
 	margin-bottom: 4rpx;
 }
 
 .process-pid-text {
 	font-size: 22rpx;
-	color: #666;
+	color: $oa-text-muted;
 }
 
 .status-chip {
 	font-size: 22rpx;
-	color: #007AFF;
-	background: rgba(0, 122, 255, 0.1);
+	color: $oa-brand;
+	background: $oa-brand-subtle;
 	padding: 6rpx 16rpx;
-	border-radius: 20rpx;
+	border-radius: $oa-radius-lg;
 	font-weight: 500;
 }
 
@@ -367,25 +316,25 @@ export default {
 
 .metric-label {
 	font-size: 22rpx;
-	color: #999;
+	color: $oa-text-subtle;
 	margin-bottom: 8rpx;
 }
 
 .cpu-value {
 	font-size: 26rpx;
 	font-weight: 600;
-	color: #FF3B30;
+	color: $oa-danger;
 }
 
 .memory-value {
 	font-size: 26rpx;
 	font-weight: 600;
-	color: #4CD964;
+	color: $oa-success;
 }
 
 .process-detail {
 	background: rgba(0, 0, 0, 0.02);
-	border-top: 1rpx solid rgba(0, 0, 0, 0.1);
+	border-top: 1rpx solid $oa-hairline;
 	padding: 30rpx;
 	flex: 1 1 100%;
 	order: 1;
@@ -398,7 +347,7 @@ export default {
 	display: flex;
 	justify-content: space-between;
 	align-items: flex-start;
-	margin-bottom: 15rpx;
+	margin-bottom: $oa-sp-1;
 	padding: 8rpx 0;
 }
 
@@ -408,7 +357,7 @@ export default {
 
 .detail-label {
 	font-size: 26rpx;
-	color: #666;
+	color: $oa-text-muted;
 	font-weight: 500;
 	min-width: 120rpx;
 	flex-shrink: 0;
@@ -416,7 +365,7 @@ export default {
 
 .detail-value {
 	font-size: 26rpx;
-	color: #333;
+	color: $oa-text;
 	font-weight: 500;
 	text-align: right;
 	max-width: 60%;
@@ -431,37 +380,4 @@ export default {
 	text-align: left;
 }
 
-.empty-state {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	padding: 80rpx 0;
-	margin: 20rpx;
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
-}
-
-.empty-text {
-	font-size: 28rpx;
-	color: #999;
-}
-
-.error-state {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	justify-content: center;
-	padding: 80rpx 0;
-	margin: 20rpx;
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 16rpx;
-	box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.1);
-}
-
-.error-text {
-	font-size: 28rpx;
-	color: #FF3B30;
-	text-align: center;
-}
 </style>

@@ -162,13 +162,16 @@ export default {
 }
 
 .info-card {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 20rpx;
+  background: $oa-surface;
+  border-radius: $oa-radius-lg;
   padding: 20rpx;
+  box-shadow: $oa-shadow-md;
 }
 
 .info-content {
-  space-y: 16rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
 }
 
 .info-row {
@@ -176,7 +179,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 12rpx 0;
-  border-bottom: 1rpx solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1rpx solid $oa-hairline;
 }
 
 .info-row:last-child {
@@ -185,14 +188,14 @@ export default {
 
 .info-label {
   font-size: 28rpx;
-  color: #666;
+  color: $oa-text-muted;
   font-weight: 500;
   min-width: 120rpx;
 }
 
 .info-value {
   font-size: 28rpx;
-  color: #333;
+  color: $oa-text;
   font-weight: 600;
   text-align: right;
   flex: 1;
