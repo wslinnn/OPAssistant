@@ -584,7 +584,6 @@
 
 .menu-icon {
 	font-size: 40rpx;
-	color: #333;
 }
 
 .add-btn {
@@ -619,7 +618,7 @@
 }
 
 .empty-text {
-	color: #999;
+	color: $oa-text-subtle;
 	font-size: 20rpx;
 }
 
@@ -684,6 +683,7 @@
 	border-radius: 20rpx;
 	width: 600rpx;
 	padding: 30rpx;
+	box-shadow: $oa-shadow-lg;
 }
 
 .popup-header {
@@ -694,7 +694,7 @@
 .popup-title {
 	font-size: 30rpx;
 	font-weight: bold;
-	color: #333;
+	color: $oa-text;
 }
 
 .form-content {
@@ -708,14 +708,14 @@
 .label {
 	display: block;
 	font-size: 26rpx;
-	color: #333;
+	color: $oa-text;
 	margin-bottom: 8rpx;
 }
 
 .input {
 	width: 100%;
 	height: 70rpx;
-	border: 2rpx solid #ddd;
+	border: 2rpx solid $oa-hairline;
 	border-radius: 8rpx;
 	padding: 0 20rpx;
 	font-size: 26rpx;
@@ -737,12 +737,12 @@
 }
 
 .cancel-btn {
-	background-color: #f5f5f5;
-	color: #666;
+	background-color: $oa-surface-sunken;
+	color: $oa-text-muted;
 }
 
 .confirm-btn {
-	background-color: #007aff;
+	background-color: $oa-brand;
 	color: white;
 }
 
@@ -755,24 +755,24 @@
 	flex: 1;
 	text-align: center;
 	padding: 15rpx;
-	border: 2rpx solid #ddd;
+	border: 2rpx solid $oa-hairline;
 	border-radius: 8rpx;
 	font-size: 26rpx;
-	color: #666;
-	background-color: #f9f9f9;
+	color: $oa-text-muted;
+	background-color: $oa-surface-sunken;
 	transition: all 0.3s ease;
 }
 
 .protocol-option.active {
-	background-color: #007aff;
+	background-color: $oa-brand;
 	color: white;
-	border-color: #007aff;
+	border-color: $oa-brand;
 }
 
 /* 菜单弹窗样式 */
 .menu-content {
-	background-color: #fff;
-	border-radius: 20rpx;
+	background-color: $oa-surface;
+	border-radius: $oa-radius-lg;
 	padding: 20rpx;
 	margin-top: calc(var(--status-bar-height) + 88rpx);
 }
@@ -781,7 +781,7 @@
 	display: flex;
 	align-items: center;
 	padding: 15rpx 0;
-	border-bottom: 1rpx solid #eee;
+	border-bottom: 1rpx solid $oa-hairline;
 }
 
 .menu-item:last-child {
@@ -791,24 +791,24 @@
 .menu-item-icon {
 	font-size: 36rpx;
 	margin-right: 15rpx;
-	color: #007aff;
+	color: $oa-brand;
 }
 
 .menu-item-text {
 	flex: 1;
 	font-size: 28rpx;
-	color: #333;
+	color: $oa-text;
 }
 
 .menu-item-arrow {
 	font-size: 30rpx;
-	color: #999;
+	color: $oa-text-subtle;
 }
 
 /* 设备操作菜单样式 */
 .device-menu-content {
-	background-color: #fff;
-	border-radius: 20rpx 20rpx 0 0;
+	background-color: $oa-surface;
+	border-radius: $oa-radius-lg $oa-radius-lg 0 0;
 	padding: 5rpx;
 }
 
@@ -816,7 +816,7 @@
 	display: flex;
 	align-items: center;
 	padding: 20rpx 0;
-	border-bottom: 1rpx solid #eee;
+	border-bottom: 1rpx solid $oa-hairline;
 }
 
 .device-menu-content .menu-item:last-child {
@@ -832,10 +832,10 @@
 .device-menu-content .menu-item-text {
 	flex: 1;
 	font-size: 32rpx;
-	color: #333;
+	color: $oa-text;
 }
 
 .device-menu-content .delete-item .menu-item-text {
-	color: #ff3b30;
+	color: $oa-danger;
 }
 </style>

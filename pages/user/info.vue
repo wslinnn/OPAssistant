@@ -3,140 +3,80 @@
 		<view class="user-card">
 			<view class="user-icon">👤</view>
 			<text class="user-title">{{ $t('user_info.title') }}</text>
-			
-			<view class="language-section">
-				<text class="section-title">{{ $t('language.current_language') }}</text>
-				<view class="language-options">
-					<view 
-						:class="['language-option', currentLanguage === 'zh-Hans' ? 'active' : '']" 
-						@click="switchLanguage('zh-Hans')"
-					>
-						<text>{{ $t('language.chinese') }}</text>
-					</view>
-					<view 
-						:class="['language-option', currentLanguage === 'en' ? 'active' : '']" 
-						@click="switchLanguage('en')"
-					>
-						<text>{{ $t('language.english') }}</text>
-					</view>
-				</view>
+		</view>
+
+		<view class="settings-card">
+			<view class="lang-row" @click="goLanguage">
+				<oa-list-row :label="$t('language.title')" :value="currentLanguageLabel" arrow :border="false" />
 			</view>
 		</view>
 	</view>
 </template>
 
 <script>
+	import I18nUtils from '@/utils/i18n.js'
+
 	export default {
-		data() {
-			return {
-				currentLanguage: 'zh-Hans'
+		computed: {
+			currentLanguageLabel() {
+				const locale = I18nUtils.getCurrentLanguage()
+				return locale === 'zh-Hans' ? this.$t('language.chinese') : this.$t('language.english')
 			}
 		},
 		onLoad() {
-			// 动态设置页面标题
 			uni.setNavigationBarTitle({
 				title: this.$t('user_info.title')
 			})
-			
-			// 获取当前语言设置
-			this.currentLanguage = uni.getStorageSync('locale') || 'zh-Hans'
 		},
 		methods: {
-			switchLanguage(locale) {
-				if (this.currentLanguage === locale) {
-					return
-				}
-				
-				// 保存语言设置
-				uni.setStorageSync('locale', locale)
-				this.currentLanguage = locale
-				
-				// 显示成功提示
-				uni.showToast({
-					title: this.$t('language.switch_success'),
-					icon: 'success'
+			goLanguage() {
+				uni.navigateTo({
+					url: '/pages/language/index'
 				})
-				
-				// 提示重启应用
-				setTimeout(() => {
-					uni.showModal({
-						title: this.$t('language.title'),
-						content: this.$t('language.restart_required'),
-						showCancel: false,
-						confirmText: '确定'
-					})
-				}, 1500)
 			}
 		}
 	}
 </script>
 
 <style scoped lang="scss">
-.container {
-	min-height: 100vh;
-	background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-	padding: 20rpx;
-}
+	@import '@/styles/common.scss';
 
-.user-card {
-	background: rgba(255, 255, 255, 0.95);
-	border-radius: 20rpx;
-	padding: 60rpx 40rpx;
-	margin-top: 50rpx;
-	text-align: center;
-	box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
-}
+	.container {
+		min-height: 100vh;
+		background: $oa-bg;
+		padding: $oa-sp-2;
+	}
 
-.user-icon {
-	font-size: 120rpx;
-	margin-bottom: 30rpx;
-}
+	.user-card {
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
+		padding: 60rpx 40rpx;
+		margin-top: 50rpx;
+		text-align: center;
+		box-shadow: $oa-shadow-md;
+	}
 
-.user-title {
-	font-size: 36rpx;
-	font-weight: bold;
-	color: #333;
-	display: block;
-	margin-bottom: 50rpx;
-}
+	.user-icon {
+		font-size: 120rpx;
+		margin-bottom: 30rpx;
+	}
 
-.language-section {
-	text-align: left;
-}
+	.user-title {
+		font-size: 36rpx;
+		font-weight: bold;
+		color: $oa-text;
+		display: block;
+	}
 
-.section-title {
-	font-size: 28rpx;
-	color: #666;
-	display: block;
-	margin-bottom: 30rpx;
-	text-align: center;
-}
+	.settings-card {
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
+		padding: 24rpx 40rpx;
+		margin-top: 30rpx;
+		box-shadow: $oa-shadow-md;
+	}
 
-.language-options {
-	display: flex;
-	gap: 20rpx;
-	justify-content: center;
-}
-
-.language-option {
-	flex: 1;
-	max-width: 200rpx;
-	padding: 20rpx;
-	border: 2rpx solid #e0e0e0;
-	border-radius: 10rpx;
-	text-align: center;
-	transition: all 0.3s ease;
-	cursor: pointer;
-}
-
-.language-option.active {
-	border-color: #007aff;
-	background-color: #007aff;
-	color: white;
-}
-
-.language-option:not(.active):hover {
-	border-color: #007aff;
-	background-color: #f0f8ff;
-}
+	.lang-row:active {
+		opacity: 0.6;
+	}
 </style>

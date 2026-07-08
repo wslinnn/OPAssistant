@@ -89,11 +89,11 @@
 	}
 
 	.settings-card {
-		background: rgba(255, 255, 255, 0.95);
-		border-radius: 20rpx;
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
 		padding: 40rpx;
 		margin-top: 30rpx;
-		box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.1);
+		box-shadow: $oa-shadow-md;
 	}
 
 	.settings-content {
@@ -118,8 +118,8 @@
 	.language-icon-wrap {
 		width: 64rpx;
 		height: 64rpx;
-		border-radius: 16rpx;
-		background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+		border-radius: $oa-radius-lg;
+		background: $oa-brand-subtle;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -128,14 +128,14 @@
 	.language-icon-text {
 		font-size: 26rpx;
 		font-weight: 700;
-		color: #1976d2;
+		color: $oa-brand;
 		letter-spacing: -1rpx;
 	}
 
 	.section-title {
 		font-size: 34rpx;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: $oa-text;
 	}
 
 	.select-row {
@@ -147,7 +147,7 @@
 
 	.select-label {
 		font-size: 30rpx;
-		color: #333;
+		color: $oa-text;
 		font-weight: 500;
 	}
 
@@ -162,19 +162,19 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 20rpx 24rpx;
-		background: #f5f6f7;
-		border: 2rpx solid #e9ecef;
-		border-radius: 12rpx;
+		background: $oa-surface-sunken;
+		border: 2rpx solid $oa-hairline;
+		border-radius: $oa-radius-md;
 	}
 
 	.picker-text {
 		font-size: 28rpx;
-		color: #1a1a1a;
+		color: $oa-text;
 	}
 
 	.picker-arrow {
 		font-size: 20rpx;
-		color: #999;
+		color: $oa-text-subtle;
 		margin-left: 12rpx;
 	}
 </style>
