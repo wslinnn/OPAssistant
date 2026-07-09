@@ -308,7 +308,7 @@ export default {
 			try {
 				await UciRpc.setCommit('firewall', item['.name'], { enabled: on ? '1' : '0' })
 				try { await UciRpc.apply('firewall') } catch (e) { /* apply 失败不阻断，配置已落盘，下次 reload 生效 */ }
-				this.$set(item, 'enabled', on ? '1' : '0' })
+				this.$set(item, 'enabled', on ? '1' : '0')
 			} catch (e) {
 				uni.showToast({ title: this.$t('common.save_failed'), icon: 'none' })
 			}
