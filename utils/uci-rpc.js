@@ -37,9 +37,15 @@ class UciRpc {
 				success: (res) => {
 					const r = res.data && res.data.result
 					if (r && r[0] === 0) resolve(r[1])
-					else reject(r ? r[0] : new Error('ubus no result'))
+					else {
+						console.log(`[UciRpc] ubus ${object}.${method} FAILED code=${r ? r[0] : 'null'} params=${JSON.stringify(params).slice(0, 300)}`)
+						reject(r ? r[0] : new Error('ubus no result'))
+					}
 				},
-				fail: (err) => reject(err)
+				fail: (err) => {
+					console.log(`[UciRpc] ubus ${object}.${method} network FAIL: ${err.errMsg || JSON.stringify(err)}`)
+					reject(err)
+				}
 			})
 		})
 	}

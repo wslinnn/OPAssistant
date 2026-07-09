@@ -326,7 +326,9 @@ export default {
 	color: $oa-text;
 }
 .uci-dialog__body {
-	max-height: 56vh;
+	flex: 1 1 auto;
+	min-height: 0;
+	max-height: 62vh;
 }
 .uci-group {
 	margin-bottom: $oa-sp-1;
