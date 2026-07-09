@@ -50,8 +50,14 @@ class UciRpc {
 	}
 
 	// get(config) → { sectionName: { '.type','.anonymous','.name', <field>... } }
-	static get(config) {
-		return this._uci('get', { config })
+	// rpcd ubus uci.get 返回 {values:{sections...}}（luci rpc.declare expect 'values'），这里解包取 sections map
+	static async get(config) {
+		const res = await this._uci('get', { config })
+		const hasValues = res && typeof res.values === 'object' && res.values !== null
+		const data = hasValues ? res.values : (res || {})
+		const sections = Object.keys(data).filter(k => data[k] && typeof data[k] === 'object' && data[k]['.type'])
+		console.log(`[UciRpc] get('${config}'): rawKeys=[${Object.keys(res || {}).join(',')}] hasValues=${hasValues} sections=${sections.length}`)
+		return data
 	}
 
 	// add(config, type, values) → 新 section 名（uci add 返回 {section:name}，取字符串）
