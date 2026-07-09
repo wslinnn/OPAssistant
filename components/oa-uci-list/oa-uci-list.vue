@@ -157,9 +157,12 @@ export default {
 			if (this.saving || this.deleting) return
 			this.$refs.popup.close()
 		},
-		// depends 联动判定：依赖字段值匹配才满足（UI 显隐 + 校验/提交跳过共用）
+		// depends 联动判定：依赖字段值匹配才满足（UI 显隐 + 校验/提交跳过共用）；value 支持数组(多值任一)
 		fieldDependsMet(f) {
-			return !f.depends || String(this.formData[f.depends.key]) === String(f.depends.value)
+			if (!f.depends) return true
+			const cur = String(this.formData[f.depends.key])
+			const val = f.depends.value
+			return Array.isArray(val) ? val.map(String).includes(cur) : cur === String(val)
 		},
 		// switch 取值映射：onValue/offValue 优先（samba4 yes/no），invert 兼容（arpbind 反逻辑）
 		_switchVals(f) {
@@ -246,7 +249,7 @@ export default {
 			try {
 				const values = {}
 				this.schema.forEach(f => {
-					if (!this.fieldDependsMet(f)) return  // depends 未满足不提交（匹配 luci 不写隐藏字段）
+					if (!this.fieldDependsMet(f)) return  // depends 未满足不提交（保留 uci 原值，匹配 luci 不写隐藏字段；副作用：如 WiFi key 在 encryption=none 时旧值残留，驱动层忽略，无功能影响）
 					const v = this.formData[f.key]
 					values[f.key] = f.type === 'dynamicList' ? (Array.isArray(v) ? v : []) : (v === undefined || v === null ? '' : String(v))
 				})

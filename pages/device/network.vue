@@ -65,7 +65,10 @@
 			<oa-empty v-if="wirelessList.length === 0" :text="$t('network.wireless_loading')" />
 			<oa-card v-for="radio in wirelessList" :key="radio.name" padding="lg" :divider="true">
 				<view slot="header" class="wireless-radio-title">{{ radio.name }}</view>
-				<view slot="actions" class="wireless-radio-chip">{{ $t('network.chip') }}：{{ radio.chip }}</view>
+				<view slot="actions">
+					<text class="wireless-radio-edit" @click="goWifiSettings">{{ $t('wifi.settings') }} ›</text>
+				</view>
+				<view class="wireless-radio-row"><text class="label">{{ $t('network.chip') }}：</text><oa-copy-text class="value" :text="radio.chip">{{ radio.chip }}</oa-copy-text></view>
 				<view class="wireless-radio-row"><text class="label">{{ $t('network.band') }}：</text><oa-copy-text class="value" :text="radio.band">{{ radio.band }}</oa-copy-text></view>
 				<view class="wireless-radio-row"><text class="label">{{ $t('network.channel') }}：</text><oa-copy-text class="value" :text="String(radio.channel)">{{ radio.channel }}</oa-copy-text></view>
 				<view class="wireless-radio-row"><text class="label">{{ $t('network.protocol') }}：</text><oa-copy-text class="value" :text="'802.11' + radio.protocols">802.11{{ radio.protocols }}</oa-copy-text></view>
@@ -164,6 +167,11 @@
 			goBack() {
 				uni.reLaunch({
 					url: '/pages/device_list'
+				})
+			},
+			goWifiSettings() {
+				uni.navigateTo({
+					url: '/pages/device/plugins/wifi/index'
 				})
 			},
 			loadData() {
@@ -828,6 +836,11 @@
 .wireless-radio-chip {
 	font-size: 22rpx;
 	color: $oa-text-subtle;
+}
+.wireless-radio-edit {
+	font-size: 24rpx;
+	color: $oa-brand;
+	font-weight: 600;
 }
 .wireless-radio-row {
 	display: flex;

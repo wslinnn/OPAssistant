@@ -149,6 +149,14 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/plugins/wifi/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%wifi.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
 		    "path" : "pages/language/index",
 		    "style" :                                                                                    
 		    {
