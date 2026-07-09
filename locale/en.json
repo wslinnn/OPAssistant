@@ -311,7 +311,13 @@
     "startup": "Startup Items",
     "reboot": "Reboot",
     "factory_reset": "Factory Reset",
-    "coming_soon": "Coming Soon"
+    "coming_soon": "Coming Soon",
+    "group_tools": "Tools",
+    "group_network": "Network & Security",
+    "group_storage": "Storage",
+    "group_system": "System",
+    "group_proxy": "Proxy",
+    "no_plugins": "No plugins available"
   },
   "arpbind": {
     "title": "IP/MAC Binding",

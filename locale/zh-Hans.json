@@ -357,7 +357,13 @@
     "startup": "启动项",
     "reboot": "重启",
     "factory_reset": "复位",
-    "coming_soon": "即将推出"
+    "coming_soon": "即将推出",
+    "group_tools": "常用工具",
+    "group_network": "网络与安全",
+    "group_storage": "存储与共享",
+    "group_system": "系统维护",
+    "group_proxy": "代理",
+    "no_plugins": "未检测到可用插件"
   },
   "arpbind": {
     "title": "IP/MAC 绑定",
