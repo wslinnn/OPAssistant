@@ -193,6 +193,33 @@ class UciRpc {
 		if (mode !== undefined) params.mode = mode
 		return this.callUbus('file', 'write', params)
 	}
+
+	// USB 打印机发现（ubus file exec /usr/bin/detectlp，复用 luci 同款脚本）。
+	// detectlp 输出每行 "devname,product,model,description"（product=VID/PID/VER 内核串，即 uci device 的真实 value）
+	// → printers 供 oa-uci-list device 下拉(value=product,label=描述[VID:PID])；details 供只读展示表
+	static async getUsbPrinters() {
+		let res
+		try {
+			res = await this.callUbus('file', 'exec', { command: '/usr/bin/detectlp' }, 8000)
+		} catch (e) { return { printers: [], details: [] } }
+		const stdout = (res && res.stdout) || ''
+		const details = []
+		const printers = []
+		stdout.split('\n').forEach(line => {
+			if (!line.trim()) return
+			const parts = line.split(',')
+			if (parts.length < 2 || !parts[0] || !parts[1]) return
+			const devname = parts[0]
+			const product = parts[1]
+			const model = parts[2] || ''
+			const description = parts.slice(3).join(',').trim()
+			const segs = String(product).split('/')
+			const id = segs.length >= 2 ? `${segs[0].padStart(4, '0')}:${segs[1].padStart(4, '0')}` : product
+			details.push({ devname, product, model, description, id, devicePath: '/dev/usb/' + devname })
+			printers.push({ value: product, label: `${description || model || devname} [${id}]` })
+		})
+		return { printers, details }
+	}
 }
 
 export default UciRpc

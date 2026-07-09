@@ -568,6 +568,38 @@
     "opt_proto_icmp": "ICMP",
     "opt_proto_icmpv6": "ICMPv6"
   },
+  "usb_printer": {
+    "title": "USB Printer",
+    "hint": "This configures the p910nd print service (listening on port 9100+). Print jobs are sent by clients over the network. After changing bindings you may need to replug the USB printer for changes to take effect.",
+    "detected": "Detected Printers",
+    "no_printers": "No USB printer detected",
+    "bindings": "Printer Bindings",
+    "add_binding": "Add Binding",
+    "edit_binding": "Edit Binding",
+    "no_bindings": "No printer bindings",
+    "field_enabled": "Enabled",
+    "field_device": "Device",
+    "field_port": "Listen Port",
+    "field_bind": "Listen IP",
+    "field_bidirectional": "Bidirectional",
+    "invalid_ip": "Invalid IP (e.g. 0.0.0.0)"
+  },
+  "passwall2": {
+    "title": "PassWall2",
+    "status": "Status",
+    "service": "Service",
+    "running": "Running",
+    "stopped": "Stopped",
+    "node": "Current Node",
+    "no_node": "Not selected",
+    "mode": "Mode",
+    "enable": "Enable Proxy",
+    "enable_hint": "When enabled, the router proxies traffic via the current node",
+    "advanced": "Advanced",
+    "advanced_hint": "Manage nodes, subscriptions and routing rules in the router web UI (re-login required).",
+    "open_web": "Open in Router Web UI",
+    "copied_url": "URL copied"
+  },
   "route": {
     "title": "Routing Table",
     "loading_routes": "Loading routing table...",

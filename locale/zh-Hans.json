@@ -614,6 +614,38 @@
     "opt_proto_icmp": "ICMP",
     "opt_proto_icmpv6": "ICMPv6"
   },
+  "usb_printer": {
+    "title": "USB 打印机",
+    "hint": "本功能配置 p910nd 打印服务（监听 9100+ 端口），打印作业由客户端经网络发起。修改绑定后可能需重新插拔 USB 打印机使配置生效。",
+    "detected": "检测到的打印机",
+    "no_printers": "未检测到 USB 打印机",
+    "bindings": "打印绑定",
+    "add_binding": "添加绑定",
+    "edit_binding": "编辑绑定",
+    "no_bindings": "暂无打印绑定",
+    "field_enabled": "启用",
+    "field_device": "设备",
+    "field_port": "监听端口",
+    "field_bind": "监听 IP",
+    "field_bidirectional": "双向模式",
+    "invalid_ip": "请输入有效 IP（如 0.0.0.0）"
+  },
+  "passwall2": {
+    "title": "PassWall2",
+    "status": "运行状态",
+    "service": "服务状态",
+    "running": "运行中",
+    "stopped": "已停止",
+    "node": "当前节点",
+    "no_node": "未选择",
+    "mode": "运行模式",
+    "enable": "启用代理",
+    "enable_hint": "开启后路由器将按当前节点代理流量",
+    "advanced": "高级设置",
+    "advanced_hint": "节点、订阅、分流规则等完整配置请在路由器网页端管理（需重新登录）。",
+    "open_web": "在路由器网页端打开",
+    "copied_url": "已复制网页地址"
+  },
   "pages": {
     "home": "首页",
     "client": "终端",

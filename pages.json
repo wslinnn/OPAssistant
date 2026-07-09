@@ -165,6 +165,22 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/plugins/usb-printer/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%usb_printer.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/device/plugins/passwall2/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%passwall2.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
 		    "path" : "pages/language/index",
 		    "style" :                                                                                    
 		    {

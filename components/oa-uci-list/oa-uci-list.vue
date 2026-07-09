@@ -193,6 +193,7 @@ export default {
 			if (f.candidates === 'interfaces') return this.candidates.interfaces || []
 			if (f.candidates === 'zones') return this.candidates.zones || []
 			if (f.candidates === 'helpers') return this.candidates.helpers || []
+			if (f.candidates === 'printers') return this.candidates.printers || []
 			return []
 		},
 		fieldOptionIndex(f) {
