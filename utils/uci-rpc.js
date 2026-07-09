@@ -90,15 +90,12 @@ class UciRpc {
 		return this._uci('reorder', { config, section, index })
 	}
 
-	// commit(config)。rpcd session ACL 对 ubus uci.commit 严格（App session 常被拒 -32002），
-	// 被拒时降级 luci HTTP apply_rollback（luci 服务端 root 权限 commit，与 luci web 同通道）
+	// commit(config)。luci-base rpcd ACL 刻意不授予 uci.commit（强制走 apply），但授予 uci.apply + uci.confirm。
+	// uci.apply{rollback:true} 内部已 uci_commit + ucitrack reload + 启动 90s 回滚定时；uci.confirm 取消回滚使改动永久生效。
+	// 与 luci web 保存完全同路径，纯 ubus，无需 cookie/CSRF token（ubus 通道不校验 luci CSRF）
 	static async commit(config) {
-		try {
-			return await this._uci('commit', { config })
-		} catch (e) {
-			console.log(`[UciRpc] uci.commit denied (code=${e}), fallback luci apply_rollback`)
-			return this._luciApply()
-		}
+		await this._uci('apply', { config, rollback: true, timeout: 90 })
+		await this._uci('confirm', { config })
 	}
 
 	// apply：调 /etc/init.d/<script> <action>（file exec 通道）。initScript/action 白名单防注入
@@ -110,45 +107,6 @@ class UciRpc {
 			command: `/etc/init.d/${initScript}`,
 			params: [action]
 		}, 12000)
-	}
-
-	// luci HTTP apply（与 luci web 保存同通道）：session.set token → apply_rollback(commit+reload) → confirm(取消回滚)
-	// 用于 ubus uci.commit 被 rpcd session ACL 拒（-32002）时的降级。App 的 sysauth 直接作 cookie sysauth_http
-	static async _luciApply() {
-		const { base, session } = this._ctx()
-		if (!session) return Promise.reject(new Error('no session'))
-		// luci 要求 session 带 token（CSRF）；App session.login 默认无，这里写一个
-		const token = Array.from({ length: 32 }, () => Math.floor(Math.random() * 16).toString(16)).join('')
-		try { await this.callUbus('session', 'set', { values: { token } }) } catch (e) { console.log(`[UciRpc] session.set token failed: ${JSON.stringify(e)}`) }
-		const ts = Date.now()
-		// apply_rollback：commit session pending + ucitrack reload + 启动 60s 回滚
-		const rb = await this._httpGet(`${base}/cgi-bin/luci/admin/uci/apply_rollback?sid=${session}&token=${token}&${ts}`)
-		// confirm：取消 60s 回滚（token 同 session.token，luci 不轮转）
-		await this._httpGet(`${base}/cgi-bin/luci/confirm?token=${token}&${ts + 1}`)
-		return rb
-	}
-
-	// luci HTTP GET（带 sysauth cookie 认证，复用 App session id）
-	static _httpGet(url) {
-		const { session } = this._ctx()
-		return new Promise((resolve, reject) => {
-			uni.request({
-				method: 'GET',
-				url,
-				header: { 'Cookie': `sysauth_http=${session}; sysauth=${session}` },
-				timeout: 15000,
-				success: (res) => {
-					const q = url.indexOf('?')
-					console.log(`[UciRpc] luci GET ${q > -1 ? url.slice(0, q) : url} → ${res.statusCode}`)
-					if (res.statusCode >= 200 && res.statusCode < 400) resolve(res)
-					else reject(new Error('luci http ' + res.statusCode))
-				},
-				fail: (err) => {
-					console.log(`[UciRpc] luci GET FAIL: ${err.errMsg || JSON.stringify(err)}`)
-					reject(err)
-				}
-			})
-		})
 	}
 
 	// 便捷：set + commit（不含 apply，按需调用方再 apply）
