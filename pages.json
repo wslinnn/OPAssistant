@@ -133,6 +133,22 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/plugins/samba4/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%samba.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/device/plugins/upnp/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%upnp.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
 		    "path" : "pages/language/index",
 		    "style" :                                                                                    
 		    {

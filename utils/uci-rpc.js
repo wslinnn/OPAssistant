@@ -141,6 +141,19 @@ class UciRpc {
 		})
 		return { devices }
 	}
+
+	// 网络接口候选（uci network 的 interface section 名，samba4 interface 多选用）
+	static async getInterfaceCandidates() {
+		let res
+		try { res = await this.get('network') }
+		catch (e) { return { interfaces: [] } }
+		const interfaces = []
+		Object.keys(res || {}).forEach(name => {
+			const s = res[name] || {}
+			if (s['.type'] === 'interface') interfaces.push({ value: s['.name'] || name, label: s['.name'] || name })
+		})
+		return { interfaces }
+	}
 }
 
 export default UciRpc

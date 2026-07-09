@@ -36,6 +36,13 @@
 								</view>
 								<input class="uci-field__input" v-model="dynInput[f.key]" :placeholder="f.placeholder || $t('common.add')" @confirm="addDyn(f)" />
 							</view>
+							<view v-else-if="f.type === 'multiSelect'" class="uci-field__multi">
+								<view class="multi-tags">
+									<view v-for="opt in fieldOptions(f)" :key="opt.value" :class="['multi-tag', { 'multi-tag--on': multiSelected(f, opt.value) }]" @click="toggleMulti(f, opt.value)">
+										<text>{{ opt.label }}</text>
+									</view>
+								</view>
+							</view>
 						</block>
 					</view>
 				</view>
@@ -79,11 +86,12 @@ export default {
 		dialogTitle() {
 			return this.isEdit ? (this.editTitle || this.$t('common.edit')) : (this.createTitle || this.$t('common.add'))
 		},
-		// 按 group 聚合字段（保持声明顺序）
+		// 按 group 聚合字段（保持声明顺序）；depends 联动：依赖字段值不匹配时隐藏
 		groupedSchema() {
 			const groups = []
 			const idx = {}
 			this.schema.forEach(f => {
+				if (!this.fieldDependsMet(f)) return
 				const g = f.group || ''
 				if (idx[g] === undefined) {
 					idx[g] = groups.length
@@ -120,6 +128,8 @@ export default {
 				const raw = section[f.key]
 				if (f.type === 'dynamicList') {
 					data[f.key] = Array.isArray(raw) ? [...raw] : (raw ? [raw] : [])
+				} else if (f.type === 'multiSelect') {
+					data[f.key] = Array.isArray(raw) ? raw.map(String).filter(Boolean).join(' ') : (raw !== undefined && raw !== null && raw !== '' ? String(raw) : data[f.key])
 				} else if (raw !== undefined && raw !== null && raw !== '') {
 					data[f.key] = String(raw)
 				}
@@ -132,7 +142,8 @@ export default {
 			const data = {}
 			this.schema.forEach(f => {
 				if (f.type === 'dynamicList') data[f.key] = []
-				else if (f.type === 'switch') data[f.key] = f.default !== undefined ? String(f.default) : (f.invert ? '1' : '0')
+				else if (f.type === 'multiSelect') data[f.key] = Array.isArray(f.default) ? f.default.map(String).filter(Boolean).join(' ') : (f.default !== undefined ? String(f.default) : '')
+				else if (f.type === 'switch') data[f.key] = f.default !== undefined ? String(f.default) : this._switchVals(f).off
 				else data[f.key] = f.default !== undefined ? String(f.default) : ''
 			})
 			return data
@@ -146,19 +157,29 @@ export default {
 			if (this.saving || this.deleting) return
 			this.$refs.popup.close()
 		},
-		// switch 反逻辑（arpbind enabled='0' 表启用）
+		// depends 联动判定：依赖字段值匹配才满足（UI 显隐 + 校验/提交跳过共用）
+		fieldDependsMet(f) {
+			return !f.depends || String(this.formData[f.depends.key]) === String(f.depends.value)
+		},
+		// switch 取值映射：onValue/offValue 优先（samba4 yes/no），invert 兼容（arpbind 反逻辑）
+		_switchVals(f) {
+			if (f.onValue !== undefined) return { on: String(f.onValue), off: String(f.offValue !== undefined ? f.offValue : '0') }
+			if (f.invert) return { on: '0', off: '1' }
+			return { on: '1', off: '0' }
+		},
 		fieldBool(f) {
-			const v = this.formData[f.key]
-			return f.invert ? (v === '0') : (v === '1')
+			return String(this.formData[f.key]) === this._switchVals(f).on
 		},
 		onSwitch(f, on) {
-			this.$set(this.formData, f.key, on ? (f.invert ? '0' : '1') : (f.invert ? '1' : '0'))
+			const v = this._switchVals(f)
+			this.$set(this.formData, f.key, on ? v.on : v.off)
 		},
 		fieldOptions(f) {
 			if (f.options) return f.options
 			if (f.candidates === 'hosthints-ip') return this.candidates.hosthintsIp || []
 			if (f.candidates === 'hosthints-mac') return this.candidates.hosthintsMac || []
 			if (f.candidates === 'devices' || f.type === 'deviceSelect') return this.candidates.devices || []
+			if (f.candidates === 'interfaces') return this.candidates.interfaces || []
 			return []
 		},
 		fieldOptionIndex(f) {
@@ -186,8 +207,20 @@ export default {
 		removeDyn(f, i) {
 			if (Array.isArray(this.formData[f.key])) this.formData[f.key].splice(i, 1)
 		},
+		// multiSelect（空格分隔字符串存储，如 samba4 interface）
+		multiSelected(f, val) {
+			return String(this.formData[f.key] || '').split(/\s+/).filter(Boolean).includes(String(val))
+		},
+		toggleMulti(f, val) {
+			const arr = String(this.formData[f.key] || '').split(/\s+/).filter(Boolean)
+			const i = arr.indexOf(String(val))
+			if (i >= 0) arr.splice(i, 1)
+			else arr.push(String(val))
+			this.$set(this.formData, f.key, arr.join(' '))
+		},
 		async onSave() {
 			for (const f of this.schema) {
+				if (!this.fieldDependsMet(f)) continue  // depends 未满足的字段跳过校验（UI 隐藏，用户无法修正）
 				if (f.required) {
 					const v = this.formData[f.key]
 					const empty = f.type === 'dynamicList' ? !v || !v.length : (v === '' || v === undefined || v === null)
@@ -213,6 +246,7 @@ export default {
 			try {
 				const values = {}
 				this.schema.forEach(f => {
+					if (!this.fieldDependsMet(f)) return  // depends 未满足不提交（匹配 luci 不写隐藏字段）
 					const v = this.formData[f.key]
 					values[f.key] = f.type === 'dynamicList' ? (Array.isArray(v) ? v : []) : (v === undefined || v === null ? '' : String(v))
 				})
@@ -367,6 +401,22 @@ export default {
 .dyn-tag__del {
 	margin-left: 8rpx;
 	font-size: $oa-fs-body;
+}
+.multi-tags {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8rpx;
+}
+.multi-tag {
+	background: $oa-surface-sunken;
+	color: $oa-text-muted;
+	border-radius: $oa-radius-md;
+	padding: $oa-sp-1 $oa-sp-2;
+	font-size: $oa-fs-caption;
+}
+.multi-tag--on {
+	background: $oa-brand-subtle;
+	color: $oa-brand;
 }
 .uci-dialog__actions {
 	display: flex;
