@@ -365,17 +365,21 @@ export default {
 }
 .uci-field__combo-btn {
 	flex-shrink: 0;
+	height: 80rpx;
+	line-height: 80rpx;
 	color: $oa-text-subtle;
 	font-size: $oa-fs-body;
-	padding: $oa-sp-2;
+	padding: 0 $oa-sp-2;
 }
 .uci-field__input {
 	flex: 1;
 	width: 100%;
 	box-sizing: border-box;
+	height: 80rpx;
+	line-height: 80rpx;
 	background: $oa-surface-sunken;
 	border-radius: $oa-radius-md;
-	padding: $oa-sp-2;
+	padding: 0 $oa-sp-2;
 	font-size: $oa-fs-body;
 	color: $oa-text;
 }
@@ -383,9 +387,10 @@ export default {
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
+	height: 80rpx;
 	background: $oa-surface-sunken;
 	border-radius: $oa-radius-md;
-	padding: $oa-sp-2;
+	padding: 0 $oa-sp-2;
 }
 .uci-field__select-text {
 	flex: 1;

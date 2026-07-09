@@ -38,7 +38,7 @@ class UciRpc {
 					const r = res.data && res.data.result
 					if (r && r[0] === 0) resolve(r[1])
 					else {
-						console.log(`[UciRpc] ubus ${object}.${method} FAILED code=${r ? r[0] : 'null'} params=${JSON.stringify(params).slice(0, 300)}`)
+						console.log(`[UciRpc] ubus ${object}.${method} FAILED ubusCode=${r ? r[0] : 'null'} http=${res.statusCode} params=${JSON.stringify(params).slice(0, 200)} body=${JSON.stringify(res.data).slice(0, 400)}`)
 						reject(r ? r[0] : new Error('ubus no result'))
 					}
 				},
