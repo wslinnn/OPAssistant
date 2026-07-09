@@ -122,10 +122,10 @@ export default {
 				{ key: 'ieee80211k', label: '802.11k', type: 'switch', group: 'mtk' },
 				{ key: 'ieee80211r', label: '802.11r', type: 'switch', group: 'mtk' },
 				{ key: 'autoba', label: 'Auto Block ACK', type: 'switch', group: 'mtk' },
-				{ key: 'kicklow', label: this.$t('wifi.kicklow'), type: 'text', placeholder: '0', group: 'mtk' },
-				{ key: 'assocthres', label: this.$t('wifi.assocthres'), type: 'text', placeholder: '0', group: 'mtk' },
-				{ key: 'steeringthresold', label: this.$t('wifi.steeringthresold'), type: 'text', placeholder: '0', group: 'mtk' },
-				{ key: 'steeringbssid', label: this.$t('wifi.steeringbssid'), type: 'dynamicList', group: 'mtk' }
+				{ key: 'kicklow', label: this.$t('wifi.kicklow'), type: 'text', placeholder: '0', validate: { pattern: '^-*[0-9]+$' }, group: 'mtk' },
+				{ key: 'assocthres', label: this.$t('wifi.assocthres'), type: 'text', placeholder: '0', validate: { pattern: '^-*[0-9]+$' }, group: 'mtk' },
+				{ key: 'steeringthresold', label: this.$t('wifi.steeringthresold'), type: 'text', placeholder: '0', validate: { pattern: '^-*[0-9]+$' }, group: 'mtk' },
+				{ key: 'steeringbssid', label: this.$t('wifi.steeringbssid'), type: 'dynamicList', validate: { pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$' }, group: 'mtk' }
 			]
 		}
 	},
