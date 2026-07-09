@@ -201,7 +201,7 @@ class UciRpc {
 		let res
 		try {
 			res = await this.callUbus('file', 'exec', { command: '/usr/bin/detectlp' }, 8000)
-		} catch (e) { return { printers: [], details: [] } }
+		} catch (e) { return { printers: [], details: [], error: true } }
 		const stdout = (res && res.stdout) || ''
 		const details = []
 		const printers = []

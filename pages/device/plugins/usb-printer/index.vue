@@ -44,6 +44,7 @@ export default {
 	data() {
 		return {
 			loading: false,
+			initialized: false,
 			scanning: false,
 			printers: [],
 			bindings: [],
@@ -71,7 +72,7 @@ export default {
 	},
 	methods: {
 		async load() {
-			this.loading = this.bindings.length === 0
+			this.loading = !this.initialized
 			try {
 				const data = await UciRpc.get('usb_printer')
 				const bindings = []
@@ -83,6 +84,7 @@ export default {
 			} catch (e) {
 				uni.showToast({ title: this.$t('common.load_failed'), icon: 'none' })
 			} finally {
+				this.initialized = true
 				this.loading = false
 			}
 		},
@@ -90,8 +92,14 @@ export default {
 			this.scanning = true
 			try {
 				const res = await UciRpc.getUsbPrinters()
-				this.printers = res.details || []
-				this.candidates = { printers: res.printers || [] }
+				if (res.error) {
+					this.printers = []
+					this.candidates = { printers: [] }
+					uni.showToast({ title: this.$t('common.load_failed'), icon: 'none' })
+				} else {
+					this.printers = res.details || []
+					this.candidates = { printers: res.printers || [] }
+				}
 			} catch (e) {
 				this.printers = []
 				this.candidates = { printers: [] }
