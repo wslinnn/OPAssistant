@@ -68,9 +68,10 @@ class UciRpc {
 		return data
 	}
 
-	// add(config, type, values) → 新 section 名（uci add 返回 {section:name}，取字符串）
-	static async add(config, type, values = {}) {
-		const res = await this._uci('add', { config, type, name: '', values })
+	// add(config, type) → 新 section 名。rpcd uci.add 只创建匿名空壳，传 name/values 会触发 INVALID_ARGS [2]
+	// （与 luci 一致：add 不带 values，字段值由调用方后续 set 填入）
+	static async add(config, type) {
+		const res = await this._uci('add', { config, type })
 		return (res && res.section) || res
 	}
 
@@ -157,8 +158,11 @@ class UciRpc {
 	}
 
 	// 便捷：add + commit → 返回新 section 名
-	static async addCommit(config, type, values) {
-		const name = await this.add(config, type, values)
+	static async addCommit(config, type, values = {}) {
+		const name = await this.add(config, type)
+		if (values && Object.keys(values).length) {
+			await this.set(config, name, values)
+		}
 		await this.commit(config)
 		return name
 	}
