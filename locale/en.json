@@ -13,6 +13,7 @@
     "save_failed": "Save failed",
     "delete_success": "Deleted",
     "delete_failed": "Delete failed",
+    "delete_confirm": "Delete this entry?",
     "load_failed": "Load failed",
     "enabled": "Enabled",
     "disabled": "Disabled",

@@ -13,6 +13,7 @@
     "save_failed": "保存失败",
     "delete_success": "删除成功",
     "delete_failed": "删除失败",
+    "delete_confirm": "确定删除此条？",
     "load_failed": "加载失败",
     "enabled": "已启用",
     "disabled": "已禁用",

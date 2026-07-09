@@ -30,7 +30,7 @@
 			</oa-card>
 		</view>
 
-		<oa-uci-list ref="globalEditor" config="samba4" section-type="samba" :schema="globalSchema" init-script="samba4" :candidates="candidates" :create-title="$t('samba.edit_global')" :edit-title="$t('samba.edit_global')" @saved="load" />
+		<oa-uci-list ref="globalEditor" config="samba4" section-type="samba" :allow-delete="false" :schema="globalSchema" init-script="samba4" :candidates="candidates" :create-title="$t('samba.edit_global')" :edit-title="$t('samba.edit_global')" @saved="load" />
 		<oa-uci-list ref="shareEditor" config="samba4" section-type="sambashare" :schema="shareSchema" init-script="samba4" :create-title="$t('samba.add_share')" :edit-title="$t('samba.edit_share')" @saved="load" @deleted="load" />
 	</view>
 </template>

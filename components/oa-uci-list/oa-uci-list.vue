@@ -285,7 +285,17 @@ export default {
 				this.saving = false
 			}
 		},
-		async onRemove() {
+		onRemove() {
+			uni.showModal({
+				title: this.$t('common.delete'),
+				content: this.$t('common.delete_confirm'),
+				confirmText: this.$t('common.delete'),
+				cancelText: this.$t('common.cancel'),
+				confirmColor: '#e64646',
+				success: (r) => { if (r.confirm) this._doRemove() }
+			})
+		},
+		async _doRemove() {
 			this.deleting = true
 			try {
 				await UciRpc.deleteCommit(this.config, this.editingName)

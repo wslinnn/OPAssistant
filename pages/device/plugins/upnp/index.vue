@@ -37,7 +37,7 @@
 			</oa-card>
 		</view>
 
-		<oa-uci-list ref="cfgEditor" config="upnpd" section-type="config" :schema="configSchema" init-script="miniupnpd" :create-title="$t('upnp.edit_config')" :edit-title="$t('upnp.edit_config')" @saved="onSaved" />
+		<oa-uci-list ref="cfgEditor" config="upnpd" section-type="config" :allow-delete="false" :schema="configSchema" init-script="miniupnpd" :create-title="$t('upnp.edit_config')" :edit-title="$t('upnp.edit_config')" @saved="onSaved" />
 		<oa-uci-list ref="aclEditor" config="upnpd" section-type="perm_rule" :schema="aclSchema" init-script="miniupnpd" :create-title="$t('upnp.add_acl')" :edit-title="$t('upnp.edit_acl')" @saved="load" @deleted="load" />
 	</view>
 </template>

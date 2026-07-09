@@ -46,9 +46,9 @@
 			</oa-card>
 		</view>
 
-		<oa-uci-list ref="radioEditor" config="wireless" section-type="wifi-device" :schema="radioSchema" :create-title="$t('wifi.radio_settings')" :edit-title="$t('wifi.radio_settings')" @saved="onSaved" />
-		<oa-uci-list ref="ifaceEditor" config="wireless" section-type="wifi-iface" :schema="ifaceSchema" :create-title="$t('wifi.edit_ssid')" :edit-title="$t('wifi.edit_ssid')" @saved="onSaved" />
-		<oa-uci-list ref="mtkEditor" config="wireless" section-type="wifi-iface" :schema="mtkSchema" :create-title="$t('wifi.mtk_advanced')" :edit-title="$t('wifi.mtk_advanced')" @saved="onSaved" />
+		<oa-uci-list ref="radioEditor" config="wireless" section-type="wifi-device" :allow-delete="false" :schema="radioSchema" :create-title="$t('wifi.radio_settings')" :edit-title="$t('wifi.radio_settings')" @saved="onSaved" />
+		<oa-uci-list ref="ifaceEditor" config="wireless" section-type="wifi-iface" :allow-delete="false" :schema="ifaceSchema" :create-title="$t('wifi.edit_ssid')" :edit-title="$t('wifi.edit_ssid')" @saved="onSaved" />
+		<oa-uci-list ref="mtkEditor" config="wireless" section-type="wifi-iface" :allow-delete="false" :schema="mtkSchema" :create-title="$t('wifi.mtk_advanced')" :edit-title="$t('wifi.mtk_advanced')" @saved="onSaved" />
 	</view>
 </template>
 
