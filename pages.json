@@ -157,6 +157,14 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/plugins/firewall/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%firewall.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
 		    "path" : "pages/language/index",
 		    "style" :                                                                                    
 		    {

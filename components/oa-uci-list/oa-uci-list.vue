@@ -48,7 +48,7 @@
 				</view>
 			</scroll-view>
 			<view class="uci-dialog__actions">
-				<oa-button v-if="isEdit" type="negative" block :loading="deleting" :disabled="saving" @click="onRemove">{{ $t('common.delete') }}</oa-button>
+				<oa-button v-if="isEdit && allowDelete" type="negative" block :loading="deleting" :disabled="saving" @click="onRemove">{{ $t('common.delete') }}</oa-button>
 				<oa-button type="neutral" block :disabled="saving || deleting" @click="close">{{ $t('common.cancel') }}</oa-button>
 				<oa-button type="primary" block :loading="saving" :disabled="deleting" @click="onSave">{{ $t('common.save') }}</oa-button>
 			</view>
@@ -70,7 +70,8 @@ export default {
 		initScript: { type: String, default: '' },
 		candidates: { type: Object, default: () => ({}) },
 		createTitle: { type: String, default: '' },
-		editTitle: { type: String, default: '' }
+		editTitle: { type: String, default: '' },
+		allowDelete: { type: Boolean, default: true }
 	},
 	data() {
 		return {
@@ -158,11 +159,18 @@ export default {
 			this.$refs.popup.close()
 		},
 		// depends 联动判定：依赖字段值匹配才满足（UI 显隐 + 校验/提交跳过共用）；value 支持数组(多值任一)
+		// 依赖字段若为 multiSelect（空格分隔串），按集合交集判定（如 proto='tcp udp' depends [tcp,udp]）
 		fieldDependsMet(f) {
 			if (!f.depends) return true
-			const cur = String(this.formData[f.depends.key])
+			const cur = String(this.formData[f.depends.key] || '')
 			const val = f.depends.value
-			return Array.isArray(val) ? val.map(String).includes(cur) : cur === String(val)
+			const arr = Array.isArray(val) ? val.map(String) : [String(val)]
+			const depF = this.schema.find(x => x.key === f.depends.key)
+			if (depF && depF.type === 'multiSelect') {
+				const curSet = cur.split(/\s+/).filter(Boolean)
+				return arr.some(v => curSet.includes(v))
+			}
+			return arr.includes(cur)
 		},
 		// switch 取值映射：onValue/offValue 优先（samba4 yes/no），invert 兼容（arpbind 反逻辑）
 		_switchVals(f) {
@@ -183,6 +191,8 @@ export default {
 			if (f.candidates === 'hosthints-mac') return this.candidates.hosthintsMac || []
 			if (f.candidates === 'devices' || f.type === 'deviceSelect') return this.candidates.devices || []
 			if (f.candidates === 'interfaces') return this.candidates.interfaces || []
+			if (f.candidates === 'zones') return this.candidates.zones || []
+			if (f.candidates === 'helpers') return this.candidates.helpers || []
 			return []
 		},
 		fieldOptionIndex(f) {
@@ -251,7 +261,9 @@ export default {
 				this.schema.forEach(f => {
 					if (!this.fieldDependsMet(f)) return  // depends 未满足不提交（保留 uci 原值，匹配 luci 不写隐藏字段；副作用：如 WiFi key 在 encryption=none 时旧值残留，驱动层忽略，无功能影响）
 					const v = this.formData[f.key]
-					values[f.key] = f.type === 'dynamicList' ? (Array.isArray(v) ? v : []) : (v === undefined || v === null ? '' : String(v))
+					if (f.type === 'dynamicList') values[f.key] = Array.isArray(v) ? v : []
+					else if (f.type === 'multiSelect' && f.uciList) values[f.key] = String(v || '').split(/\s+/).filter(Boolean)
+					else values[f.key] = (v === undefined || v === null) ? '' : String(v)
 				})
 				let name
 				if (this.isEdit) {

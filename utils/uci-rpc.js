@@ -154,6 +154,45 @@ class UciRpc {
 		})
 		return { interfaces }
 	}
+
+	// 防火墙 zone 候选（firewall.@zone[].name，redirect/rule/nat/forwarding 的 src/dest 下拉用）
+	static async getZoneCandidates() {
+		let res
+		try { res = await this.get('firewall') }
+		catch (e) { return { zones: [] } }
+		const zones = []
+		Object.keys(res || {}).forEach(name => {
+			const s = res[name] || {}
+			if (s['.type'] === 'zone') {
+				const n = s.name || s['.name']
+				if (n) zones.push({ value: n, label: n })
+			}
+		})
+		return { zones }
+	}
+
+	// conntrack helpers（ubus luci getConntrackHelpers）→ set_helper/helper 下拉选项
+	static async getConntrackHelpers() {
+		let res
+		try { res = await this.callUbus('luci', 'getConntrackHelpers') }
+		catch (e) { return { helpers: [] } }
+		const arr = (res && res.result) || []
+		const helpers = arr.map(h => ({ value: h.name, label: h.description || h.name })).filter(h => h.value)
+		return { helpers }
+	}
+
+	// 文件读（ubus file read，与 luci fs.read 同通道）→ 文本内容
+	static async readFile(path) {
+		const res = await this.callUbus('file', 'read', { path })
+		return (res && res.data) || ''
+	}
+
+	// 文件写（ubus file write，与 luci fs.write 同通道）。data 原样写入，调用方负责规范化
+	static writeFile(path, data, mode) {
+		const params = { path, data }
+		if (mode !== undefined) params.mode = mode
+		return this.callUbus('file', 'write', params)
+	}
 }
 
 export default UciRpc
