@@ -80,9 +80,11 @@ class UciRpc {
 		return this._uci('commit', { config })
 	}
 
-	// apply：调 /etc/init.d/<script> <action>（file exec 通道）
+	// apply：调 /etc/init.d/<script> <action>（file exec 通道）。initScript/action 白名单防注入
 	static apply(initScript, action = 'reload') {
 		if (!initScript) return Promise.resolve()
+		if (!/^[a-zA-Z0-9_-]+$/.test(initScript)) return Promise.reject(new Error('invalid init script name'))
+		if (!/^(reload|restart|start|stop)$/.test(action)) return Promise.reject(new Error('invalid action'))
 		return this.callUbus('file', 'exec', {
 			command: `/etc/init.d/${initScript}`,
 			params: [action]

@@ -64,7 +64,7 @@ export default {
 				{ key: 'username', label: this.$t('cifs.username'), type: 'text', default: 'guest', group: 'auth', groupLabel: this.$t('cifs.g_auth') },
 				{ key: 'password', label: this.$t('cifs.password'), type: 'password', group: 'auth' },
 				{ key: 'workgroup', label: this.$t('cifs.workgroup'), type: 'text', default: 'WORKGROUP', group: 'auth' },
-				{ key: 'options', label: this.$t('cifs.options'), type: 'dynamicList', group: 'auth' }
+				{ key: 'options', label: this.$t('cifs.options'), type: 'dynamicList', group: 'auth', validate: { pattern: '^[A-Za-z0-9_=,.-]+$' } }
 			]
 		},
 		smbVersionOptions() {

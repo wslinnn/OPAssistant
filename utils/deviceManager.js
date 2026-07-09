@@ -101,7 +101,6 @@ class DeviceManager {
 			const updatedDevice = { ...deviceList[index], ...deviceData }
 			if (deviceData.password !== undefined) {
 				updatedDevice.password = Crypto.encrypt(deviceData.password)
-				console.log("updated device password is " + updatedDevice.password);
 			}
 			deviceList[index] = updatedDevice
 			return this.saveDeviceList(deviceList)
@@ -150,7 +149,6 @@ class DeviceManager {
 			_pluginsCache = null  // 切设备清空插件探测缓存
 			const deviceToStore = { ...device }
 			deviceToStore.password = Crypto.encrypt(device.password)
-			console.log("set current device password is " + deviceToStore.password);
 			uni.setStorageSync(CURRENT_DEVICE_KEY, deviceToStore)
 			return true
 		} catch (e) {

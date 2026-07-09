@@ -56,7 +56,7 @@ export default {
 		schema() {
 			return [
 				{ key: 'name', label: this.$t('wolplus.name'), type: 'text', required: true },
-				{ key: 'macaddr', label: this.$t('wolplus.macaddr'), type: 'text', candidates: 'hosthints-mac', required: true, placeholder: '00:11:22:33:44:55' },
+				{ key: 'macaddr', label: this.$t('wolplus.macaddr'), type: 'text', candidates: 'hosthints-mac', required: true, placeholder: '00:11:22:33:44:55', validate: { pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$' } },
 				{ key: 'maceth', label: this.$t('wolplus.iface'), type: 'deviceSelect', default: 'br-lan', required: true }
 			]
 		}
@@ -92,6 +92,10 @@ export default {
 		async wake(s) {
 			if (!s.macaddr) {
 				uni.showToast({ title: this.$t('wolplus.save_first'), icon: 'none' })
+				return
+			}
+			if (!/^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$/.test(s.macaddr)) {
+				uni.showToast({ title: `${this.$t('wolplus.macaddr')} ${this.$t('common.invalid')}`, icon: 'none' })
 				return
 			}
 			this.waking = s['.name']

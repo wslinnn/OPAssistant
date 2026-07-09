@@ -54,8 +54,8 @@ export default {
 		schema() {
 			return [
 				{ key: 'enabled', label: this.$t('arpbind.enable'), type: 'switch', invert: true, default: '0' },
-				{ key: 'ipaddr', label: this.$t('arpbind.ipaddr'), type: 'text', candidates: 'hosthints-ip', required: true, placeholder: '192.168.1.100' },
-				{ key: 'macaddr', label: this.$t('arpbind.macaddr'), type: 'text', candidates: 'hosthints-mac', required: true, placeholder: '00:11:22:33:44:55' },
+				{ key: 'ipaddr', label: this.$t('arpbind.ipaddr'), type: 'text', candidates: 'hosthints-ip', required: true, placeholder: '192.168.1.100', validate: { pattern: '^[a-zA-Z0-9.:]+$' } },
+				{ key: 'macaddr', label: this.$t('arpbind.macaddr'), type: 'text', candidates: 'hosthints-mac', required: true, placeholder: '00:11:22:33:44:55', validate: { pattern: '^([0-9A-Fa-f]{2}:){5}[0-9A-Fa-f]{2}$' } },
 				{ key: 'ifname', label: this.$t('arpbind.ifname'), type: 'deviceSelect', required: true }
 			]
 		}

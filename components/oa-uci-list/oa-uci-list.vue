@@ -196,6 +196,18 @@ export default {
 						return
 					}
 				}
+				// 字段格式校验（schema.validate.pattern；dynamicList 逐元素校验）
+				if (f.validate && f.validate.pattern) {
+					const re = new RegExp(f.validate.pattern)
+					const val = this.formData[f.key]
+					const arr = f.type === 'dynamicList' ? (Array.isArray(val) ? val : []) : [val]
+					for (const item of arr) {
+						if (item !== '' && item !== undefined && item !== null && !re.test(String(item))) {
+							uni.showToast({ title: f.validate.message || `${f.label} ${this.$t('common.invalid')}`, icon: 'none' })
+							return
+						}
+					}
+				}
 			}
 			this.saving = true
 			try {

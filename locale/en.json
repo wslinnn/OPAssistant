@@ -16,7 +16,8 @@
     "load_failed": "Load failed",
     "enabled": "Enabled",
     "disabled": "Disabled",
-    "retry": "Retry"
+    "retry": "Retry",
+    "invalid": "invalid format"
   },
   "device_list": {
     "title": "Devices",
