@@ -233,6 +233,18 @@ export default {
 			this.$set(this.formData, f.key, arr.join(' '))
 		},
 		async onSave() {
+			const HIGH_RISK = ['firewall', 'wireless', 'passwall2']
+			const isHigh = HIGH_RISK.includes(this.config)
+			uni.showModal({
+				title: this.$t('common.save'),
+				content: isHigh ? (this.$t('common.risk_network_warning') + ' ' + this.$t('common.save_confirm')) : this.$t('common.save_confirm'),
+				confirmText: this.$t('common.save'),
+				cancelText: this.$t('common.cancel'),
+				confirmColor: isHigh ? '#e64646' : '#007aff',
+				success: (r) => { if (r.confirm) this._doSave() }
+			})
+		},
+		async _doSave() {
 			for (const f of this.schema) {
 				if (!this.fieldDependsMet(f)) continue  // depends 未满足的字段跳过校验（UI 隐藏，用户无法修正）
 				if (f.required) {

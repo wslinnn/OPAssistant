@@ -163,14 +163,23 @@ export default {
 			return ({ '2g': '2.4 GHz', '5g': '5 GHz', '6g': '6 GHz', '60g': '60 GHz' })[b] || b || '-'
 		},
 		radioEnabled(radio) { return radio.disabled !== '1' },
-		async toggleRadio(radio, on) {
-			try {
-				await Wireless.setRadioEnabled(radio['.name'], on)
-				this.$set(radio, 'disabled', on ? '0' : '1')
-			} catch (e) {
-				// 失败不更新 disabled：oa-switch 由 :value=radioEnabled 驱动，自动恢复原状态，避免假性关闭
-				uni.showToast({ title: this.$t('wifi.apply_failed'), icon: 'none' })
-			}
+		toggleRadio(radio, on) {
+			uni.showModal({
+				title: this.$t('common.save'),
+				content: this.$t('common.risk_network_warning'),
+				confirmText: this.$t('common.confirm'),
+				cancelText: this.$t('common.cancel'),
+				confirmColor: '#e64646',
+				success: async (r) => {
+					if (!r.confirm) return
+					try {
+						await Wireless.setRadioEnabled(radio['.name'], on)
+						this.$set(radio, 'disabled', on ? '0' : '1')
+					} catch (e) {
+						uni.showToast({ title: this.$t('wifi.apply_failed'), icon: 'none' })
+					}
+				}
+			})
 		},
 		async restart(radio) {
 			this.restarting = radio['.name']

@@ -60,15 +60,6 @@
 		    }
 		},
 		{
-		    "path" : "pages/device/apps/factory_reset/index",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%factory_reset.title%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-
-		{
 		    "path" : "pages/device/apps/process/index",
 		    "style" :                                                                                    
 		    {

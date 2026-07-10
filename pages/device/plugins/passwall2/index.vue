@@ -80,20 +80,30 @@ export default {
 			}
 		},
 		// 主开关：uci set + commit + apply（ubus uci.commit 不触发 ucitrack，须显式 reload passwall2）
-		async toggle(on) {
+		toggle(on) {
 			if (!this.globalSection['.name']) {
 				uni.showToast({ title: this.$t('common.save_failed'), icon: 'none' })
 				return
 			}
-			const prev = this.enabled
-			this.enabled = on
-			try {
-				await UciRpc.setCommit('passwall2', this.globalSection['.name'], { enabled: on ? '1' : '0' })
-				try { await UciRpc.apply('passwall2') } catch (e) { /* apply 失败不阻断，配置已落盘 */ }
-			} catch (e) {
-				this.enabled = prev
-				uni.showToast({ title: this.$t('common.save_failed'), icon: 'none' })
-			}
+			uni.showModal({
+				title: this.$t('common.save'),
+				content: this.$t('common.risk_network_warning'),
+				confirmText: this.$t('common.confirm'),
+				cancelText: this.$t('common.cancel'),
+				confirmColor: '#e64646',
+				success: async (r) => {
+					if (!r.confirm) return
+					const prev = this.enabled
+					this.enabled = on
+					try {
+						await UciRpc.setCommit('passwall2', this.globalSection['.name'], { enabled: on ? '1' : '0' })
+						try { await UciRpc.apply('passwall2') } catch (e) { /* apply 失败不阻断，配置已落盘 */ }
+					} catch (e) {
+						this.enabled = prev
+						uni.showToast({ title: this.$t('common.save_failed'), icon: 'none' })
+					}
+				}
+			})
 		},
 		// 外部浏览器打开路由器 luci passwall2 页（luci admin 无 URL token，用户需手动登录管理完整配置）
 		openExternal() {

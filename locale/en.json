@@ -14,6 +14,8 @@
     "delete_success": "Deleted",
     "delete_failed": "Delete failed",
     "delete_confirm": "Delete this entry?",
+    "save_confirm": "Save this configuration?",
+    "risk_network_warning": "⚠️ High-risk: may briefly disrupt connectivity; ensure fallback access if remote",
     "load_failed": "Load failed",
     "enabled": "Enabled",
     "disabled": "Disabled",

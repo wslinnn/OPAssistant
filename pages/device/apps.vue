@@ -33,8 +33,7 @@ const TOOLS = [
 	{ id: 'diag', group: 'tools', iconText: '诊断', page: '/pages/device/apps/diag/index' },
 	{ id: 'syslog', group: 'tools', iconText: '日志', page: '/pages/device/apps/syslog/index' },
 	{ id: 'conntrack', group: 'tools', iconText: '连接', page: '/pages/device/apps/conntrack/index' },
-	{ id: 'reboot', group: 'tools', icon: '/static/reboot-w.png', page: '/pages/device/apps/reboot/index' },
-	{ id: 'factory_reset', group: 'tools', icon: '/static/reset-w.png', page: '/pages/device/apps/factory_reset/index' }
+	{ id: 'reboot', group: 'tools', icon: '/static/reboot-w.png', page: '/pages/device/apps/reboot/index' }
 ]
 
 // luci 插件：fixed=系统自带必显示，否则由 DeviceManager.getInstalledPlugins(config) 探测；i18n 为各插件 locale section 名

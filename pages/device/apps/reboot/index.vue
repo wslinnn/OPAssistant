@@ -19,13 +19,11 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
+import UciRpc from '@/utils/uci-rpc.js'
 
 export default {
 	data() {
 		return {
-			deviceInfo: {},
-			session: '',
 			url: '/ubus'
 		}
 	},
@@ -34,11 +32,6 @@ export default {
 			title: this.$t('reboot.title')
 		})
 
-		this.deviceInfo = DeviceManager.getCurrentDevice()
-		this.session = this.deviceInfo.sysauth
-		const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
-		const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
-		this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
 	},
 	methods: {
 		confirmReboot() {
@@ -56,30 +49,9 @@ export default {
 		},
 
 		executeReboot() {
-			uni.request({
-				method: 'POST',
-				url: this.url,
-				data: {
-					jsonrpc: '2.0',
-					id: 3,
-					method: 'call',
-					params: [this.session, 'system', 'reboot', {}]
-				},
-				header: {
-					'Content-Type': 'application/json',
-					'x-uniauth': 'true'
-				},
-				timeout: 3000,
-				success: (res) => {
-					console.log('reboot:', res)
-				},
-				fail: (err) => {
-					console.log('reboot:', err)
-				},
-				complete: () => {
-					this.$refs.countdownAction.startCountdown()
-				}
-			})
+			UciRpc.callUbus('system', 'reboot', {}, 15000)
+				.catch(() => {})
+				.finally(() => { this.$refs.countdownAction.startCountdown() })
 		},
 
 		onCountdownEnd() {
