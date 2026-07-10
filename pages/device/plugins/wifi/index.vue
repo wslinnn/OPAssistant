@@ -111,17 +111,18 @@ export default {
 			]
 		},
 		mtkSchema() {
-			// MTK 分支 AP 级特有开关（真实 uci key，源码 wireless-mtk.js 确认）
+			// MTK 分支 AP 级特有开关（真实 uci key + 默认值，源码 wireless-mtk.js 确认）
+			// default 对齐 luci Flag.default：uci 未显式写时按驱动默认显示，否则 app 显示关但驱动实际开
 			return [
-				{ key: 'mumimo_dl', label: 'MU-MIMO DL', type: 'switch', group: 'mtk', groupLabel: this.$t('wifi.g_mtk') },
-				{ key: 'mumimo_ul', label: 'MU-MIMO UL', type: 'switch', group: 'mtk' },
-				{ key: 'ofdma_dl', label: 'OFDMA DL (WiFi6)', type: 'switch', group: 'mtk' },
-				{ key: 'ofdma_ul', label: 'OFDMA UL (WiFi6)', type: 'switch', group: 'mtk' },
-				{ key: 'amsdu', label: 'A-MSDU', type: 'switch', group: 'mtk' },
-				{ key: 'uapsd', label: 'U-APSD', type: 'switch', group: 'mtk' },
-				{ key: 'ieee80211k', label: '802.11k', type: 'switch', group: 'mtk' },
-				{ key: 'ieee80211r', label: '802.11r', type: 'switch', group: 'mtk' },
-				{ key: 'autoba', label: 'Auto Block ACK', type: 'switch', group: 'mtk' },
+				{ key: 'mumimo_dl', label: 'MU-MIMO DL', type: 'switch', default: '1', group: 'mtk', groupLabel: this.$t('wifi.g_mtk') },
+				{ key: 'mumimo_ul', label: 'MU-MIMO UL', type: 'switch', default: '1', group: 'mtk' },
+				{ key: 'ofdma_dl', label: 'OFDMA DL (WiFi6)', type: 'switch', default: '1', group: 'mtk' },
+				{ key: 'ofdma_ul', label: 'OFDMA UL (WiFi6)', type: 'switch', default: '1', group: 'mtk' },
+				{ key: 'amsdu', label: 'A-MSDU', type: 'switch', default: '1', group: 'mtk' },
+				{ key: 'uapsd', label: 'U-APSD', type: 'switch', default: '1', group: 'mtk' },
+				{ key: 'ieee80211k', label: '802.11k', type: 'switch', default: '1', group: 'mtk' },
+				{ key: 'ieee80211r', label: '802.11r', type: 'switch', default: '0', group: 'mtk' },
+				{ key: 'autoba', label: 'Auto Block ACK', type: 'switch', default: '1', group: 'mtk' },
 				{ key: 'kicklow', label: this.$t('wifi.kicklow'), type: 'text', placeholder: '0', validate: { pattern: '^-*[0-9]+$' }, group: 'mtk' },
 				{ key: 'assocthres', label: this.$t('wifi.assocthres'), type: 'text', placeholder: '0', validate: { pattern: '^-*[0-9]+$' }, group: 'mtk' },
 				{ key: 'steeringthresold', label: this.$t('wifi.steeringthresold'), type: 'text', placeholder: '0', validate: { pattern: '^-*[0-9]+$' }, group: 'mtk' },
@@ -162,7 +163,11 @@ export default {
 			const b = radio.band || (radio.iwinfo && radio.iwinfo.band) || ''
 			return ({ '2g': '2.4 GHz', '5g': '5 GHz', '6g': '6 GHz', '60g': '60 GHz' })[b] || b || '-'
 		},
-		radioEnabled(radio) { return radio.disabled !== '1' },
+		radioEnabled(radio) {
+			// OR(对齐 luci):device 或其下任一 iface disabled='1' 即视为未启用(BSS 不建、SSID 不广播)
+			if (radio.disabled === '1') return false
+			return !this.ifaces.some(i => i.device === radio['.name'] && i.disabled === '1')
+		},
 		toggleRadio(radio, on) {
 			uni.showModal({
 				title: this.$t('common.save'),
@@ -174,7 +179,7 @@ export default {
 					if (!r.confirm) return
 					try {
 						await Wireless.setRadioEnabled(radio['.name'], on)
-						this.$set(radio, 'disabled', on ? '0' : '1')
+						this.load()
 					} catch (e) {
 						uni.showToast({ title: this.$t('wifi.apply_failed'), icon: 'none' })
 					}

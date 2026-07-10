@@ -8,12 +8,12 @@
 export default {
 	name: 'oa-copy-text',
 	props: {
-		text: { type: String, default: '' },
-		copy: { type: String, default: '' }
+		text: { type: [String, Number], default: '' },
+		copy: { type: [String, Number], default: '' }
 	},
 	methods: {
 		onCopy() {
-			const data = this.copy || this.text || ''
+			const data = String(this.copy || this.text || '')
 			if (!data) return
 			uni.setClipboardData({
 				data,

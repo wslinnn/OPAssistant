@@ -58,26 +58,31 @@ class Wireless {
 		})
 	}
 
-	// radio 启停（uci disabled + apply；异常向上传播，调用方据以提示失败、避免假性关闭）
+	// radio 启停(对齐 luci network_updown):device 与其下所有 wifi-iface 的 disabled 同步
+	// (OR 关系——任一残留 disabled='1' 则 netifd 不建 BSS、SSID 不广播;只清 device 不够,这是"没真正开启"的根因)
+	// + uci.apply{rollback}(ucitrack→netifd up/down)+ enable 时 /sbin/wifi up 兜底立即 up
 	static async setRadioEnabled(radioName, enabled) {
-		await UciRpc.setCommit('wireless', radioName, { disabled: enabled ? '0' : '1' })
-		await this.applyWireless()
-	}
-
-	// radio 重启（network.wireless down + up，per-radio 不动其它接口；失败 fallback applyWireless）
-	static async restartRadio(radioName) {
-		try {
-			await UciRpc.callUbus('network.wireless', 'down', { device: radioName })
-			await UciRpc.callUbus('network.wireless', 'up', { device: radioName })
-		} catch (e) {
-			await this.applyWireless()
+		const w = await UciRpc.get('wireless').catch(() => ({}))
+		const ifaces = Object.keys(w).filter(n => w[n] && w[n]['.type'] === 'wifi-iface' && w[n].device === radioName)
+		const val = enabled ? '0' : '1'
+		await UciRpc.set('wireless', radioName, { disabled: val })
+		await Promise.all(ifaces.map(n => UciRpc.set('wireless', n, { disabled: val })))
+		await UciRpc.commit('wireless')
+		if (enabled) {
+			try { await UciRpc.callUbus('file', 'exec', { command: '/sbin/wifi', params: ['up', radioName] }) } catch (e) {}
 		}
 	}
 
-	// apply 仅无线子系统（network.wireless reload，不断 WAN/有线；失败 fallback 全 network reload；异常向上传播）
+	// radio 重启：同 luci radio_restart = /sbin/wifi up <radio>(ubus file exec；ACL luci-mod-network-config /sbin/wifi exec)
+	// (network.wireless up/down 无 ACL 授予；/sbin/wifi up 是 luci 官方 per-radio 重启路径)
+	static async restartRadio(radioName) {
+		await UciRpc.callUbus('file', 'exec', { command: '/sbin/wifi', params: ['up', radioName] })
+	}
+
+	// apply 无线子系统：network.wireless reload / init.d network reload 均需 session ACL(常 Access denied/ubusCode 6)；
+	// 改走 uci.apply{rollback}+confirm(uci namespace 授予)→ rpcd ucitrack 系统级 reload，不经 session ACL(同 luci web 保存路径)
 	static async applyWireless() {
-		try { await UciRpc.callUbus('network.wireless', 'reload', {}) }
-		catch (e) { await UciRpc.apply('network', 'reload') }
+		await UciRpc.commit('wireless')
 	}
 }
 
