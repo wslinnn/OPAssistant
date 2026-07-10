@@ -50,7 +50,7 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
+import UciRpc from '@/utils/uci-rpc.js'
 
 export default {
 	data() {
@@ -58,24 +58,15 @@ export default {
 			loading: false,
 			processList: [],
 			error: '',
-			deviceInfo: {},
-			session: '',
-			url: '/ubus',
 			refreshTimer: null,
-			isFirstLoad: true
+			isFirstLoad: true,
+			busy: false
 		}
 	},
 	onLoad() {
 		uni.setNavigationBarTitle({
 			title: this.$t('process.title')
 		})
-
-		this.deviceInfo = DeviceManager.getCurrentDevice()
-		this.session = this.deviceInfo.sysauth
-		const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
-		const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
-		this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
-
 		this.loadProcessList()
 		this.startAutoRefresh()
 	},
@@ -83,46 +74,30 @@ export default {
 		this.stopAutoRefresh()
 	},
 	methods: {
-		loadProcessList() {
-			// 只在首次加载时显示加载动画
+		// busy 守卫:防止 3s 轮询在慢请求(>3s)下堆积(callUbus 改 await 后,loading 不再天然拦截轮询)
+		async loadProcessList() {
+			if (this.busy) return
+			this.busy = true
 			if (this.isFirstLoad) {
 				this.loading = true
 			}
 			this.error = ''
-
-			uni.request({
-				method: 'POST',
-				url: this.url,
-				data: {
-					jsonrpc: '2.0',
-					id: 1,
-					method: 'call',
-					params: [this.session, 'luci', 'getProcessList', {}]
-				},
-				header: {
-					'Content-Type': 'application/json',
-					'x-uniauth': 'true'
-				},
-				timeout: 10000,
-				success: (res) => {
-					if (res.data && res.data.result && res.data.result[1] && res.data.result[1].result) {
-						this.parseProcessList(res.data.result[1].result)
-					} else {
-						this.error = this.$t('process.parse_failed')
-					}
-					if (this.isFirstLoad) {
-						this.loading = false
-						this.isFirstLoad = false
-					}
-				},
-				fail: (err) => {
-					this.error = this.$t('process.load_failed')
-					if (this.isFirstLoad) {
-						this.loading = false
-						this.isFirstLoad = false
-					}
+			try {
+				const res = await UciRpc.callUbus('luci', 'getProcessList', {}, 10000)
+				if (res && res.result) {
+					this.parseProcessList(res.result)
+				} else {
+					this.error = this.$t('process.parse_failed')
 				}
-			})
+			} catch (e) {
+				this.error = this.$t('process.load_failed')
+			} finally {
+				this.busy = false
+				if (this.isFirstLoad) {
+					this.loading = false
+					this.isFirstLoad = false
+				}
+			}
 		},
 
 		parseProcessList(processes) {
@@ -201,10 +176,10 @@ export default {
 
 		startAutoRefresh() {
 			this.refreshTimer = setInterval(() => {
-				if (!this.loading) {
+				if (!this.busy) {
 					this.loadProcessList()
 				}
-			}, 3000) // 3秒刷新一次
+			}, 3000)
 		},
 
 		stopAutoRefresh() {

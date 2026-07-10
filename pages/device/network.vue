@@ -109,7 +109,8 @@
 </template>
 
 <script>
-	import DeviceManager from '@/utils/deviceManager.js'
+		import UciRpc from '@/utils/uci-rpc.js'
+	import { formatBytes } from '@/utils/format.js'
 	import PageTab from '@/components/PageTab.vue'
 
 	export default {
@@ -117,13 +118,10 @@
 		data() {
 			return {
 				currentTab: 0,
-				session: '',
-				url: '/ubus',
 				rawInterfaces: [],
 				rawDevices: {},
 				interfaceList: [],
 				deviceGroups: [],
-				deviceInfo: {},
 				wirelessList: [],
 				ipv6Dialog: { title: '', sections: [] }
 			}
@@ -136,11 +134,6 @@
 				frontColor: '#000000',
 				backgroundColor: '#F8F8F8'
 			})
-			this.deviceInfo = DeviceManager.getCurrentDevice()
-			this.session = this.deviceInfo.sysauth
-			const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
-			const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
-			this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
 
 			this.loadData()
 		},
@@ -163,6 +156,7 @@
 			}
 		},
 		methods: {
+			formatBytes,
 
 			goBack() {
 				uni.reLaunch({
@@ -176,43 +170,15 @@
 			},
 			loadData() {
 				this.fetchInterfaces()
-				this.fetchDevices()
 				this.fetchWireless()
 			},
 			fetchInterfaces() {
-				uni.request({
-					method: 'POST',
-					url: this.url,
-					data: [
-						{
-							jsonrpc: '2.0',
-							id: 1,
-							method: 'call',
-							params: [this.session, 'network.interface', 'dump', {}]
-						},
-						{
-							jsonrpc: '2.0',
-							id: 2,
-							method: 'call',
-							params: [this.session, 'luci-rpc', 'getNetworkDevices', {}]
-						}
-					],
-					header: {
-						'Content-Type': 'application/json',
-						'x-uniauth': 'true'
-					},
-					timeout: 3000,
-					success: (res) => {
-						const interfaceRes = Array.isArray(res.data) ? res.data[0] : res.data
-						const deviceRes = Array.isArray(res.data) ? res.data[1] : null
-						let interfaces = []
-						let deviceMap = {}
-						if (interfaceRes && interfaceRes.result && interfaceRes.result[1] && interfaceRes.result[1].interface) {
-							interfaces = interfaceRes.result[1].interface
-						}
-						if (deviceRes && deviceRes.result && deviceRes.result[1]) {
-							deviceMap = deviceRes.result[1]
-						}
+				Promise.all([
+					UciRpc.callUbus('network.interface', 'dump', {}),
+					UciRpc.callUbus('luci-rpc', 'getNetworkDevices', {})
+				]).then(([ifacePayload, devMap]) => {
+												let interfaces = (ifacePayload && ifacePayload.interface) || []
+						let deviceMap = devMap || {}
 						this.rawInterfaces = interfaces
 						this.rawDevices = deviceMap
 						this.interfaceList = interfaces
@@ -355,63 +321,13 @@
 						}
 						this.deviceGroups = this.generateDeviceGroups(deviceMap)
 					}
-				})
-			},
-			fetchDevices() {
-				uni.request({
-					method: 'POST',
-					url: this.url,
-					data: {
-						jsonrpc: '2.0',
-						id: 2,
-						method: 'call',
-						params: [this.session, 'network.device', 'status', {}]
-					},
-					header: {
-						'Content-Type': 'application/json',
-						'x-uniauth': 'true'
-					},
-					timeout: 3000,
-					success: (res) => {
-						if (res.data && res.data.result && res.data.result[1] && res.data.result[1].device) {
-							const list = res.data.result[1].device.map(d => {
-								return {
-									name: d.name,
-									up: d.up,
-									macaddr: d.macaddr,
-									speed: d.speed,
-									mtu: d.mtu,
-									rx_bytes: d.rx_bytes,
-									rx_packets: d.rx_packets,
-									tx_bytes: d.tx_bytes,
-									tx_packets: d.tx_packets
-								}
-							})
-							this.deviceGroups = this.generateDeviceGroups(list)
-						}
-					}
-				})
+				).catch(() => {})
 			},
 			fetchWireless() {
 				this.wirelessList = [];
-				uni.request({
-					method: 'POST',
-					url: this.url,
-					data: {
-						jsonrpc: '2.0',
-						id: 99,
-						method: 'call',
-						params: [this.session, 'luci-rpc', 'getWirelessDevices', {}]
-					},
-					header: {
-						'Content-Type': 'application/json',
-						'x-uniauth': 'true'
-					},
-					timeout: 3000,
-					success: (res) => {
-						if (res.data && res.data.result && res.data.result[1]) {
-							const radios = res.data.result[1];
-							this.wirelessList = Object.keys(radios).map(radioName => {
+								UciRpc.callUbus('luci-rpc', 'getWirelessDevices', {})
+				.then((radios) => {
+												if (radios) {							this.wirelessList = Object.keys(radios).map(radioName => {
 								const radio = radios[radioName];
 								const iw = radio.iwinfo || {};
 								return {
@@ -458,7 +374,7 @@
 							});
 						}
 					}
-				});
+				).catch(() => {});
 			},
 			generateDeviceGroups(deviceMap) {
 				const typeMap = {
@@ -575,13 +491,6 @@
 			},
 			closeIpv6Dialog() {
 				if (this.$refs.ipv6DialogPopup) this.$refs.ipv6DialogPopup.close()
-			},
-			formatBytes(bytes) {
-				if (!bytes) return '0 B'
-				const k = 1024
-				const sizes = ['B', 'KB', 'MB', 'GB']
-				const i = Math.floor(Math.log(bytes) / Math.log(k))
-				return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i]
 			},
 			formatUptime(seconds) {
 				if (!seconds) return '-'

@@ -30,6 +30,9 @@ const TOOLS = [
 	{ id: 'route', group: 'tools', icon: '/static/route-w.png', page: '/pages/device/apps/route/index' },
 	{ id: 'process', group: 'tools', icon: '/static/process-w.png', page: '/pages/device/apps/process/index' },
 	{ id: 'startup', group: 'tools', icon: '/static/startup-w.png', page: '/pages/device/apps/startup/index' },
+	{ id: 'diag', group: 'tools', iconText: '诊断', page: '/pages/device/apps/diag/index' },
+	{ id: 'syslog', group: 'tools', iconText: '日志', page: '/pages/device/apps/syslog/index' },
+	{ id: 'conntrack', group: 'tools', iconText: '连接', page: '/pages/device/apps/conntrack/index' },
 	{ id: 'reboot', group: 'tools', icon: '/static/reboot-w.png', page: '/pages/device/apps/reboot/index' },
 	{ id: 'factory_reset', group: 'tools', icon: '/static/reset-w.png', page: '/pages/device/apps/factory_reset/index' }
 ]

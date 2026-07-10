@@ -56,7 +56,9 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
+import UciRpc from '@/utils/uci-rpc.js'
+import Wireless from '@/utils/wireless.js'
+import { formatDuration } from '@/utils/format.js'
 import PageTab from '@/components/PageTab.vue'
 export default {
   components: { PageTab },
@@ -72,12 +74,11 @@ export default {
   data() {
     return {
       currentTab: 1,
-      session: '',
-      url: '/ubus',
-      deviceInfo: {},
       wirelessClients: [],
       loading: false,
       wirelessIfBandMap: {},
+      dhcpCache: null,
+      dhcpBusy: null,
       dhcpv4List: [],
       dhcpv6List: []
     }
@@ -87,11 +88,6 @@ export default {
       title: this.$t('client.title')
     })
 
-    this.deviceInfo = DeviceManager.getCurrentDevice()
-    this.session = this.deviceInfo.sysauth
-    const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
-    const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
-    this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
     this.loadData()
   },
   onShow() {
@@ -115,6 +111,7 @@ export default {
       })
     },
     loadData() {
+      this.dhcpCache = null
       if (this.currentTab === 1) {
         this.fetchWirelessClients()
       } else if (this.currentTab === 2) {
@@ -147,79 +144,34 @@ export default {
       this.wirelessClients = allClients
       this.loading = false
     },
-    getWirelessInterfaces() {
-      return new Promise((resolve) => {
-        uni.request({
-          method: 'POST',
-          url: this.url,
-          data: {
-            jsonrpc: '2.0',
-            id: 101,
-            method: 'call',
-            params: [this.session, 'luci-rpc', 'getWirelessDevices', {}]
-          },
-          header: { 'Content-Type': 'application/json' },
-		  timeout: 3000,
-          success: (res) => {
-            let interfaces = []
-            if (res.data && res.data.result && res.data.result[1]) {
-              const radios = res.data.result[1]
-              Object.values(radios).forEach(radio => {
-                let band = radio.config && radio.config.band ? radio.config.band.toUpperCase() : '-'
-                if (radio.interfaces && Array.isArray(radio.interfaces)) {
-                  radio.interfaces.forEach(iface => {
-                    if (iface.ifname) {
-                      interfaces.push({ifname: iface.ifname, band})
-                      this.wirelessIfBandMap[iface.ifname] = band
-                    }
-                  })
+    async getWirelessInterfaces() {
+      try {
+        const radios = await UciRpc.callUbus('luci-rpc', 'getWirelessDevices', {})
+        const interfaces = []
+        if (radios) {
+          Object.values(radios).forEach(radio => {
+            const band = radio.config && radio.config.band ? radio.config.band.toUpperCase() : ''
+            if (radio.interfaces && Array.isArray(radio.interfaces)) {
+              radio.interfaces.forEach(iface => {
+                if (iface.ifname) {
+                  interfaces.push({ ifname: iface.ifname, band })
+                  this.wirelessIfBandMap[iface.ifname] = band
                 }
               })
             }
-            resolve(interfaces)
-          },
-          fail: () => resolve([])
-        })
-      })
-    },
+          })
+        }
+        return interfaces
+      } catch (e) {
+        return []
+      }
+                },
 
-    getClientsByInterface(ifname) {
-      return new Promise((resolve) => {
-        uni.request({
-          method: 'POST',
-          url: this.url,
-          data: {
-            jsonrpc: '2.0',
-            id: 102,
-            method: 'call',
-            params: [this.session, 'iwinfo', 'assoclist', { device: ifname }]
-          },
-          header: { 'Content-Type': 'application/json' },
-		  timeout: 3000,
-          success: (res) => {
-            let clients = []
-            if (res.data && res.data.result && res.data.result[1] && res.data.result[1].results) {
-              clients = res.data.result[1].results
-            }
-            resolve(clients)
-          },
-          fail: () => resolve([])
-        })
-      })
+    async getClientsByInterface(ifname) {
+      return Wireless.getAssocList(ifname)
     },
     formatTime(val) {
-      if (!val && val !== 0) return '-';
-      const s = parseInt(val);
-      const d = Math.floor(s / 86400);
-      const h = Math.floor((s % 86400) / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      const sec = s % 60;
-      let str = '';
-      if (d > 0) str += `${d}d `;
-      if (h > 0 || d > 0) str += `${h}h `;
-      if (m > 0 || h > 0 || d > 0) str += `${m}m `;
-      str += `${sec}s`;
-      return str.trim();
+      return formatDuration(val)
     },
     formatSingleRate(client, dir) {
       const info = (client[dir] || {});
@@ -237,155 +189,60 @@ export default {
       if (mcsStr) str += ` ${mcsStr}`;
       return str;
     },
-    fetchDHCPv4List() {
-      this.dhcpv4List = []
-      uni.request({
-        method: 'POST',
-        url: this.url,
-        data: {
-          jsonrpc: '2.0',
-          id: 201,
-          method: 'call',
-          params: [this.session, 'luci-rpc', 'getDHCPLeases', {}]
-        },
-        header: { 'Content-Type': 'application/json' },
-		timeout: 3000,
-        success: (res) => {
-          if (res.data && res.data.result && res.data.result[1] && res.data.result[1].dhcp_leases) {
-            this.dhcpv4List = res.data.result[1].dhcp_leases
-          }
-        }
-      })
+    async ensureDhcpLeases() {
+      if (this.dhcpCache) return this.dhcpCache
+      if (this.dhcpBusy) return this.dhcpBusy
+      this.dhcpBusy = (async () => {
+        let cache = { v4: [], v6: [] }
+        try {
+          const leases = await UciRpc.callUbus('luci-rpc', 'getDHCPLeases', {})
+          cache = { v4: (leases && leases.dhcp_leases) || [], v6: (leases && leases.dhcp6_leases) || [] }
+        } catch (e) {}
+        this.dhcpCache = cache
+        this.dhcpBusy = null
+        return cache
+      })()
+      return this.dhcpBusy
     },
-    fetchDHCPv6List() {
-      this.dhcpv6List = []
-      uni.request({
-        method: 'POST',
-        url: this.url,
-        data: {
-          jsonrpc: '2.0',
-          id: 202,
-          method: 'call',
-          params: [this.session, 'luci-rpc', 'getDHCPLeases', {}]
-        },
-        header: { 'Content-Type': 'application/json' },
-		timeout: 3000,
-        success: (res) => {
-          if (res.data && res.data.result && res.data.result[1] && res.data.result[1].dhcp6_leases) {
-            this.dhcpv6List = res.data.result[1].dhcp6_leases
-          }
-        }
-      })
+    async fetchDHCPv4List() {
+      const { v4 } = await this.ensureDhcpLeases()
+      this.dhcpv4List = v4
+    },
+    async fetchDHCPv6List() {
+      const { v6 } = await this.ensureDhcpLeases()
+      this.dhcpv6List = v6
     },
     formatLeaseTime(val) {
-      if (!val && val !== 0) return '-';
-      const s = parseInt(val);
-      const d = Math.floor(s / 86400); // 86400 = 24 * 60 * 60
-      const h = Math.floor((s % 86400) / 3600);
-      const m = Math.floor((s % 3600) / 60);
-      const sec = s % 60;
-      if (d > 0) return `${d}d ${h}h ${m}m ${sec}s`;
-      if (h > 0) return `${h}h ${m}m ${sec}s`;
-      if (m > 0) return `${m}m ${sec}s`;
-      return `${sec}s`;
+      return formatDuration(val)
     },
-    getDHCPv4Leases() {
-      return new Promise((resolve) => {
-        uni.request({
-          method: 'POST',
-          url: this.url,
-          data: {
-            jsonrpc: '2.0',
-            id: 201,
-            method: 'call',
-            params: [this.session, 'luci-rpc', 'getDHCPLeases', {}]
-          },
-          header: { 'Content-Type': 'application/json' },
-          timeout: 3000,
-          success: (res) => {
-            if (res.data && res.data.result && res.data.result[1] && res.data.result[1].dhcp_leases) {
-              resolve(res.data.result[1].dhcp_leases)
-            } else {
-              resolve([])
-            }
-          },
-          fail: () => resolve([])
-        })
-      })
+    async getDHCPv4Leases() {
+      const { v4 } = await this.ensureDhcpLeases()
+      return v4
     },
-    getDHCPv6Leases() {
-      return new Promise((resolve) => {
-        uni.request({
-          method: 'POST',
-          url: this.url,
-          data: {
-            jsonrpc: '2.0',
-            id: 202,
-            method: 'call',
-            params: [this.session, 'luci-rpc', 'getDHCPLeases', {}]
-          },
-          header: { 'Content-Type': 'application/json' },
-          timeout: 3000,
-          success: (res) => {
-            if (res.data && res.data.result && res.data.result[1] && res.data.result[1].dhcp6_leases) {
-              resolve(res.data.result[1].dhcp6_leases)
-            } else {
-              resolve([])
-            }
-          },
-          fail: () => resolve([])
-        })
-      })
+    async getDHCPv6Leases() {
+      const { v6 } = await this.ensureDhcpLeases()
+      return v6
     },
     kickClient(client) {
       uni.showModal({
         title: this.$t('client.tip'),
-        content: this.$t('client.confirm_disconnect', {
-          mac: client.mac,
-          hostname: client.hostname ? '('+client.hostname+')' : ''
-        }),
+        content: this.$t('client.confirm_disconnect', { mac: client.mac, hostname: client.hostname ? '('+client.hostname+')' : '' }),
         success: (res) => {
           if (res.confirm) {
-            uni.request({
-              method: 'POST',
-              url: this.url,
-              data: {
-                jsonrpc: '2.0',
-                id: 93,
-                method: 'call',
-                params: [
-                  this.session,
-                  `hostapd.${client.ifname}`,
-                  'del_client',
-                  {
-                    addr: client.mac,
-                    deauth: true,
-                    reason: 5,
-                    ban_time: 60000
-                  }
-                ]
-              },
-              header: { 'Content-Type': 'application/json' },
-              timeout: 3000,
-              success: (res) => {
-                uni.showToast({ title: this.$t('client.disconnect_success'), icon: 'success' })
-                this.loadData()
-              },
-              fail: () => {
-                uni.showToast({ title: this.$t('client.disconnect_failed'), icon: 'none' })
-              }
-            })
+            Wireless.kickClient(client.ifname, client.mac)
+              .then(() => { uni.showToast({ title: this.$t('client.disconnect_success'), icon: 'success' }); this.loadData() })
+              .catch(() => { uni.showToast({ title: this.$t('client.disconnect_failed'), icon: 'none' }) })
           }
         }
       })
-    }
+          }
   },
   watch: {
     currentTab(val) {
       this.loadData()
     }
   }
-}
+    }
 </script>
 
 <style scoped lang="scss">

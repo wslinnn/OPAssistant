@@ -124,7 +124,7 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
+import UciRpc from '@/utils/uci-rpc.js'
 import { OA_ECHART } from '@/utils/echart-theme.js'
 // #ifdef MP
 const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
@@ -150,9 +150,6 @@ export default {
   data() {
     return {
              currentTab: 0,
-       session: '',
-       url: '/ubus',
-       deviceInfo: {},
        deviceList: [],
        selectedDevice: '',
        bandwidthData: null,
@@ -527,11 +524,6 @@ export default {
        frontColor: '#000000',
        backgroundColor: '#F8F8F8'
      })
-     this.deviceInfo = DeviceManager.getCurrentDevice()
-     this.session = this.deviceInfo.sysauth
-     const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
-     const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
-	 this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
      
      this.loadPageData()
           
@@ -605,45 +597,32 @@ export default {
      },
     
      fetchDevices() {
-       uni.request({
-         method: 'POST',
-         url: this.url,
-         data: {
-           jsonrpc: '2.0',
-           id: 1,
-           method: 'call',
-           params: [this.session, 'luci-rpc', 'getNetworkDevices', {}]
-         },
-         header: { 'Content-Type': 'application/json', 'x-uniauth': 'true' },
-         timeout: 3000,
-         success: (res) => {
-           if (res.data && res.data.result && res.data.result[1]) {
-             const deviceMap = res.data.result[1]
-             this.deviceList = Object.keys(deviceMap)
-               .filter(devName => devName !== 'lo' && deviceMap[devName].up !== false)
-               .map(devName => ({
-                 name: devName,
-                 type: deviceMap[devName].type || '-',
-                 macaddr: deviceMap[devName].mac || '-'
-               }))
-               .sort((a, b) => {
-                 if (a.name === 'br-lan') return -1
-                 if (b.name === 'br-lan') return 1
-                 return a.name.localeCompare(b.name)
-               })
-             
-             if (this.deviceList.length > 0 && !this.selectedDevice) {
-               const brLanDevice = this.deviceList.find(device => device.name === 'br-lan')
-               const defaultDevice = brLanDevice ? brLanDevice.name : this.deviceList[0].name
-               this.selectDevice(defaultDevice)
-             }
+       UciRpc.callUbus('luci-rpc', 'getNetworkDevices', {})
+       .then((deviceMap) => {
+         if (deviceMap) {
+           this.deviceList = Object.keys(deviceMap)
+             .filter(devName => devName !== 'lo' && deviceMap[devName].up !== false)
+             .map(devName => ({
+               name: devName,
+               type: deviceMap[devName].type || '-',
+               macaddr: deviceMap[devName].mac || '-'
+             }))
+             .sort((a, b) => {
+               if (a.name === 'br-lan') return -1
+               if (b.name === 'br-lan') return 1
+               return a.name.localeCompare(b.name)
+             })
+           if (this.deviceList.length > 0 && !this.selectedDevice) {
+             const brLanDevice = this.deviceList.find(d => d.name === 'br-lan')
+             const defaultDevice = brLanDevice ? brLanDevice.name : this.deviceList[0].name
+             this.selectDevice(defaultDevice)
            }
-         },
-         fail: (err) => {
-           uni.showToast({ title: this.$t('statistics.get_interfaces_failed'), icon: 'none' })
          }
        })
-     },
+       .catch(() => {
+         uni.showToast({ title: this.$t('statistics.get_interfaces_failed'), icon: 'none' })
+       })
+           },
     
      selectDevice(devname) {
        this.selectedDevice = devname
@@ -655,33 +634,21 @@ export default {
      },
     
      fetchLoadData() {
-       uni.request({
-         method: 'POST',
-         url: this.url,
-         data: {
-           jsonrpc: '2.0',
-           id: 2,
-           method: 'call',
-           params: [this.session, 'luci', 'getRealtimeStats', { mode: 'load' }]
-         },
-         header: { 'Content-Type': 'application/json', 'x-uniauth': 'true' },
-         timeout: 3000,
-         success: (res) => {
-           if (res.data && res.data.result && res.data.result[1] && res.data.result[1].result) {
-             this.loadData = res.data.result[1].result
-             this.processLoadData()
-             this.updateLastLoadUpdateTime()
-           } else {
-             this.loadData = null
-           }
-         },
-         fail: (err) => {
-           console.error('get load data failed:', err)
+       UciRpc.callUbus('luci', 'getRealtimeStats', { mode: 'load' })
+       .then((res) => {
+         if (res && res.result) {
+           this.loadData = res.result
+           this.processLoadData()
+           this.updateLastLoadUpdateTime()
+         } else {
            this.loadData = null
-           uni.showToast({ title: this.$t('statistics.get_load_failed'), icon: 'none' })
          }
        })
-     },
+       .catch(() => {
+         this.loadData = null
+         uni.showToast({ title: this.$t('statistics.get_load_failed'), icon: 'none' })
+       })
+         },
 
       processLoadData() {
         if (!this.loadData || this.loadData.length === 0) return
@@ -869,34 +836,21 @@ export default {
      
      fetchBandwidthData() {
        if (!this.selectedDevice) return
-       
-       uni.request({
-         method: 'POST',
-         url: this.url,
-         data: {
-           jsonrpc: '2.0',
-           id: 33,
-           method: 'call',
-           params: [this.session, 'luci', 'getRealtimeStats', { mode: 'interface', device: this.selectedDevice }]
-         },
-         header: { 'Content-Type': 'application/json', 'x-uniauth': 'true' },
-         timeout: 3000,
-         success: (res) => {
-           if (res.data && res.data.result && res.data.result[1] && res.data.result[1].result) {
-             this.bandwidthData = res.data.result[1].result
-             this.processBandwidthData()
-             this.updateLastUpdateTime()
-           } else {
-             this.bandwidthData = null
-           }
-         },
-         fail: (err) => {
-           console.error('get bandwidth data failed:', err)
+       UciRpc.callUbus('luci', 'getRealtimeStats', { mode: 'interface', device: this.selectedDevice })
+       .then((res) => {
+         if (res && res.result) {
+           this.bandwidthData = res.result
+           this.processBandwidthData()
+           this.updateLastUpdateTime()
+         } else {
            this.bandwidthData = null
-          uni.showToast({ title: this.$t('statistics.get_bandwidth_failed'), icon: 'none' })
          }
        })
-     },
+       .catch(() => {
+         this.bandwidthData = null
+         uni.showToast({ title: this.$t('statistics.get_bandwidth_failed'), icon: 'none' })
+       })
+         },
     
      processBandwidthData() {
        if (!this.bandwidthData || this.bandwidthData.length < 2) return
@@ -1137,7 +1091,7 @@ export default {
           }
         }
       }
-}
+              }
 </script>
 
 <style scoped lang="scss">

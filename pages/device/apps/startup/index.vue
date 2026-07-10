@@ -26,29 +26,20 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
+import UciRpc from '@/utils/uci-rpc.js'
 
 export default {
 	data() {
 		return {
 			loading: false,
 			startupList: [],
-			error: '',
-			deviceInfo: {},
-			session: '',
-			url: '/ubus'
+			error: ''
 		}
 	},
 	onLoad() {
 		uni.setNavigationBarTitle({
 			title: this.$t('startup.title')
 		})
-
-		this.deviceInfo = DeviceManager.getCurrentDevice()
-		this.session = this.deviceInfo.sysauth
-		const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
-		const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
-		this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
 		this.loadStartupList()
 	},
 	methods: {
@@ -62,37 +53,17 @@ export default {
 			if (startup.enabled) return this.$t('startup.stopped')
 			return this.$t('startup.disabled')
 		},
-		loadStartupList() {
+		async loadStartupList() {
 			this.loading = true
 			this.error = ''
-
-			uni.request({
-				method: 'POST',
-				url: this.url,
-				data: {
-					jsonrpc: '2.0',
-					id: 1,
-					method: 'call',
-					params: [this.session, 'rc', 'list', {}]
-				},
-				header: {
-					'Content-Type': 'application/json',
-					'x-uniauth': 'true'
-				},
-				timeout: 10000,
-				success: (res) => {
-					if (res.data && res.data.result && res.data.result[1]) {
-						this.parseStartupList(res.data.result[1])
-					} else {
-						this.error = this.$t('startup.parse_failed')
-					}
-					this.loading = false
-				},
-				fail: (err) => {
-					this.error = this.$t('startup.load_failed')
-					this.loading = false
-				}
-			})
+			try {
+				const data = await UciRpc.callUbus('rc', 'list', {}, 10000)
+				this.parseStartupList(data)
+			} catch (e) {
+				this.error = this.$t('startup.load_failed')
+			} finally {
+				this.loading = false
+			}
 		},
 
 		parseStartupList(data) {

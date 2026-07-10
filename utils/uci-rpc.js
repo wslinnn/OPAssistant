@@ -25,6 +25,16 @@ class UciRpc {
 	static callUbus(object, method, params = {}, timeout = 8000) {
 		const { url, session } = this._ctx()
 		return new Promise((resolve, reject) => {
+			let done = false
+			// 硬超时兜底：uni.request 的 timeout 在 app-plus 对"连接已建立但服务端不响应"
+			// （如 rpcd file.exec 执行 hang 的命令）可能不触发 fail，用 setTimeout 保证最终
+			// reject，避免页面永久 loading，并让超时在控制台可见
+			const timer = setTimeout(() => {
+				if (done) return
+				done = true
+				console.log(`[UciRpc] ubus ${object}.${method} TIMEOUT ${timeout}ms params=${JSON.stringify(params).slice(0, 200)}`)
+				reject(new Error('timeout'))
+			}, timeout)
 			uni.request({
 				method: 'POST',
 				url,
@@ -37,6 +47,9 @@ class UciRpc {
 				header: HEADER,
 				timeout,
 				success: (res) => {
+					if (done) return
+					done = true
+					clearTimeout(timer)
 					const r = res.data && res.data.result
 					if (r && r[0] === 0) resolve(r[1])
 					else {
@@ -45,6 +58,9 @@ class UciRpc {
 					}
 				},
 				fail: (err) => {
+					if (done) return
+					done = true
+					clearTimeout(timer)
 					console.log(`[UciRpc] ubus ${object}.${method} network FAIL: ${err.errMsg || JSON.stringify(err)}`)
 					reject(err)
 				}

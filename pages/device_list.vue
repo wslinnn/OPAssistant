@@ -94,6 +94,7 @@
 
 <script>
 	import DeviceManager from '@/utils/deviceManager.js'
+	import UciRpc from '@/utils/uci-rpc.js'
 
 	export default {
 		data() {
@@ -420,57 +421,18 @@
 
 			// 检查session是否有效
 			checkSessionValidity(device) {
-				const protocol = device.useHttps ? 'https' : 'http'
-				const formattedHost = DeviceManager.formatHostForUrl(device.ip)
-				const url = `${protocol}://${formattedHost}:${device.port}/ubus`
-				console.log("checkSessionValidity url:", url)
-				uni.request({
-					method: "POST",
-					url: url,
-					data: {
-						jsonrpc: "2.0",
-						id: 1,
-						method: "call",
-						params: [device.sysauth, "system", "board", {}]
-					},
-					header: {
-						'Content-Type': 'application/json',
-						'x-uniauth': 'true'
-					},
-					timeout: 3000,
-					success: (res) => {
-						console.log("checkSessionValidity session检查响应:", JSON.stringify(res))
-
-
-						if (res.statusCode === 200 && res.data && res.data.result && res.data.result[0] === 0) {
-
-							uni.hideLoading()
-							uni.showToast({
-								title: this.$t('device_list.connection_success'),
-								icon: 'success',
-								duration: 1000
-							})
-
-
-							setTimeout(() => {
-								uni.reLaunch({
-									url: '/pages/device/home'
-								})
-							}, 500)
-							console.log("session valid, jump to home page")
-
-						} else {
-							this.reLoginDevice(device)
-						}
-					},
-					fail: (err) => {
-						console.log("checkSessionValidity fail:", err)
-						// 安卓出现该接口概率性失败，但是reLogin ok，所以去掉提示
-						// 直接调用reLoginDevice，让reLoginDevice方法处理loading的隐藏
-						this.reLoginDevice(device)
-					}
+				// callUbus 按 current_device 取上下文(进入设备前 onCardClickHandle 已 setCurrentDevice(device));硬超时兜底覆盖安卓概率性失败
+				UciRpc.callUbus('system', 'board', {}, 3000)
+				.then(() => {
+					uni.hideLoading()
+					uni.showToast({ title: this.$t('device_list.connection_success'), icon: 'success', duration: 1000 })
+					setTimeout(() => { uni.reLaunch({ url: '/pages/device/home' }) }, 500)
 				})
-		},
+				.catch(() => {
+					// 会话失效/超时/网络失败(等价原 success.else + fail)一律走 reLogin
+					this.reLoginDevice(device)
+				})
+			},
 
 		reLoginDevice(device) {
 				const deviceWithoutSession = { ...device, sysauth: null }

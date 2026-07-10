@@ -152,7 +152,8 @@
 </template>
 
 <script>
-	import DeviceManager from '@/utils/deviceManager.js'
+	import UciRpc from '@/utils/uci-rpc.js'
+	import { formatBytes, formatRate } from '@/utils/format.js'
 	import { OA_ECHART } from '@/utils/echart-theme.js'
 	// #ifdef MP
 	const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
@@ -170,8 +171,6 @@
 				loading: false,
 				isFirstLoad: true,
 				timer: null,
-				url: '/ubus',
-				session: '',
 				deviceInfo: {
 					model: '',
 					version: '',
@@ -247,11 +246,6 @@
 		},
 		onLoad() {
 			this.updateTabBarText()
-			this.deviceInfo = DeviceManager.getCurrentDevice()
-			this.session = this.deviceInfo.sysauth
-			const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
-			const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
-			this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
 			this.loadData()
 			this.startAutoRefresh()
 		},
@@ -517,26 +511,12 @@
 			},
 			fetchQuickBandwidthData(device) {
 				if (!device) return
-				uni.request({
-					method: 'POST',
-					url: this.url,
-					data: {
-						jsonrpc: '2.0',
-						id: 10,
-						method: 'call',
-						params: [this.session, 'luci', 'getRealtimeStats', { mode: 'interface', device }]
-					},
-					header: {
-						'Content-Type': 'application/json',
-						'x-uniauth': 'true'
-					},
-					timeout: 3000,
-					success: (res) => {
-						const result = res && res.data && res.data.result && res.data.result[1] ? res.data.result[1].result : null
+				UciRpc.callUbus('luci', 'getRealtimeStats', { mode: 'interface', device }, 3000)
+					.then((res) => {
+						const result = res && res.result ? res.result : null
 						this.processQuickBandwidthData(result)
-					},
-					fail: () => {}
-				})
+					})
+					.catch(() => {})
 			},
 			processQuickBandwidthData(samples) {
 				if (!Array.isArray(samples) || samples.length < 2) return
@@ -565,12 +545,7 @@
 				this.updateQuickBandwidthChart()
 			},
 			formatBandwidth(val) {
-				if (!val || val < 0) return '0 B/s'
-				const units = ['B/s', 'KB/s', 'MB/s', 'GB/s']
-				const i = Math.floor(Math.log(val) / Math.log(1024))
-				if (i === 0) return Math.round(val) + ' B/s'
-				const n = val / Math.pow(1024, i)
-				return i === 1 ? Math.round(n) + ' ' + units[i] : n.toFixed(1) + ' ' + units[i]
+				return formatRate(val)
 			},
 			diskMountDisplay(disk) {
 				if (!disk) return ''
@@ -579,32 +554,22 @@
 
 			// ===== 状态数据采集 =====
 			fetchAllStatusData() {
-				uni.request({
-					method: 'POST',
-					url: this.url,
-					timeout: 3000,
-					data: [
-						{ jsonrpc: '2.0', id: 1, method: 'call', params: [this.session, 'system', 'board', {}] },
-						{ jsonrpc: '2.0', id: 2, method: 'call', params: [this.session, 'system', 'info', {}] },
-						{ jsonrpc: '2.0', id: 3, method: 'call', params: [this.session, 'luci', 'getCPUUsage', {}] },
-						{ jsonrpc: '2.0', id: 4, method: 'call', params: [this.session, 'luci', 'getOnlineUsers', {}] },
-						{ jsonrpc: '2.0', id: 5, method: 'call', params: [this.session, 'file', 'read', { path: '/proc/sys/net/netfilter/nf_conntrack_count' }] },
-						{ jsonrpc: '2.0', id: 6, method: 'call', params: [this.session, 'file', 'read', { path: '/proc/sys/net/netfilter/nf_conntrack_max' }] },
-						{ jsonrpc: '2.0', id: 7, method: 'call', params: [this.session, 'network.interface', 'dump', {}] },
-						{ jsonrpc: '2.0', id: 8, method: 'call', params: [this.session, 'luci', 'getTempInfo', {}] },
-						{ jsonrpc: '2.0', id: 9, method: 'call', params: [this.session, 'luci', 'getMountPoints', {}] }
-					],
-					header: {
-						'Content-Type': 'application/json',
-						'x-uniauth': 'true'
-					},
-					success: (res) => {
-						this.processAllStatusData(res.data)
-					},
-					fail: (err) => {
-						console.error('data error:', err)
-						this.loading = false
-					}
+				Promise.all([
+					UciRpc.callUbus('system', 'board', {}).catch(() => null),
+					UciRpc.callUbus('system', 'info', {}).catch(() => null),
+					UciRpc.callUbus('luci', 'getCPUUsage', {}).catch(() => null),
+					UciRpc.callUbus('luci', 'getOnlineUsers', {}).catch(() => null),
+					UciRpc.callUbus('file', 'read', { path: '/proc/sys/net/netfilter/nf_conntrack_count' }).catch(() => null),
+					UciRpc.callUbus('file', 'read', { path: '/proc/sys/net/netfilter/nf_conntrack_max' }).catch(() => null),
+					UciRpc.callUbus('network.interface', 'dump', {}).catch(() => null),
+					UciRpc.callUbus('luci', 'getTempInfo', {}).catch(() => null),
+					UciRpc.callUbus('luci', 'getMountPoints', {}).catch(() => null)
+				]).then(([board, info, cpu, users, connCount, connMax, ifaceDump, temp, mounts]) => {
+					const R = (p) => ({ result: [0, p] })
+					this.processAllStatusData([R(board), R(info), R(cpu), R(users), R(connCount), R(connMax), R(ifaceDump), R(temp), R(mounts)])
+				}).catch((err) => {
+					console.error('data error:', err)
+					this.loading = false
 				})
 			},
 			processAllStatusData(dataArray) {
@@ -687,10 +652,8 @@
 
 				// CPU 使用率：兼容数字（0-1 归一化）/ 百分比字符串 / 纯数字，钳制 0-100
 				const cpuRes = dataArray[2]
-				console.log('[getCPUUsage] raw response:', cpuRes)
 				if (cpuRes && cpuRes.result && cpuRes.result[1]) {
 					const data = cpuRes.result[1]
-					console.log('[getCPUUsage] result[1] data:', data)
 					const raw = data.cpuusage
 					let cpuUsage = '0%'
 					if (raw !== undefined && raw !== null) {
@@ -788,11 +751,7 @@
 				}
 			},
 			formatBytes(bytes) {
-				if (bytes === 0) return '0 B'
-				const sizes = ['B', 'KB', 'MB', 'GB', 'TB']
-				const i = Math.floor(Math.log(bytes) / Math.log(1024))
-				const n = Math.min(i, sizes.length - 1)
-				return parseFloat((bytes / Math.pow(1024, n)).toFixed(1)) + ' ' + sizes[n]
+				return formatBytes(bytes)
 			},
 			parseNetworkInterfaces(interfaces) {
 				if (!interfaces || !Array.isArray(interfaces)) {

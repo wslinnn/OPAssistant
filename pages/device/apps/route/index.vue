@@ -28,68 +28,38 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
+import Diag from '@/utils/diag.js'
 
 export default {
 	data() {
 		return {
 			loading: false,
 			routeList: [],
-			error: '',
-			deviceInfo: {},
-			session: '',
-			url: '/ubus'
+			error: ''
 		}
 	},
 	onLoad() {
 		uni.setNavigationBarTitle({
 			title: this.$t('route.title')
 		})
-
-		this.deviceInfo = DeviceManager.getCurrentDevice()
-		this.session = this.deviceInfo.sysauth
-		const protocol = this.deviceInfo.useHttps ? 'https' : 'http'
-		const formattedHost = DeviceManager.formatHostForUrl(this.deviceInfo.ip)
-		this.url = `${protocol}://${formattedHost}:${this.deviceInfo.port}/ubus`
-
 		this.loadRouteTable()
 	},
 	methods: {
-		loadRouteTable() {
+		async loadRouteTable() {
 			this.loading = true
 			this.error = ''
-
-			uni.request({
-				method: 'POST',
-				url: this.url,
-				data: {
-					jsonrpc: '2.0',
-					id: 1,
-					method: 'call',
-					params: [this.session, 'file', 'exec', {
-						command: '/sbin/ip',
-						params: ['-4', 'route', 'show', 'table', 'all'],
-						env: null
-					}]
-				},
-				header: {
-					'Content-Type': 'application/json',
-					'x-uniauth': 'true'
-				},
-				timeout: 10000,
-				success: (res) => {
-					if (res.data && res.data.result && res.data.result[1] && res.data.result[1].stdout) {
-						this.parseRouteTable(res.data.result[1].stdout)
-					} else {
-						this.error = this.$t('route.parse_failed')
-					}
-					this.loading = false
-				},
-				fail: (err) => {
-					this.error = this.$t('route.load_failed')
-					this.loading = false
+			try {
+				const res = await Diag.exec('/sbin/ip', ['-4', 'route', 'show', 'table', 'all'], 10000)
+				if (res && res.stdout) {
+					this.parseRouteTable(res.stdout)
+				} else {
+					this.error = this.$t('route.parse_failed')
 				}
-			})
+			} catch (e) {
+				this.error = this.$t('route.load_failed')
+			} finally {
+				this.loading = false
+			}
 		},
 
 		parseRouteTable(stdout) {

@@ -93,6 +93,30 @@
 		    }
 		},
 		{
+		    "path" : "pages/device/apps/diag/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%diag.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/device/apps/syslog/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%syslog.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/device/apps/conntrack/index",
+		    "style" :
+		    {
+		        "navigationBarTitleText": "%conntrack.title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
 		    "path" : "pages/device/client_detail",
 		    "style" :                                                                                    
 		    {
