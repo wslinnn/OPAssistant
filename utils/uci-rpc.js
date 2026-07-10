@@ -107,11 +107,33 @@ class UciRpc {
 	}
 
 	// commit(config)。luci-base rpcd ACL 刻意不授予 uci.commit（强制走 apply），但授予 uci.apply + uci.confirm。
-	// uci.apply{rollback:true} 内部已 uci_commit + ucitrack reload + 启动 90s 回滚定时；uci.confirm 取消回滚使改动永久生效。
+	// uci.apply{rollback:true} 内部已 uci_commit + ucitrack reload + 启动 120s 回滚定时；uci.confirm 取消回滚使改动永久生效。
 	// 与 luci web 保存完全同路径，纯 ubus，无需 cookie/CSRF token（ubus 通道不校验 luci CSRF）
+	// S1 远程安全：rollback timeout 90→120（跨网往返慢，给 confirm 留余量）+ 保存前 session 预检
+	// （system.board 探针验证 sysauth 服务端有效，失效重登，避免 apply 成功但 confirm 因 session 过期失败 → 被 120s 回滚）
 	static async commit(config) {
-		await this._uci('apply', { config, rollback: true, timeout: 90 })
+		await this._ensureSession()
+		await this._uci('apply', { config, rollback: true, timeout: 120 })
 		await this._uci('confirm', { config })
+	}
+
+	// session 预检：system.board 探针验证当前 sysauth 服务端仍有效；失效(ubus 6/超时/网络)则重登
+	// （远程跨网场景关键：apply 与 confirm 之间 session 过期会导致 confirm 失败 → 进入 rollback 被回滚）
+	static async _ensureSession() {
+		try {
+			await this.callUbus('system', 'board', {}, 3000)
+		} catch (e) {
+			await this._relogin()
+		}
+	}
+
+	// 重登：loginDevice 成功后内部已 setCurrentDevice(新 sysauth)，后续 callUbus 自动用新会话
+	static _relogin() {
+		return new Promise((resolve) => {
+			const device = DeviceManager.getCurrentDevice()
+			if (!device) { resolve(); return }
+			DeviceManager.loginDevice({ ...device, sysauth: null }, () => resolve())
+		})
 	}
 
 	// apply：调 /etc/init.d/<script> <action>（file exec 通道）。initScript/action 白名单防注入
