@@ -37,3 +37,22 @@ export function formatDuration(seconds) {
 	str += sec + 's'
 	return str
 }
+
+// 带宽采样差分 → 速率序列(samples: [[ts,rx,?,tx],...];home/statistics 共用差分核心)
+// clamp:true 时负值(计数器回绕)置 0;dt<=0 的点跳过
+export function computeBandwidthRates(samples, { clamp = false } = {}) {
+	const timestamps = [], rxRates = [], txRates = []
+	if (!Array.isArray(samples) || samples.length < 2) return { timestamps, rxRates, txRates }
+	for (let i = 1; i < samples.length; i++) {
+		const cur = samples[i], prev = samples[i - 1]
+		const dt = cur[0] - prev[0]
+		if (dt <= 0) continue
+		let rx = (cur[1] - prev[1]) / dt
+		let tx = (cur[3] - prev[3]) / dt
+		if (clamp) { rx = Math.max(0, rx); tx = Math.max(0, tx) }
+		timestamps.push(cur[0])
+		rxRates.push(rx)
+		txRates.push(tx)
+	}
+	return { timestamps, rxRates, txRates }
+}

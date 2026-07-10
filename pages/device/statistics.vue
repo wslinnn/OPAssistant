@@ -125,6 +125,7 @@
 
 <script>
 import UciRpc from '@/utils/uci-rpc.js'
+import { computeBandwidthRates } from '@/utils/format.js'
 import { OA_ECHART } from '@/utils/echart-theme.js'
 // #ifdef MP
 const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
@@ -208,11 +209,11 @@ export default {
              },
              formatter: (params) => {
                // 这里假设this.formatBandwidth可用，若不可用需调整为合适作用域
-               const up = this.formatBandwidth(params[0].value)
-               const down = this.formatBandwidth(params[1].value)
+               const inbound = this.formatBandwidth(params[0].value)
+               const outbound = this.formatBandwidth(params[1].value)
                // 使用 \n 进行换行，并设置 tooltip 的 extraCssText: 'white-space:pre' 以支持换行
-               return "上行：" + up + "\n" +
-                      "下行：" + down;
+               return this.$t('statistics.inbound') + "：" + inbound + "\n" +
+                      this.$t('statistics.outbound') + "：" + outbound;
              },
 
            },
@@ -364,9 +365,9 @@ export default {
                const load5 = params[1].value.toFixed(2)
                const load15 = params[2].value.toFixed(2)
                // 使用 \n 进行换行，并设置 tooltip 的 extraCssText: 'white-space:pre' 以支持换行
-               return "1分钟：" + load1 + "\n" +
-                      "5分钟：" + load5 + "\n" +
-                      "15分钟：" + load15;
+               return this.$t('statistics.load_1min') + "：" + load1 + "\n" +
+                      this.$t('statistics.load_5min') + "：" + load5 + "\n" +
+                      this.$t('statistics.load_15min') + "：" + load15;
   
              }
            },
@@ -854,50 +855,17 @@ export default {
     
      processBandwidthData() {
        if (!this.bandwidthData || this.bandwidthData.length < 2) return
-       
-       const latest = this.bandwidthData[this.bandwidthData.length - 1]
-       const previous = this.bandwidthData[this.bandwidthData.length - 2]
-       
-       if (latest && previous) {
-         const timeDelta = latest[0] - previous[0] 
-         
-         if (timeDelta > 0) {
-           this.currentRxRate = (latest[1] - previous[1]) / timeDelta
-           this.currentTxRate = (latest[3] - previous[3]) / timeDelta
-           
-            this.calculateAverageAndPeak()
-            this.updateChartData()
-         }
-       }
+       const { rxRates, txRates } = computeBandwidthRates(this.bandwidthData)
+       if (rxRates.length === 0) return
+       this.currentRxRate = rxRates[rxRates.length - 1]
+       this.currentTxRate = txRates[txRates.length - 1]
+       this.averageRxRate = rxRates.reduce((a, b) => a + b, 0) / rxRates.length
+       this.averageTxRate = txRates.reduce((a, b) => a + b, 0) / txRates.length
+       this.peakRxRate = Math.max(...rxRates)
+       this.peakTxRate = Math.max(...txRates)
+       this.updateChartData()
      },
     
-    calculateAverageAndPeak() {
-      if (!this.bandwidthData || this.bandwidthData.length < 2) return
-      
-      const rates = []
-      
-      for (let i = 1; i < this.bandwidthData.length; i++) {
-        const current = this.bandwidthData[i]
-        const previous = this.bandwidthData[i - 1]
-        const timeDelta = current[0] - previous[0]
-        
-        if (timeDelta > 0) {
-          const rxRate = (current[1] - previous[1]) / timeDelta
-          const txRate = (current[3] - previous[3]) / timeDelta
-          rates.push({ rx: rxRate, tx: txRate })
-        }
-      }
-      
-      if (rates.length > 0) {
-        const rxSum = rates.reduce((sum, rate) => sum + rate.rx, 0)
-        const txSum = rates.reduce((sum, rate) => sum + rate.tx, 0)
-        this.averageRxRate = rxSum / rates.length
-        this.averageTxRate = txSum / rates.length
-        
-        this.peakRxRate = Math.max(...rates.map(rate => rate.rx))
-        this.peakTxRate = Math.max(...rates.map(rate => rate.tx))
-      }
-    },
     
     formatBandwidth(bytesPerSecond) {
       if (!bytesPerSecond || bytesPerSecond < 0) return '0 B/s'

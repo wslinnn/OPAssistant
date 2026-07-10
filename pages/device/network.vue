@@ -118,8 +118,6 @@
 		data() {
 			return {
 				currentTab: 0,
-				rawInterfaces: [],
-				rawDevices: {},
 				interfaceList: [],
 				deviceGroups: [],
 				wirelessList: [],
@@ -179,8 +177,6 @@
 				]).then(([ifacePayload, devMap]) => {
 												let interfaces = (ifacePayload && ifacePayload.interface) || []
 						let deviceMap = devMap || {}
-						this.rawInterfaces = interfaces
-						this.rawDevices = deviceMap
 						this.interfaceList = interfaces
 							.filter(i => i.interface !== 'loopback' && i.up !== false)
 							.map(i => {
@@ -492,15 +488,6 @@
 			closeIpv6Dialog() {
 				if (this.$refs.ipv6DialogPopup) this.$refs.ipv6DialogPopup.close()
 			},
-			formatUptime(seconds) {
-				if (!seconds) return '-'
-				const d = Math.floor(seconds / 86400)
-				const h = Math.floor((seconds % 86400) / 3600)
-				const m = Math.floor((seconds % 3600) / 60)
-				if (d > 0) return `${d}d ${h}h ${m}m`
-				if (h > 0) return `${h}h ${m}m`
-				return `${m}m`
-			},
 			formatHwModes(hwmodes_text, hwmodes) {
 				if (hwmodes_text) {
 					return hwmodes_text
@@ -520,13 +507,6 @@
 				}
 				return String(Math.floor(n))
 			},
-			formatPackets(val) {
-				if (!val) return '0'
-				if (val >= 1e9) return (val / 1e9).toFixed(2) + 'G'
-				if (val >= 1e6) return (val / 1e6).toFixed(2) + 'M'
-				if (val >= 1e3) return (val / 1e3).toFixed(2) + 'K'
-				return val.toLocaleString()
-			}
 		},
 		watch: {
 			currentTab(val) {

@@ -153,7 +153,7 @@
 
 <script>
 	import UciRpc from '@/utils/uci-rpc.js'
-	import { formatBytes, formatRate } from '@/utils/format.js'
+	import { formatBytes, formatRate, computeBandwidthRates } from '@/utils/format.js'
 	import { OA_ECHART } from '@/utils/echart-theme.js'
 	// #ifdef MP
 	const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
@@ -519,29 +519,16 @@
 					.catch(() => {})
 			},
 			processQuickBandwidthData(samples) {
-				if (!Array.isArray(samples) || samples.length < 2) return
-				const timestamps = []
-				const rxRates = []
-				const txRates = []
-				for (let i = 1; i < samples.length; i++) {
-					const cur = samples[i]
-					const prev = samples[i - 1]
-					const dt = cur[0] - prev[0]
-					if (dt <= 0) continue
-					const rx = Math.max(0, (cur[1] - prev[1]) / dt)
-					const tx = Math.max(0, (cur[3] - prev[3]) / dt)
-					timestamps.push(cur[0])
-					rxRates.push(rx)
-					txRates.push(tx)
-				}
+				const { timestamps, rxRates, txRates } = computeBandwidthRates(samples, { clamp: true })
+				if (timestamps.length === 0) return
 				if (timestamps.length > 60) {
 					timestamps.splice(0, timestamps.length - 60)
 					rxRates.splice(0, rxRates.length - 60)
 					txRates.splice(0, txRates.length - 60)
 				}
 				this.quickBandwidthChartData = { timestamps, rxRates, txRates }
-				if (rxRates.length > 0) this.quickRxRate = rxRates[rxRates.length - 1]
-				if (txRates.length > 0) this.quickTxRate = txRates[txRates.length - 1]
+				this.quickRxRate = rxRates[rxRates.length - 1]
+				this.quickTxRate = txRates[txRates.length - 1]
 				this.updateQuickBandwidthChart()
 			},
 			formatBandwidth(val) {
