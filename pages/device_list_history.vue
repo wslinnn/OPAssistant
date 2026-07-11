@@ -37,6 +37,9 @@
 		data() {
 			return { groups: [], current: null }
 		},
+		onLoad() {
+			uni.setNavigationBarTitle({ title: this.$t('device_list.history_title') })
+		},
 		onShow() {
 			this.load()
 		},

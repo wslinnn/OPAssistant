@@ -36,6 +36,7 @@
     "group_naming": "Name",
     "connect": "Connect",
     "login_title": "Sign In",
+    "login_prompt": "Connect your router",
     "password_show": "Show password",
     "password_hide": "Hide password",
     "history_title": "Device History",

@@ -4,7 +4,7 @@
 
 		<view class="login-brand">
 			<image class="login-logo" src="/static/openwrt.png" mode="aspectFit" />
-			<text class="login-brand__name">OpenWrt</text>
+			<text class="login-brand__name">{{ $t('device_list.login_prompt') }}</text>
 		</view>
 
 		<view class="login-form">
