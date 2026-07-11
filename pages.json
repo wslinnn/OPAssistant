@@ -2,6 +2,15 @@
 	"lazyCodeLoading": "requiredComponents",
 	"pages": [ 
 		{
+		    "path" : "pages/device/home",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "%home.title%",
+		        "enablePullDownRefresh": false,
+		        "navigationStyle": "custom"
+		    }
+		},
+		{
 		    "path" : "pages/device_list",
 		    "style" :                                                                                    
 		    {
@@ -10,12 +19,11 @@
 		    }
 		},
 		{
-		    "path" : "pages/device/home",
-		    "style" :                                                                                    
+		    "path" : "pages/device_list_history",
+		    "style" : 
 		    {
-		        "navigationBarTitleText": "%home.title%",
-		        "enablePullDownRefresh": false,
-		        "navigationStyle": "custom"
+		        "navigationBarTitleText": "%device_list.history_title%",
+		        "enablePullDownRefresh": false
 		    }
 		},
 		{
