@@ -120,9 +120,7 @@
     "hours": "小时",
     "minutes": "分钟",
     "seconds": "秒",
-    "title": "首页",
-    "check_update": "检查更新",
-    "about": "关于",
+    "title": "首页",    "about": "关于",
     "already_latest": "当前已是最新版本"
   },
   "network": {
@@ -708,7 +706,11 @@
     "advanced": "高级设置",
     "advanced_hint": "节点、订阅、分流规则等完整配置请在路由器网页端管理（需重新登录）。",
     "open_web": "在路由器网页端打开",
-    "copied_url": "已复制网页地址"
+    "copied_url": "已复制网页地址",
+    "basic_settings": "基本设置",    "localhost_proxy": "本机代理",
+    "client_proxy": "客户端代理",
+    "socks_enabled": "Socks 代理",
+    "socks_port": "Socks 端口"
   },
   "pages": {
     "home": "首页",

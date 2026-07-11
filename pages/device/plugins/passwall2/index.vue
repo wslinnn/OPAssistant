@@ -19,6 +19,13 @@
 				</view>
 			</oa-card>
 
+			<!-- ① 基本设置 -->
+			<oa-card :title="$t('passwall2.basic_settings')" divider padding="lg">
+				<view class="adv-actions">
+					<oa-button type="neutral" block @click="openGlobal">{{ $t('passwall2.basic_settings') }}</oa-button>
+				</view>
+			</oa-card>
+
 			<oa-card :title="$t('passwall2.advanced')" divider padding="lg">
 				<text class="adv-hint">{{ $t('passwall2.advanced_hint') }}</text>
 				<view class="adv-actions">
@@ -26,6 +33,9 @@
 				</view>
 			</oa-card>
 		</view>
+
+		<!-- ① 基本设置编辑(@global[0] 单例,allow-delete=false) -->
+		<oa-uci-list ref="globalEditor" config="passwall2" :schema="globalSchema" :allow-delete="false" :edit-title="$t('passwall2.basic_settings')" @saved="onSaved" />
 	</view>
 </template>
 
@@ -40,7 +50,8 @@ export default {
 			globalSection: {},
 			enabled: false,
 			nodeLabel: '',
-			mode: ''
+			mode: '',
+			nodeOptions: []
 		}
 	},
 	computed: {
@@ -48,6 +59,15 @@ export default {
 			if (this.mode === 'tproxy') return 'TProxy'
 			if (this.mode === 'redirect') return 'Redirect'
 			return this.mode || '-'
+		},
+		globalSchema() {
+			return [
+				{ key: 'node', label: this.$t('passwall2.node'), type: 'select', options: this.nodeOptions, group: 'global', groupLabel: this.$t('passwall2.basic_settings') },
+				{ key: 'localhost_proxy', label: this.$t('passwall2.localhost_proxy'), type: 'switch', group: 'global' },
+				{ key: 'client_proxy', label: this.$t('passwall2.client_proxy'), type: 'switch', group: 'global' },
+				{ key: 'socks_enabled', label: this.$t('passwall2.socks_enabled'), type: 'switch', group: 'global' },
+				{ key: 'node_socks_port', label: this.$t('passwall2.socks_port'), type: 'text', placeholder: '1070', group: 'global' }
+			]
 		}
 	},
 	onLoad() {
@@ -73,13 +93,14 @@ export default {
 				const node = globalS ? globalS.node : ''
 				this.nodeLabel = node ? (nodes[node] || node) : ''
 				this.mode = forwarding ? forwarding.tcp_proxy_way : ''
+				this.nodeOptions = Object.keys(nodes).map(name => ({ value: name, label: nodes[name] }))
 			} catch (e) {
 				uni.showToast({ title: this.$t('common.load_failed'), icon: 'none' })
 			} finally {
 				this.loading = false
 			}
 		},
-		// 主开关：uci set + commit + apply（ubus uci.commit 不触发 ucitrack，须显式 reload passwall2）
+		// 主开关(高危:透明代理 reload 致 LAN 短暂断网,二次确认 + rollback 兜底)
 		toggle(on) {
 			if (!this.globalSection['.name']) {
 				uni.showToast({ title: this.$t('common.save_failed'), icon: 'none' })
@@ -105,6 +126,14 @@ export default {
 				}
 			})
 		},
+		openGlobal() {
+			if (!this.globalSection['.name']) {
+				uni.showToast({ title: this.$t('common.load_failed'), icon: 'none' })
+				return
+			}
+			this.$refs.globalEditor.openEdit(this.globalSection)
+		},
+		onSaved() { this.load() },
 		// 外部浏览器打开路由器 luci passwall2 页（luci admin 无 URL token，用户需手动登录管理完整配置）
 		openExternal() {
 			const d = DeviceManager.getCurrentDevice() || {}

@@ -120,9 +120,7 @@
     "hours": "h",
     "minutes": "m",
     "seconds": "s",
-    "title": "Home",
-    "check_update": "Check for updates",
-    "about": "About",
+    "title": "Home",    "about": "About",
     "already_latest": "Already on the latest version"
   },
   "network": {
@@ -610,7 +608,11 @@
     "advanced": "Advanced",
     "advanced_hint": "Manage nodes, subscriptions and routing rules in the router web UI (re-login required).",
     "open_web": "Open in Router Web UI",
-    "copied_url": "URL copied"
+    "copied_url": "URL copied",
+    "basic_settings": "Basic Settings",    "localhost_proxy": "Localhost Proxy",
+    "client_proxy": "Client Proxy",
+    "socks_enabled": "Socks Proxy",
+    "socks_port": "Socks Port"
   },
   "route": {
     "title": "Routing Table",
