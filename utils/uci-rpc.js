@@ -101,9 +101,11 @@ class UciRpc {
 		return this._uci('delete', { config, section })
 	}
 
-	// reorder(config, section, index)
-	static reorder(config, section, index) {
-		return this._uci('reorder', { config, section, index })
+	// reorder(config, sections[])：rpcd ubus uci 的方法名是 order（luci-base ACL 授予 ubus.uci.order，
+	// 不授予 reorder——luci web 排序走后端 Lua uci cursor 从不经 rpcd）。params sections 为数组，
+	// 按目标顺序列出该 config 全部 section，rpcd 据此全量重排（与 luci uci.callOrder 一致）。
+	static reorder(config, sections) {
+		return this._uci('order', { config, sections })
 	}
 
 	// commit(config)。luci-base rpcd ACL 刻意不授予 uci.commit（强制走 apply），但授予 uci.apply + uci.confirm。

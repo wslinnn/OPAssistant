@@ -43,6 +43,7 @@
 									</view>
 								</view>
 							</view>
+							<view v-else-if="f.type === 'textarea'"><textarea class="uci-field__area" v-model="formData[f.key]" :placeholder="f.placeholder || ''" :maxlength="-1" auto-height /></view>
 						</block>
 					</view>
 				</view>
@@ -158,19 +159,23 @@ export default {
 			if (this.saving || this.deleting) return
 			this.$refs.popup.close()
 		},
-		// depends 联动判定：依赖字段值匹配才满足（UI 显隐 + 校验/提交跳过共用）；value 支持数组(多值任一)
+		// depends 联动判定：依赖字段值匹配才满足（UI 显隐 + 校验/提交跳过共用）
+		// f.depends 支持单对象或数组(AND)；value 支持数组(多值任一)
 		// 依赖字段若为 multiSelect（空格分隔串），按集合交集判定（如 proto='tcp udp' depends [tcp,udp]）
 		fieldDependsMet(f) {
 			if (!f.depends) return true
-			const cur = String(this.formData[f.depends.key] || '')
-			const val = f.depends.value
-			const arr = Array.isArray(val) ? val.map(String) : [String(val)]
-			const depF = this.schema.find(x => x.key === f.depends.key)
-			if (depF && depF.type === 'multiSelect') {
-				const curSet = cur.split(/\s+/).filter(Boolean)
-				return arr.some(v => curSet.includes(v))
-			}
-			return arr.includes(cur)
+			const deps = Array.isArray(f.depends) ? f.depends : [f.depends]
+			return deps.every(d => {
+				const cur = String(this.formData[d.key] || '')
+				const val = d.value
+				const arr = Array.isArray(val) ? val.map(String) : [String(val)]
+				const depF = this.schema.find(x => x.key === d.key)
+				if (depF && depF.type === 'multiSelect') {
+					const curSet = cur.split(/\s+/).filter(Boolean)
+					return arr.some(v => curSet.includes(v))
+				}
+				return arr.includes(cur)
+			})
 		},
 		// switch 取值映射：onValue/offValue 优先（samba4 yes/no），invert 兼容（arpbind 反逻辑）
 		_switchVals(f) {
@@ -274,9 +279,16 @@ export default {
 				this.schema.forEach(f => {
 					if (!this.fieldDependsMet(f)) return  // depends 未满足不提交（保留 uci 原值，匹配 luci 不写隐藏字段；副作用：如 WiFi key 在 encryption=none 时旧值残留，驱动层忽略，无功能影响）
 					const v = this.formData[f.key]
-					if (f.type === 'dynamicList') values[f.key] = Array.isArray(v) ? v : []
-					else if (f.type === 'multiSelect' && f.uciList) values[f.key] = String(v || '').split(/\s+/).filter(Boolean)
-					else values[f.key] = (v === undefined || v === null) ? '' : String(v)
+					// rpcd uci.set 不接受空 list [](list 分支先 delete option 再 add，空=对可能不存在的 option delete→uci 报错→INVALID_ARGUMENT ubusCode 2)；
+					// 空列表跳过不写(对齐 luci：空 list 走 option delete 而非 set [])。副作用：app 无法清空已选 list
+					// (rpcd 无 option-delete 接口)，但新增/无值场景=uci 无该 option=正确的空，覆盖绝大多数用法
+					if (f.type === 'dynamicList') {
+						const arr = Array.isArray(v) ? v : []
+						if (arr.length) values[f.key] = arr
+					} else if (f.type === 'multiSelect' && f.uciList) {
+						const arr = String(v || '').split(/\s+/).filter(Boolean)
+						if (arr.length) values[f.key] = arr
+					} else values[f.key] = (v === undefined || v === null) ? '' : String(v)
 				})
 				let name
 				if (this.isEdit) {
@@ -462,6 +474,16 @@ export default {
 .multi-tag--on {
 	background: $oa-brand-subtle;
 	color: $oa-brand;
+}
+.uci-field__area {
+	width: 100%;
+	box-sizing: border-box;
+	min-height: 160rpx;
+	background: $oa-surface-sunken;
+	border-radius: $oa-radius-md;
+	padding: $oa-sp-2;
+	font-size: $oa-fs-caption;
+	color: $oa-text;
 }
 .uci-dialog__actions {
 	display: flex;
