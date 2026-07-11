@@ -1,11 +1,11 @@
 <template>
 	<view class="container">
 		<view class="header">
-			<view class="menu-btn" @click="showMenu">
+			<view class="menu-btn" :aria-label="$t('device_list.settings')" @click="showMenu">
 				<image class="menu-icon" src="/static/menu.png" mode="widthFix" style="width: 50rpx; height: 50rpx;" />
 			</view>
 			<view class="header-actions">
-				<view class="add-btn" @click="addDevice">
+				<view class="add-btn" :aria-label="$t('device_list.add_device')" @click="addDevice">
 					<image class="add-icon" src="/static/add.png" mode="widthFix" />
 				</view>
 			</view>
@@ -21,8 +21,16 @@
 		</uni-popup>
 
 		<view class="device-list-container">
-			<oa-empty v-if="deviceList.length === 0" :text="$t('device_list.empty_message')" />
-			<view v-else :key="index" v-for="(item, index) in deviceList">
+			<oa-empty
+				v-if="deviceList.length === 0"
+				icon="/static/openwrt.png"
+			>
+				<text class="empty-title">{{ $t('device_list.empty_title') }}</text>
+				<text class="empty-value">{{ $t('device_list.empty_value') }}</text>
+				<oa-button type="primary" class="empty-cta" @click="addDevice">{{ $t('device_list.empty_cta') }}</oa-button>
+				<text class="empty-hint">{{ $t('device_list.empty_hint') }}</text>
+			</oa-empty>
+			<view v-else :key="item.id" v-for="item in deviceList">
 				<view class="device-card" @click="onCardClickHandle(item)">
 					<view class="card-content">
 						<image class="device-icon" src="/static/openwrt.png" mode="widthFix" />
@@ -30,7 +38,7 @@
 							<oa-copy-text class="device-name" :text="item.name">{{item.name}}</oa-copy-text>
 							<oa-copy-text class="device-address" :text="item.ip">{{formatDeviceAddress(item)}}</oa-copy-text>
 						</view>
-						<view class="more-btn" @click.stop="showDeviceMenu(item)">
+						<view class="more-btn" :aria-label="$t('device_list.more_aria')" @click.stop="showDeviceMenu(item)">
 							<image class="more-icon" src="/static/more.png" mode="widthFix" />
 						</view>
 					</view>
@@ -50,7 +58,7 @@
 					</view>
 					<view class="form-item">
 						<text class="label">{{ $t('device_list.protocol') }}:</text>
-						<oa-segmented :options="protocolOptions" v-model="deviceForm.useHttps" equal />
+						<oa-segmented :options="protocolOptions" v-model="deviceForm.useHttps" equal @change="onProtocolChange" />
 					</view>
 					<view class="form-item">
 						<text class="label">{{ $t('device_list.username_default') }}:</text>
@@ -149,14 +157,7 @@
 			},
 
 			loadDeviceList() {
-				const deviceList = DeviceManager.getDeviceList()
-				if (deviceList.length === 0) {
-
-					DeviceManager.initTestData()
-					this.deviceList = DeviceManager.getDeviceList()
-				} else {
-					this.deviceList = deviceList
-				}
+				this.deviceList = DeviceManager.getDeviceList()
 			},
 
 
@@ -218,15 +219,24 @@
 
 
 			validateIP(host) {
-				// 长度限制：不超过64个字符
-				if (!host || host.length === 0 || host.length > 64) {
-					return false
-				}
+				// 长度 ≤64，字符集限定（字母/数字/点/冒号/连字符），覆盖 IPv4/IPv6/域名
+				const s = String(host || '').trim()
+				if (!s || s.length > 64) return false
+				if (!/^[a-zA-Z0-9.:\-]+$/.test(s)) return false
+				if (!/[a-zA-Z0-9]/.test(s)) return false          // 必须含字母或数字（拒 "---"、"..."）
+				if (/[.]{2,}|[\-]{2,}/.test(s)) return false       // 连续点/连字符非法（IPv6 "::" 放行）
+				if (/^[.\-]|[.\-]$/.test(s)) return false          // 点/连字符不能首尾（IPv6 ':' 首尾可）
+				// 形似 IPv4 时校验每段 ≤255（拒 "999.999.999.999"）
+				const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(s)
+				if (ipv4) return ipv4.slice(1).every(seg => Number(seg) <= 255)
+				return true
+			},
 
-				// 允许的字符：字母、数字、点号、冒号、连字符
-				// 这些字符涵盖了IPv4、IPv6和域名的所有有效字符
-				const allowedCharsRegex = /^[a-zA-Z0-9.:-]+$/
-				return allowedCharsRegex.test(host)
+			// 协议↔端口联动：切 HTTPS 默认 443、HTTP 默认 80（仅在常见默认值上自动切换，不覆盖自定义端口）
+			onProtocolChange(useHttps) {
+				const p = this.deviceForm.port
+				if (useHttps && p === '80') this.deviceForm.port = '443'
+				else if (!useHttps && p === '443') this.deviceForm.port = '80'
 			},
 
 
@@ -377,13 +387,7 @@
 			},
 
 
-			formatTime(timeString) {
-				if (!timeString) return ''
-				const date = new Date(timeString)
-				// 根据当前语言设置时间格式
-				const locale = this.$i18n.locale
-				return date.toLocaleString(locale === 'en' ? 'en-US' : 'zh-CN')
-			},
+
 
 
 
@@ -525,22 +529,21 @@
 }
 
 .menu-btn {
-	padding: 10rpx;
-}
-
-.menu-icon {
-	font-size: 40rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 88rpx;
+	height: 88rpx;
 }
 
 .add-btn {
 	background-color: transparent;
 	border: none;
-	padding: 10rpx;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 60rpx;
-	height: 60rpx;
+	width: 88rpx;
+	height: 88rpx;
 }
 
 .add-icon {
@@ -557,7 +560,6 @@
 	box-shadow: $oa-shadow-md;
 	min-height: 120rpx;
 	position: relative;
-	border: 1rpx solid $oa-hairline;
 }
 
 .card-content {
@@ -580,8 +582,8 @@
 }
 
 .device-name {
-	font-size: 34rpx;
-	font-weight: bold;
+	font-size: $oa-fs-title;
+	font-weight: 600;
 	color: $oa-text;
 	margin-bottom: 15rpx;
 	line-height: 1.3;
@@ -594,7 +596,11 @@
 }
 
 .more-btn {
-	padding: 10rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 88rpx;
+	height: 88rpx;
 	margin-left: 10rpx;
 	flex-shrink: 0;
 }
@@ -602,6 +608,30 @@
 .more-icon {
 	width: 40rpx;
 	height: 40rpx;
+}
+
+/* 首跑空态：引导式欢迎（onboard）—— 图标 + 标题 + 价值 + CTA + 提示 */
+.empty-title {
+	font-size: $oa-fs-title;
+	font-weight: 600;
+	color: $oa-text;
+	margin-top: $oa-sp-2;
+}
+.empty-value {
+	font-size: $oa-fs-body;
+	color: $oa-text-muted;
+	line-height: 1.5;
+	text-align: center;
+	margin-top: $oa-sp-2;
+	max-width: 560rpx;
+}
+.empty-cta {
+	margin-top: $oa-sp-3;
+}
+.empty-hint {
+	font-size: $oa-fs-caption;
+	color: $oa-text-muted;
+	margin-top: $oa-sp-2;
 }
 
 .popup-content {
@@ -614,8 +644,8 @@
 }
 
 .popup-title {
-	font-size: 30rpx;
-	font-weight: bold;
+	font-size: $oa-fs-title;
+	font-weight: 600;
 	color: $oa-text;
 }
 
@@ -653,21 +683,10 @@
 	border-bottom: none;
 }
 
-.menu-item-icon {
-	font-size: 36rpx;
-	margin-right: 15rpx;
-	color: $oa-brand;
-}
-
 .menu-item-text {
 	flex: 1;
 	font-size: 28rpx;
 	color: $oa-text;
-}
-
-.menu-item-arrow {
-	font-size: 30rpx;
-	color: $oa-text-subtle;
 }
 
 /* 设备操作菜单样式 */
@@ -701,6 +720,7 @@
 }
 
 .device-menu-content .delete-item .menu-item-text {
-	color: $oa-danger;
+	color: $oa-text;
+	font-weight: 600;
 }
 </style>

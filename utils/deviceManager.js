@@ -478,16 +478,6 @@ class DeviceManager {
 	}
 	
 	/**
-	 * Initialize test data
-	 */
-	static initTestData() {
-		const testDevices = [
-	
-		]
-		return this.saveDeviceList(testDevices)
-	}
-	
-	/**
 	 * Check device connection status
 	 */
 	static async checkDeviceStatus(device) {
