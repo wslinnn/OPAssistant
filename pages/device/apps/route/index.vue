@@ -49,12 +49,16 @@ export default {
 			this.loading = true
 			this.error = ''
 			try {
-				const res = await Diag.exec('/sbin/ip', ['-4', 'route', 'show', 'table', 'all'], 10000)
-				if (res && res.stdout) {
-					this.parseRouteTable(res.stdout)
-				} else {
-					this.error = this.$t('route.parse_failed')
-				}
+				// 并发取 IPv4 + IPv6 路由表(table all 含所有表)；IPv6 失败(无 IPv6/ACL)容错不阻断 IPv4
+				const [res4, res6] = await Promise.all([
+					Diag.exec('/sbin/ip', ['-4', 'route', 'show', 'table', 'all'], 10000),
+					Diag.exec('/sbin/ip', ['-6', 'route', 'show', 'table', 'all'], 10000).catch(() => null)
+				])
+				const list = []
+				if (res4 && res4.stdout) list.push(...this.parseRoutes(res4.stdout, 'ipv4'))
+				if (res6 && res6.stdout) list.push(...this.parseRoutes(res6.stdout, 'ipv6'))
+				if (list.length) this.routeList = list
+				else { this.routeList = []; this.error = this.$t('route.parse_failed') }
 			} catch (e) {
 				this.error = this.$t('route.load_failed')
 			} finally {
@@ -62,21 +66,13 @@ export default {
 			}
 		},
 
-		parseRouteTable(stdout) {
-			try {
-				const lines = stdout.split('\n').filter(line => line.trim())
-				this.routeList = []
-
-				lines.forEach(line => {
-					const route = this.parseRouteLine(line.trim())
-					if (route) {
-						this.routeList.push(route)
-					}
-				})
-
-			} catch (error) {
-				this.error = this.$t('route.parse_failed')
-			}
+		parseRoutes(stdout, family) {
+			const list = []
+			stdout.split('\n').filter(line => line.trim()).forEach(line => {
+				const route = this.parseRouteLine(line.trim())
+				if (route) { route.family = family; list.push(route) }
+			})
+			return list
 		},
 
 		parseRouteLine(line) {
@@ -113,6 +109,9 @@ export default {
 				} else if (part.match(/^\d+\.\d+\.\d+\.\d+$/) && !route.destination) {
 					route.destination = part
 					i++
+				} else if (part.includes(':') && !route.destination) {
+					route.destination = part
+					i++
 				} else {
 					i++
 				}
@@ -122,16 +121,17 @@ export default {
 		},
 
 		getRouteType(route) {
+			const fam = route.family === 'ipv6' ? 'IPv6 ' : 'IPv4 '
 			if (route.destination === 'default') {
-				return this.$t('route.type_default')
+				return fam + this.$t('route.type_default')
 			} else if (route.destination === 'local') {
-				return this.$t('route.type_local')
+				return fam + this.$t('route.type_local')
 			} else if (route.destination === 'broadcast') {
-				return this.$t('route.type_broadcast')
+				return fam + this.$t('route.type_broadcast')
 			} else if (route.destination && route.destination.includes('/')) {
-				return this.$t('route.type_network')
+				return fam + this.$t('route.type_network')
 			} else {
-				return this.$t('route.type_host')
+				return fam + this.$t('route.type_host')
 			}
 		}
 	}
