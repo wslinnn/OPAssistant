@@ -1,10 +1,12 @@
 <template>
 	<view class="oa-nav">
 		<view class="oa-nav__bar">
-			<view v-if="showBack" class="oa-nav__back" @click="onBack">
-				<image src="/static/back.png" mode="aspectFit" class="oa-nav__back-icon" />
-			</view>
-			<view v-else class="oa-nav__placeholder" />
+			<slot name="left">
+				<view v-if="showBack" class="oa-nav__back" @click="onBack">
+					<image src="/static/back.png" mode="aspectFit" class="oa-nav__back-icon" />
+				</view>
+				<view v-else class="oa-nav__placeholder" />
+			</slot>
 			<text class="oa-nav__title">{{ title }}</text>
 			<view class="oa-nav__right">
 				<slot name="right" />

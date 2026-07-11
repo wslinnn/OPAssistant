@@ -3,8 +3,35 @@
 		<oa-loading v-if="loading" overlay :text="$t('home.loading')" />
 
 		<view class="sticky-header">
-			<oa-nav-header :title="truncatedModel || $t('home.openwrt_device')" show-back @back="goBack" />
+			<oa-nav-header :title="''" :show-back="false">
+				<template #left>
+					<view class="switch-trigger" :aria-label="$t('device_list.add_new_device')" @click="openSwitcher">
+						<text class="switch-trigger__name">{{ currentName }}</text>
+						<text class="switch-trigger__caret">▾</text>
+					</view>
+				</template>
+			</oa-nav-header>
 		</view>
+
+		<!-- 设备切换器:顶部下拉 -->
+		<uni-popup ref="switcherPopup" type="top" :mask-click="true">
+			<view class="switcher-dropdown">
+				<view
+					v-for="d in deviceList"
+					:key="d.id"
+					:class="['switcher-item', { 'switcher-item--current': d.id === currentDeviceId }]"
+					@click="selectDevice(d)"
+				>
+					<view class="switcher-item__main">
+						<text class="switcher-item__name">{{ d.name }}</text>
+						<text class="switcher-item__addr">{{ d.ip }}</text>
+					</view>
+					<oa-status-badge v-if="d.id === currentDeviceId" type="info" :text="$t('device_list.switch_current')" />
+					<view v-else class="switcher-item__more" :aria-label="$t('device_list.edit')" @click.stop="editDevice(d)">⋮</view>
+				</view>
+				<view class="switcher-add" @click="addNewDevice">＋ {{ $t('device_list.add_new_device') }}</view>
+			</view>
+		</uni-popup>
 
 		<!-- 系统状态 -->
 			<view class="device-card">
@@ -153,6 +180,7 @@
 
 <script>
 	import UciRpc from '@/utils/uci-rpc.js'
+	import DeviceManager from '@/utils/deviceManager.js'
 	import { formatBytes, formatRate, computeBandwidthRates } from '@/utils/format.js'
 	import { OA_ECHART } from '@/utils/echart-theme.js'
 	// #ifdef MP
@@ -171,6 +199,9 @@
 				loading: false,
 				isFirstLoad: true,
 				timer: null,
+				deviceList: [],
+				currentName: '',
+				currentDeviceId: null,
 				deviceInfo: {
 					model: '',
 					version: '',
@@ -246,11 +277,14 @@
 		},
 		onLoad() {
 			this.updateTabBarText()
-			this.loadData()
-			this.startAutoRefresh()
+			this.refreshCurrent()
+			this.guardLaunch()
 		},
 		onShow() {
-			this.startAutoRefresh()
+			// 仅在已连接时恢复轮询;未连接态由 guardLaunch 处理,不重复探活
+			if (DeviceManager.getCurrentDevice() && DeviceManager.getCurrentDevice().sysauth) {
+				this.startAutoRefresh()
+			}
 		},
 		onHide() {
 			this.stopAutoRefresh()
@@ -271,11 +305,56 @@
 			}
 		},
 		methods: {
-			goBack() {
-				this.stopAutoRefresh()
-				uni.reLaunch({
-					url: '/pages/device_list'
-				})
+			// 启动门控:无设备/无上次设备 → 登录页;有则探活+静默重登,失败 → 登录页
+			async guardLaunch() {
+				const list = DeviceManager.getDeviceList()
+				if (!list.length) { uni.reLaunch({ url: '/pages/device_list' }); return }
+				const last = DeviceManager.getCurrentDevice()
+				if (!last) { uni.reLaunch({ url: '/pages/device_list' }); return }
+				this.loading = true
+				const r = await UciRpc.reconnectDevice(last)
+				this.loading = false
+				if (r.success) {
+					this.refreshCurrent()
+					this.loadData()
+					this.startAutoRefresh()
+				} else {
+					uni.reLaunch({ url: '/pages/device_list' })
+				}
+			},
+
+			refreshCurrent() {
+				const c = DeviceManager.getCurrentDevice() || {}
+				this.currentName = c.name || this.$t('home.openwrt_device')
+				this.currentDeviceId = c.id || null
+			},
+
+			// 设备切换器(顶部下拉)
+			openSwitcher() {
+				this.deviceList = DeviceManager.getDeviceList()
+				this.refreshCurrent()
+				this.$refs.switcherPopup.open()
+			},
+			async selectDevice(d) {
+				this.$refs.switcherPopup.close()
+				this.loading = true
+				const r = await UciRpc.reconnectDevice(d)
+				this.loading = false
+				if (r.success) {
+					this.refreshCurrent()
+					this.loadData()
+					this.startAutoRefresh()
+				} else {
+					uni.reLaunch({ url: `/pages/device_list?editId=${d.id}` })
+				}
+			},
+			editDevice(d) {
+				this.$refs.switcherPopup.close()
+				uni.reLaunch({ url: `/pages/device_list?editId=${d.id}` })
+			},
+			addNewDevice() {
+				this.$refs.switcherPopup.close()
+				uni.reLaunch({ url: '/pages/device_list' })
 			},
 			updateTabBarText() {
 				uni.setTabBarItem({ index: 0, text: this.$t('tabbar.home') })
@@ -1099,4 +1178,71 @@
 		margin-left: 8rpx;
 	}
 
+/* 设备切换器(顶部下拉)—— 全 $oa-* token */
+.switch-trigger {
+	display: flex;
+	align-items: center;
+	gap: $oa-sp-1;
+	height: 64rpx;
+	padding: 0 $oa-sp-2;
+}
+.switch-trigger__name {
+	font-size: $oa-fs-body;
+	font-weight: 600;
+	color: $oa-text;
+	max-width: 360rpx;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.switch-trigger__caret {
+	font-size: $oa-fs-caption;
+	color: $oa-text-muted;
+}
+.switcher-dropdown {
+	background: $oa-surface;
+	border-radius: $oa-radius-lg;
+	box-shadow: $oa-shadow-lg;
+	width: 70%;
+	margin-left: $oa-sp-3;
+	margin-top: calc(var(--status-bar-height) + 88rpx);
+	padding: $oa-sp-2;
+}
+.switcher-item {
+	display: flex;
+	align-items: center;
+	padding: $oa-sp-2;
+	border-radius: $oa-radius-md;
+}
+.switcher-item--current {
+	background: $oa-brand-subtle;
+}
+.switcher-item__main {
+	flex: 1;
+	min-width: 0;
+	display: flex;
+	flex-direction: column;
+}
+.switcher-item__name {
+	font-size: $oa-fs-body;
+	font-weight: 600;
+	color: $oa-text;
+}
+.switcher-item__addr {
+	font-size: $oa-fs-caption;
+	color: $oa-text-muted;
+}
+.switcher-item__more {
+	width: 64rpx;
+	height: 64rpx;
+	line-height: 64rpx;
+	text-align: center;
+	color: $oa-text-muted;
+}
+.switcher-add {
+	margin-top: $oa-sp-1;
+	padding: $oa-sp-2;
+	font-size: $oa-fs-body;
+	color: $oa-brand;
+}
 </style>
