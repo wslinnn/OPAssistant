@@ -307,11 +307,11 @@
 		methods: {
 			// 启动门控:无设备/无上次设备 → 登录页;有则探活+静默重登,失败 → 登录页
 			async guardLaunch() {
+				this.loading = true  // 先显蒙层,防首跑/重连期闪现未连接的空仪表盘
 				const list = DeviceManager.getDeviceList()
-				if (!list.length) { uni.reLaunch({ url: '/pages/device_list' }); return }
+				if (!list.length) { this.loading = false; uni.reLaunch({ url: '/pages/device_list' }); return }
 				const last = DeviceManager.getCurrentDevice()
-				if (!last) { uni.reLaunch({ url: '/pages/device_list' }); return }
-				this.loading = true
+				if (!last) { this.loading = false; uni.reLaunch({ url: '/pages/device_list' }); return }
 				const r = await UciRpc.reconnectDevice(last)
 				this.loading = false
 				if (r.success) {
