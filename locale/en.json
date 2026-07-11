@@ -35,6 +35,7 @@
     "group_credentials": "Credentials",
     "group_naming": "Name",
     "connect": "Connect",
+    "login_title": "Sign In",
     "password_show": "Show password",
     "password_hide": "Hide password",
     "history_title": "Device History",

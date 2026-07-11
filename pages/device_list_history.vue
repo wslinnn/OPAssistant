@@ -1,7 +1,5 @@
 <template>
 	<view class="container">
-		<oa-nav-header :title="$t('device_list.history_title')" />
-
 		<oa-empty v-if="!groups.length" :text="$t('device_list.history_empty')" />
 
 		<view v-for="g in groups" :key="g.name" class="hist-group">
@@ -13,7 +11,9 @@
 						<text class="hist-account">{{ d.username }}</text>
 						<text class="hist-addr">{{ d.ip }}</text>
 					</view>
-					<view class="hist-more" :aria-label="$t('device_list.edit')" @click.stop="openMenu(d)">⋮</view>
+					<view class="hist-more" :aria-label="$t('device_list.edit')" @click.stop="openMenu(d)">
+						<image class="hist-more__img" src="/static/more.png" mode="aspectFit" />
+					</view>
 				</view>
 			</oa-card>
 		</view>
@@ -31,15 +31,17 @@
 <script>
 	import DeviceManager from '@/utils/deviceManager.js'
 
-	// 历史设备页:按设备名(备注)分组 + 首字母头像 + 账号/地址 + 三点(编辑/删除)。
-	// 选/编辑 → reLaunch 登录页 ?editId(单页栈,免事件总线);删除 → 二次确认。
+	// 历史设备页:原生导航栏(pages.json 配标题+返回);按设备名分组 + 首字母头像 + 三点(编辑/删除)。
+	// 选/编辑 → reLaunch 登录页 ?editId;删除 → 二次确认 + load() 刷新。
 	export default {
 		data() {
-			return { current: null, _version: 0 }
+			return { groups: [], current: null }
 		},
-		computed: {
-			groups() {
-				void this._version  // 删除后 _version++ 触发重算
+		onShow() {
+			this.load()
+		},
+		methods: {
+			load() {
 				const list = DeviceManager.getDeviceList()
 				const map = {}
 				const order = []
@@ -48,10 +50,8 @@
 					if (!map[k]) { map[k] = []; order.push(k) }
 					map[k].push(d)
 				})
-				return order.map(k => ({ name: k, devices: map[k] }))
-			}
-		},
-		methods: {
+				this.groups = order.map(k => ({ name: k, devices: map[k] }))
+			},
 			initial(name) {
 				const n = String(name || 'O').trim()
 				return n ? n[0].toUpperCase() : 'O'
@@ -77,7 +77,7 @@
 					success: (res) => {
 						if (res.confirm) {
 							DeviceManager.deleteDevice(id)
-							this._version++
+							this.load()
 						}
 					}
 				})
@@ -132,11 +132,15 @@
 		color: $oa-text-muted;
 	}
 	.hist-more {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		width: 64rpx;
 		height: 64rpx;
-		line-height: 64rpx;
-		text-align: center;
-		color: $oa-text-muted;
+	}
+	.hist-more__img {
+		width: 36rpx;
+		height: 36rpx;
 	}
 	.hist-menu {
 		background: $oa-surface;

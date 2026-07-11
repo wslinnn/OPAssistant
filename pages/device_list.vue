@@ -12,9 +12,11 @@
 			<text class="login-group">{{ $t('device_list.group_connection') }}</text>
 			<view class="login-field">
 				<input class="login-input" v-model="deviceForm.ip" :placeholder="$t('device_list.host_placeholder')" />
-				<view class="login-field__icon" :aria-label="$t('device_list.history_title')" @click="goHistory">🕐</view>
+				<view class="login-field__icon" :aria-label="$t('device_list.history_title')" @click="goHistory">
+					<image class="login-field__img" src="/static/list.png" mode="aspectFit" />
+				</view>
 			</view>
-			<oa-segmented :options="protocolOptions" v-model="deviceForm.useHttps" equal @change="onProtocolChange" />
+			<oa-segmented class="login-seg" :options="protocolOptions" v-model="deviceForm.useHttps" equal @change="onProtocolChange" />
 			<view class="login-field">
 				<input class="login-input" v-model="deviceForm.port" :placeholder="$t('device_list.port_placeholder')" />
 			</view>
@@ -26,7 +28,9 @@
 			</view>
 			<view class="login-field">
 				<input class="login-input" v-model="deviceForm.password" :password="!showPassword" :placeholder="$t('device_list.password_placeholder')" />
-				<view class="login-field__icon" :aria-label="showPassword ? $t('device_list.password_hide') : $t('device_list.password_show')" @click="showPassword = !showPassword">{{ showPassword ? '🙈' : '👁' }}</view>
+				<view class="login-field__icon" :aria-label="showPassword ? $t('device_list.password_hide') : $t('device_list.password_show')" @click="showPassword = !showPassword">
+					<image class="login-field__img" src="/static/eye.png" mode="aspectFit" />
+				</view>
 			</view>
 
 			<!-- 命名 -->
@@ -71,7 +75,7 @@
 			}
 		},
 		onLoad(options) {
-			uni.setNavigationBarTitle({ title: this.$t('device_list.title') })
+			uni.setNavigationBarTitle({ title: this.$t('device_list.login_title') })
 			if (options && options.editId) {
 				const d = DeviceManager.getDeviceById(options.editId)
 				if (d) {
@@ -228,11 +232,18 @@
 	}
 	.login-field__icon {
 		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		width: 64rpx;
 		height: 64rpx;
-		line-height: 64rpx;
-		text-align: center;
-		font-size: 32rpx;
+	}
+	.login-field__img {
+		width: 36rpx;
+		height: 36rpx;
+	}
+	.login-seg {
+		margin-bottom: $oa-sp-2;
 	}
 	.login-submit {
 		margin-top: $oa-sp-4;

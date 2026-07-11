@@ -14,7 +14,7 @@
 		    "path" : "pages/device_list",
 		    "style" :                                                                                    
 		    {
-		        "navigationBarTitleText": "%device_list.title%",
+		        "navigationBarTitleText": "%device_list.login_title%",
 		        "enablePullDownRefresh": false
 		    }
 		},

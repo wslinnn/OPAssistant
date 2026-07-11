@@ -27,7 +27,9 @@
 						<text class="switcher-item__addr">{{ d.ip }}</text>
 					</view>
 					<oa-status-badge v-if="d.id === currentDeviceId" type="info" :text="$t('device_list.switch_current')" />
-					<view v-else class="switcher-item__more" :aria-label="$t('device_list.edit')" @click.stop="editDevice(d)">⋮</view>
+					<view v-else class="switcher-item__more" :aria-label="$t('device_list.edit')" @click.stop="editDevice(d)">
+						<image class="switcher-item__more-img" src="/static/more.png" mode="aspectFit" />
+					</view>
 				</view>
 				<view class="switcher-add" @click="addNewDevice">＋ {{ $t('device_list.add_new_device') }}</view>
 			</view>
@@ -1233,11 +1235,15 @@
 	color: $oa-text-muted;
 }
 .switcher-item__more {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	width: 64rpx;
 	height: 64rpx;
-	line-height: 64rpx;
-	text-align: center;
-	color: $oa-text-muted;
+}
+.switcher-item__more-img {
+	width: 36rpx;
+	height: 36rpx;
 }
 .switcher-add {
 	margin-top: $oa-sp-1;
