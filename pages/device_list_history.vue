@@ -145,11 +145,15 @@
 	.hist-row {
 		display: flex;
 		align-items: center;
+		transition: opacity 0.15s ease;
+	}
+	.hist-row:active {
+		opacity: 0.7;
 	}
 	.hist-avatar {
 		width: 72rpx;
 		height: 72rpx;
-		border-radius: 50%;
+		border-radius: $oa-radius-full;
 		background: $oa-brand-subtle;
 		color: $oa-brand;
 		font-size: $oa-fs-title;
@@ -183,8 +187,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 64rpx;
-		height: 64rpx;
+		width: 80rpx;
+		height: 80rpx;
+		transition: opacity 0.15s ease;
+	}
+	.hist-more:active {
+		opacity: 0.5;
 	}
 	.hist-more__img {
 		width: 36rpx;
@@ -200,9 +208,13 @@
 		font-size: $oa-fs-body;
 		color: $oa-text;
 		border-bottom: 1rpx solid $oa-hairline;
+		transition: background-color 0.15s ease;
+	}
+	.hist-menu__item:active {
+		background: $oa-surface-sunken;
 	}
 	.hist-menu__item--danger {
-		color: $oa-text;
+		color: $oa-danger;
 		font-weight: 600;
 		border-bottom: none;
 	}

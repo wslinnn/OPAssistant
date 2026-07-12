@@ -248,8 +248,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 64rpx;
-		height: 64rpx;
+		width: 80rpx;
+		height: 80rpx;
+		transition: opacity 0.15s ease;
+	}
+	.login-field__icon:active {
+		opacity: 0.5;
 	}
 	.login-field__img {
 		width: 36rpx;
@@ -267,6 +271,11 @@
 		justify-content: center;
 		gap: $oa-sp-1;
 		margin-top: $oa-sp-4;
+		padding: $oa-sp-2;
+		transition: opacity 0.15s ease;
+	}
+	.login-lang:active {
+		opacity: 0.5;
 	}
 	.login-lang__icon {
 		width: 32rpx;
