@@ -91,7 +91,7 @@
 							<l-echart ref="overlayChartRef" @finished="initOverlayChart" style="width: 100%; height: 100%;"></l-echart>
 							<view class="ring-center">
 								<text class="ring-center-title">{{ $t('home.overlay') }}</text>
-								<text class="ring-center-percent">{{ overlayPercentNum }}</text>
+								<text class="ring-center-percent">{{ overlayPercentNum }}%</text>
 							</view>
 						</view>
 						<text class="ring-detail">{{ overlayDetail }}</text>
