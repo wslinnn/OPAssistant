@@ -5,7 +5,7 @@
       <oa-empty v-if="loading" :text="$t('client.wireless_clients_loading')" />
       <oa-empty v-else-if="wirelessClients.length === 0" :text="$t('client.no_wireless_clients')" />
       <view v-else>
-        <oa-card v-for="(client, index) in wirelessClients" :key="index" padding="lg" @click.native="goToDeviceDetail(client, 'wireless')">
+        <oa-card v-for="(client, index) in wirelessClients" :key="index" padding="lg">
           <view class="client-row">
             <text class="label">{{ $t('client.mac') }}：</text>
             <view class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -31,7 +31,7 @@
     <view v-else-if="currentTab === 2">
       <oa-empty v-if="dhcpv4List.length === 0" :text="$t('client.no_dhcpv4_allocation')" />
       <view v-else>
-        <oa-card v-for="(item, index) in dhcpv4List" :key="index" padding="lg" @click.native="goToDeviceDetail(item, 'dhcpv4')">
+        <oa-card v-for="(item, index) in dhcpv4List" :key="index" padding="lg">
           <view class="client-row"><text class="label">{{ $t('client.mac') }}：</text><oa-copy-text class="value" :text="item.macaddr">{{ item.macaddr }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><oa-copy-text class="value" :text="item.hostname">{{ item.hostname || '-' }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.ip_address') }}：</text><oa-copy-text class="value" :text="item.ipaddr">{{ item.ipaddr }}</oa-copy-text></view>
@@ -43,7 +43,7 @@
     <view v-else-if="currentTab === 3">
       <oa-empty v-if="dhcpv6List.length === 0" :text="$t('client.no_dhcpv6_allocation')" />
       <view v-else>
-        <oa-card v-for="(item, index) in dhcpv6List" :key="index" padding="lg" @click.native="goToDeviceDetail(item, 'dhcpv6')">
+        <oa-card v-for="(item, index) in dhcpv6List" :key="index" padding="lg">
           <view v-if="item.macaddr" class="client-row"><text class="label">{{ $t('client.mac') }}：</text><oa-copy-text class="value" :text="item.macaddr">{{ item.macaddr }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><oa-copy-text class="value" :text="item.hostname">{{ item.hostname || '-' }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.ipv6_address') }}：</text><oa-copy-text class="value" :text="item.ip6addr">{{ item.ip6addr }}</oa-copy-text></view>
@@ -103,13 +103,6 @@ export default {
   methods: {
     goBack() {
       uni.reLaunch({ url: '/pages/device_list' })
-    },
-    // 跳转到设备详情页面（通用：无线/DHCP）
-    goToDeviceDetail(device, type) {
-      const data = encodeURIComponent(JSON.stringify({ device, type }))
-      uni.navigateTo({
-        url: `/pages/device/client_detail?data=${data}`
-      })
     },
     loadData() {
       this.dhcpCache = null

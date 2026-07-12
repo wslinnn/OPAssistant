@@ -317,9 +317,6 @@
     "switch_success": "Language switched successfully",
     "restart_required": "Please restart the app to apply language settings"
   },
-  "client_detail": {
-    "title": "Client Details"
-  },
   "pages": {
     "home": "Home",
     "clients": "Clients",

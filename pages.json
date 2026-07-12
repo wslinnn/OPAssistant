@@ -116,14 +116,6 @@
 		    }
 		},
 		{
-		    "path" : "pages/device/client_detail",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%client_detail.title%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
 		    "path" : "pages/device/plugins/arpbind/index",
 		    "style" :
 		    {

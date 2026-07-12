@@ -224,9 +224,6 @@
     "disconnect_success": "断开成功",
     "disconnect_failed": "断开失败"
   },
-  "client_detail": {
-    "title": "终端详情"
-  },
   "statistics": {
     "title": "统计",
     "load": "负载",
