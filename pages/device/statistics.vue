@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <page-tab :tabs="tab_list" v-model="currentTab" />
+    <oa-page-tab :tabs="tab_list" v-model="currentTab" />
 
     <view v-if="currentTab === 1">
       <oa-card v-if="loadData" padding="md">
@@ -133,10 +133,8 @@ const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
 // #ifndef MP
 const echarts = null
 // #endif
-import PageTab from '@/components/PageTab.vue'
 
 export default {
-  components: { PageTab },
   computed: {
     tab_list() {
       return [

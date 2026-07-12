@@ -6,7 +6,7 @@
         <text class="client-search-clear-icon">×</text>
       </view>
     </view>
-     <page-tab :tabs="tab_list" v-model="currentTab" />
+     <oa-page-tab :tabs="tab_list" v-model="currentTab" />
     <view v-if="currentTab === 1">
       <oa-empty v-if="loading" :text="$t('client.wireless_clients_loading')" />
       <oa-empty v-else-if="filteredWirelessClients.length === 0" :text="searchKeyword ? $t('client.no_match') : $t('client.no_wireless_clients')" />
@@ -65,9 +65,7 @@
 import UciRpc from '@/utils/uci-rpc.js'
 import Wireless from '@/utils/wireless.js'
 import { formatDuration } from '@/utils/format.js'
-import PageTab from '@/components/PageTab.vue'
 export default {
-  components: { PageTab },
   computed: {
     tab_list() {
       return [
