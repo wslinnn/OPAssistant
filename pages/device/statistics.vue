@@ -729,9 +729,10 @@ export default {
         
         const categories = this.loadChartData.timestamps.map((timestamp, index) => {
           const date = new Date(timestamp * 1000)
+          const hours = date.getHours().toString().padStart(2, '0')
           const minutes = date.getMinutes().toString().padStart(2, '0')
           const seconds = date.getSeconds().toString().padStart(2, '0')
-          return `${minutes}:${seconds}`
+          return `${hours}:${minutes}:${seconds}`
         })
         
         const allLoads = [...this.loadChartData.load1, ...this.loadChartData.load5, ...this.loadChartData.load15]
@@ -981,9 +982,10 @@ export default {
          
          const categories = this.chartData.timestamps.map((timestamp, index) => {
            const date = new Date(timestamp * 1000)
+           const hours = date.getHours().toString().padStart(2, '0')
            const minutes = date.getMinutes().toString().padStart(2, '0')
            const seconds = date.getSeconds().toString().padStart(2, '0')
-           return `${minutes}:${seconds}`
+           return `${hours}:${minutes}:${seconds}`
          })
          
          const allRates = [...this.chartData.rxRates, ...this.chartData.txRates]

@@ -478,7 +478,7 @@
 				const txRates = Array.isArray(this.quickBandwidthChartData.txRates) ? this.quickBandwidthChartData.txRates : []
 				const xAxisData = timestamps.map(ts => {
 					const d = new Date(ts * 1000)
-					return `${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+					return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
 				})
 				const all = [...rxRates, ...txRates]
 				const maxVal = all.length > 0 ? Math.max.apply(Math, all) : 0
