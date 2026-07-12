@@ -14,6 +14,17 @@
 					<oa-switch :value="r.on" :disabled="r.busy" @input="toggleWifi(r)" />
 				</view>
 			</oa-card>
+
+			<!-- IPv6(仅关 LAN 侧分发) -->
+			<oa-card v-if="ipv6.available" padding="none">
+				<view class="tb-row">
+					<view class="tb-row-main">
+						<text class="tb-row-title">{{ $t('toolbox.ipv6') }}</text>
+						<text class="tb-row-sub">{{ $t('toolbox.ipv6_hint') }}</text>
+					</view>
+					<oa-switch :value="ipv6.on" :disabled="ipv6.busy" @input="toggleIpv6" />
+				</view>
+			</oa-card>
 		</view>
 	</view>
 </template>
@@ -46,7 +57,7 @@ export default {
 			this.loading = true
 			this.loadError = false
 			try {
-				await Promise.all([ this.probeWifi() ])
+				await Promise.all([ this.probeWifi(), this.probeIpv6() ])
 			} catch (e) {
 				this.loadError = true
 			} finally {
@@ -94,6 +105,55 @@ export default {
 				})
 				.catch(() => uni.showToast({ title: this.$t('toolbox.switch_failed'), icon: 'none' }))
 				.finally(() => { r.busy = false })
+		},
+		async probeIpv6() {
+			try {
+				const data = await UciRpc.get('dhcp')
+				const lan = data.lan
+				if (lan && lan['.type'] === 'dhcp') {
+					this.ipv6.available = true
+					this.ipv6.on = lan.ra !== 'disabled'
+				}
+			} catch (e) {
+				this.ipv6.available = false
+			}
+		},
+		toggleIpv6() {
+			if (this.ipv6.busy) return
+			const next = !this.ipv6.on
+			const device = DeviceManager.getCurrentDevice()
+			const backupKey = 'ipv6_backup_' + (device && device.id ? device.id : 'default')
+			this.ipv6.busy = true
+			const task = next ? this.enableIpv6(backupKey) : this.disableIpv6(backupKey)
+			task
+				.then(() => {
+					this.ipv6.on = next
+					uni.showToast({ title: this.$t('toolbox.switch_success'), icon: 'success' })
+				})
+				.catch(() => uni.showToast({ title: this.$t('toolbox.switch_failed'), icon: 'none' }))
+				.finally(() => { this.ipv6.busy = false })
+		},
+		async disableIpv6(backupKey) {
+			const data = await UciRpc.get('dhcp')
+			const lan = data.lan || {}
+			// 按设备备份原 ra 值,供恢复(规避 rpcd option-delete,故只切 ra)
+			uni.setStorageSync(backupKey, JSON.stringify({ ra: lan.ra || '' }))
+			await UciRpc.set('dhcp', 'lan', { ra: 'disabled' })
+			await UciRpc.commit('dhcp')
+			await UciRpc.apply('odhcpd', 'restart')
+		},
+		async enableIpv6(backupKey) {
+			let ra = 'hybrid'
+			try {
+				const raw = uni.getStorageSync(backupKey)
+				if (raw) {
+					const backup = JSON.parse(raw)
+					if (backup.ra && backup.ra !== 'disabled') ra = backup.ra
+				}
+			} catch (e) {}
+			await UciRpc.set('dhcp', 'lan', { ra })
+			await UciRpc.commit('dhcp')
+			await UciRpc.apply('odhcpd', 'restart')
 		}
 	}
 }
