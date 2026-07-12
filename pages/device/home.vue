@@ -46,10 +46,7 @@
 		</uni-popup>
 
 		<!-- 系统状态 -->
-			<view class="device-card">
-				<view class="device-header">
-					<text class="card-title">{{ $t('home.system_status') }}</text>
-				</view>
+			<oa-card :title="$t('home.system_status')">
 				<view class="device-details">
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.model') }}</text>
@@ -84,13 +81,10 @@
 						<text class="detail-value">{{ systemStatus.cpuLoad || '0.00 0.00 0.00' }}</text>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 
-			<!-- 资源监控（双环形图） -->
-			<view class="cpu-mem-card">
-				<view class="card-header">
-					<text class="card-title">{{ $t('home.resource_monitor') }}</text>
-				</view>
+			<!-- 资源监控(双环形图) -->
+			<oa-card :title="$t('home.resource_monitor')">
 				<view class="ring-row">
 					<view class="ring-item">
 						<view class="ring-chart-wrap">
@@ -113,35 +107,27 @@
 						<text class="ring-detail">{{ systemStatus.memoryDetail || '0MB / 0MB' }}</text>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 
-			<!-- 实时带宽（WAN 优先 / LAN 兜底） -->
-			<view class="quick-bandwidth-card" v-if="quickBandwidthDevice">
-				<view class="quick-bandwidth-header">
-					<view class="quick-bandwidth-title-wrap">
-						<text class="card-title">{{ quickBandwidthDisplayName }}</text>
+			<!-- 实时带宽(WAN 优先 / LAN 兜底) -->
+			<oa-card v-if="quickBandwidthDevice" :title="quickBandwidthDisplayName">
+				<view slot="actions" class="quick-bandwidth-metrics">
+					<view class="quick-bandwidth-metric quick-bandwidth-metric-down">
+						<text class="quick-bandwidth-arrow">↓</text>
+						<text class="quick-bandwidth-metric-value">{{ formatBandwidth(quickRxRate) }}</text>
 					</view>
-					<view class="quick-bandwidth-metrics">
-						<view class="quick-bandwidth-metric quick-bandwidth-metric-down">
-							<text class="quick-bandwidth-arrow">↓</text>
-							<text class="quick-bandwidth-metric-value">{{ formatBandwidth(quickRxRate) }}</text>
-						</view>
-						<view class="quick-bandwidth-metric quick-bandwidth-metric-up">
-							<text class="quick-bandwidth-arrow">↑</text>
-							<text class="quick-bandwidth-metric-value">{{ formatBandwidth(quickTxRate) }}</text>
-						</view>
+					<view class="quick-bandwidth-metric quick-bandwidth-metric-up">
+						<text class="quick-bandwidth-arrow">↑</text>
+						<text class="quick-bandwidth-metric-value">{{ formatBandwidth(quickTxRate) }}</text>
 					</view>
 				</view>
 				<view class="quick-bandwidth-chart">
 					<l-echart ref="quickBandwidthChartRef" @finished="initQuickBandwidthChart" style="width: 100%; height: 100%;"></l-echart>
 				</view>
-			</view>
+			</oa-card>
 
 			<!-- 网络 -->
-			<view class="network-card">
-				<view class="card-header">
-					<text class="card-title">{{ $t('home.network_status') }}</text>
-				</view>
+			<oa-card :title="$t('home.network_status')">
 				<view class="network-details">
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.wan_ip') }}</text>
@@ -164,13 +150,10 @@
 						<text class="detail-value">{{ systemStatus.connectionsDetail || '0 / 0' }}</text>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 
 			<!-- 存储 -->
-			<view class="disk-card" v-if="diskInfo.length > 0">
-				<view class="card-header">
-					<text class="card-title">{{ $t('home.disk_status') }}</text>
-				</view>
+			<oa-card v-if="diskInfo.length > 0" :title="$t('home.disk_status')">
 				<view class="disk-list">
 					<view class="disk-item" v-for="(disk, index) in diskInfo" :key="index">
 						<view class="disk-info">
@@ -186,7 +169,7 @@
 						</view>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 	</view>
 </template>
 
@@ -929,82 +912,50 @@
 		background: $oa-bg;
 	}
 
-	.device-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
-	.device-header {
-		margin-bottom: 20rpx;
-	}
-	.device-details {
+	/* —— 详情行(系统状态 / 网络 共用) —— */
+	.device-details,
+	.network-details {
 		display: flex;
 		flex-direction: column;
-		gap: 12rpx;
-	}
-	.device-card .device-details {
-		gap: 4rpx;
+		gap: $oa-sp-1;
 	}
 	.detail-row {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		padding: 8rpx 0;
+		padding: $oa-sp-1 0;
 		border-bottom: 1rpx solid $oa-hairline;
-	}
-	.device-card .detail-row {
-		padding: 4rpx 0;
 	}
 	.detail-row:last-child {
 		border-bottom: none;
 	}
 	.detail-label {
-		font-size: 26rpx;
+		font-size: $oa-fs-label;
 		color: $oa-text-muted;
 		font-weight: 500;
 	}
 	.detail-value {
-		font-size: 26rpx;
-		font-weight: 610;
+		font-size: $oa-fs-label;
+		font-weight: 600;
 		color: $oa-text;
 		text-align: right;
 		max-width: 60%;
 		word-break: break-all;
 	}
 	.temperature-value {
-		max-width: 70% !important;
-		font-size: 24rpx !important;
-		line-height: 1.4 !important;
+		max-width: 70%;
+		font-size: $oa-fs-caption;
+		line-height: 1.4;
 	}
 
-	.card-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 20rpx;
-	}
-	.card-title {
-		font-size: 28rpx;
-		font-weight: 600;
-		color: $oa-text;
-	}
-
-	.cpu-mem-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 10rpx 40rpx 20rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
+	/* —— 资源监控环形图 —— */
 	.ring-row {
 		display: flex;
 		justify-content: space-around;
 		align-items: flex-start;
 		flex-wrap: wrap;
-		gap: 24rpx;
-		margin-top: 16rpx;
+		gap: $oa-sp-3;
+		margin-top: $oa-sp-2;
 	}
 	.ring-item {
 		display: flex;
@@ -1038,7 +989,7 @@
 		top: 32%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		font-size: 20rpx;
+		font-size: $oa-fs-caption;
 		font-weight: 400;
 		color: $oa-text-muted;
 		line-height: 1;
@@ -1049,50 +1000,31 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		font-size: 24rpx;
+		font-size: $oa-fs-label;
 		font-weight: 700;
 		color: $oa-text;
 		line-height: 1;
 		white-space: nowrap;
 	}
 	.ring-detail {
-		font-size: 22rpx;
+		font-size: $oa-fs-caption;
 		color: $oa-text-subtle;
-		margin-top: 12rpx;
+		margin-top: $oa-sp-1;
 		text-align: center;
 		word-break: break-all;
 	}
 
-	.quick-bandwidth-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx 20rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
-	.quick-bandwidth-header {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		margin-bottom: 12rpx;
-		gap: 16rpx;
-	}
-	.quick-bandwidth-title-wrap {
-		display: flex;
-		flex-direction: column;
-		gap: 6rpx;
-	}
+	/* —— 实时带宽 —— */
 	.quick-bandwidth-metrics {
 		display: flex;
 		align-items: center;
-		gap: 18rpx;
-		padding-top: 2rpx;
+		gap: $oa-sp-2;
 		flex-shrink: 0;
 	}
 	.quick-bandwidth-metric {
 		display: flex;
 		align-items: center;
-		gap: 6rpx;
+		gap: $oa-sp-1;
 	}
 	.quick-bandwidth-metric-down {
 		color: $oa-bw-down;
@@ -1101,12 +1033,12 @@
 		color: $oa-bw-up;
 	}
 	.quick-bandwidth-arrow {
-		font-size: 24rpx;
+		font-size: $oa-fs-label;
 		font-weight: 600;
 		line-height: 1;
 	}
 	.quick-bandwidth-metric-value {
-		font-size: 24rpx;
+		font-size: $oa-fs-label;
 		font-weight: 600;
 		line-height: 1.2;
 	}
@@ -1119,47 +1051,22 @@
 		height: 100%;
 	}
 
-	.network-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
-	.network-details {
-		display: flex;
-		flex-direction: column;
-		gap: 12rpx;
-	}
-	.network-card .network-details {
-		gap: 4rpx;
-	}
-	.network-card .detail-row {
-		padding: 4rpx 0;
-	}
-
-	.disk-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
+	/* —— 存储 —— */
 	.disk-list {
 		display: flex;
 		flex-direction: column;
-		gap: 20rpx;
+		gap: $oa-sp-3;
 	}
 	.disk-item {
-		padding: 20rpx;
+		padding: $oa-sp-2;
 		background: $oa-surface-sunken;
 		border-radius: $oa-radius-md;
 	}
 	.disk-info {
-		margin-bottom: 12rpx;
+		margin-bottom: $oa-sp-1;
 	}
 	.disk-mount {
-		font-size: 26rpx;
+		font-size: $oa-fs-label;
 		font-weight: 700;
 		color: $oa-text;
 		line-height: 1.4;
@@ -1168,10 +1075,10 @@
 	.disk-usage {
 		display: flex;
 		flex-direction: column;
-		gap: 8rpx;
+		gap: $oa-sp-1;
 	}
 	.disk-usage-line {
-		font-size: 24rpx;
+		font-size: $oa-fs-label;
 		color: $oa-text;
 		text-align: right;
 	}
@@ -1186,113 +1093,130 @@
 		height: 100%;
 		border-radius: $oa-radius-sm;
 		background: $oa-success;
-		transition: width 0.3s ease;
+		transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 	.disk-temp-label {
-		font-size: 22rpx;
+		font-size: $oa-fs-caption;
 		color: $oa-text-subtle;
 		font-weight: 400;
-		margin-left: 8rpx;
+		margin-left: $oa-sp-1;
 	}
 
-/* 设备切换器(顶部下拉)—— 全 $oa-* token */
-.switch-trigger {
-	display: flex;
-	align-items: center;
-	gap: $oa-sp-1;
-	height: 72rpx;
-	padding: 0 $oa-sp-3;
-	background: $oa-brand-subtle;
-	border-radius: $oa-radius-full;
-}
-.switch-trigger__icon {
-	width: 40rpx;
-	height: 40rpx;
-}
-.switch-trigger__name {
-	font-size: $oa-fs-title;
-	font-weight: 600;
-	color: $oa-brand;
-	max-width: 300rpx;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-}
-.switch-trigger__caret {
-	font-size: $oa-fs-body;
-	color: $oa-brand;
-}
-.switcher-dropdown {
-	background: $oa-surface;
-	border-radius: $oa-radius-lg;
-	box-shadow: $oa-shadow-lg;
-	width: 70%;
-	margin-left: $oa-sp-3;
-	margin-top: calc(var(--status-bar-height) + 88rpx);
-	padding: $oa-sp-2;
-}
-.switcher-item {
-	display: flex;
-	align-items: center;
-	padding: $oa-sp-2;
-	border-radius: $oa-radius-md;
-}
-.switcher-item--current {
-	background: $oa-brand-subtle;
-}
-.switcher-item__main {
-	flex: 1;
-	min-width: 0;
-	display: flex;
-	flex-direction: column;
-}
-.switcher-item__name {
-	font-size: $oa-fs-body;
-	font-weight: 600;
-	color: $oa-text;
-}
-.switcher-item__addr {
-	font-size: $oa-fs-caption;
-	color: $oa-text-muted;
-}
-.switcher-item__sub {
-	display: flex;
-	align-items: center;
-	gap: $oa-sp-1;
-}
-.switcher-item__more {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 64rpx;
-	height: 64rpx;
-}
-.switcher-item__more-img {
-	width: 36rpx;
-	height: 36rpx;
-}
-.switcher-add {
-	margin-top: $oa-sp-1;
-	padding: $oa-sp-2;
-	font-size: $oa-fs-body;
-	color: $oa-brand;
-}
-.switcher-hint {
-	display: block;
-	font-size: $oa-fs-caption;
-	color: $oa-text-muted;
-	line-height: 1.4;
-	margin-top: $oa-sp-2;
-}
-.nav-lang {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 64rpx;
-	height: 64rpx;
-}
-.nav-lang__icon {
-	width: 40rpx;
-	height: 40rpx;
-}
+	/* —— 设备切换器 —— */
+	.switch-trigger {
+		display: flex;
+		align-items: center;
+		gap: $oa-sp-1;
+		height: 72rpx;
+		padding: 0 $oa-sp-3;
+		background: $oa-brand-subtle;
+		border-radius: $oa-radius-full;
+		transition: opacity 0.15s ease;
+	}
+	.switch-trigger:active {
+		opacity: 0.7;
+	}
+	.switch-trigger__icon {
+		width: 40rpx;
+		height: 40rpx;
+	}
+	.switch-trigger__name {
+		font-size: $oa-fs-title;
+		font-weight: 600;
+		color: $oa-brand;
+		max-width: 300rpx;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.switch-trigger__caret {
+		font-size: $oa-fs-body;
+		color: $oa-brand;
+	}
+	.switcher-dropdown {
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
+		box-shadow: $oa-shadow-lg;
+		width: 70%;
+		margin-left: $oa-sp-3;
+		margin-top: calc(var(--status-bar-height) + 88rpx);
+		padding: $oa-sp-2;
+	}
+	.switcher-item {
+		display: flex;
+		align-items: center;
+		padding: $oa-sp-2;
+		border-radius: $oa-radius-md;
+		transition: background-color 0.15s ease;
+	}
+	.switcher-item:active {
+		background: $oa-brand-subtle;
+	}
+	.switcher-item--current {
+		background: $oa-brand-subtle;
+	}
+	.switcher-item__main {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.switcher-item__name {
+		font-size: $oa-fs-body;
+		font-weight: 600;
+		color: $oa-text;
+	}
+	.switcher-item__addr {
+		font-size: $oa-fs-caption;
+		color: $oa-text-muted;
+	}
+	.switcher-item__sub {
+		display: flex;
+		align-items: center;
+		gap: $oa-sp-1;
+	}
+	.switcher-item__more {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 80rpx;
+		height: 80rpx;
+	}
+	.switcher-item__more-img {
+		width: 36rpx;
+		height: 36rpx;
+	}
+	.switcher-add {
+		margin-top: $oa-sp-1;
+		padding: $oa-sp-2;
+		font-size: $oa-fs-body;
+		color: $oa-brand;
+		transition: opacity 0.15s ease;
+	}
+	.switcher-add:active {
+		opacity: 0.7;
+	}
+	.switcher-hint {
+		display: block;
+		font-size: $oa-fs-caption;
+		color: $oa-text-muted;
+		line-height: 1.4;
+		margin-top: $oa-sp-2;
+	}
+	.nav-lang {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 80rpx;
+		height: 80rpx;
+		transition: opacity 0.15s ease;
+	}
+	.nav-lang:active {
+		opacity: 0.7;
+	}
+	.nav-lang__icon {
+		width: 40rpx;
+		height: 40rpx;
+	}
 </style>
+
