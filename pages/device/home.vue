@@ -476,7 +476,10 @@
 				const timestamps = Array.isArray(this.quickBandwidthChartData.timestamps) ? this.quickBandwidthChartData.timestamps : []
 				const rxRates = Array.isArray(this.quickBandwidthChartData.rxRates) ? this.quickBandwidthChartData.rxRates : []
 				const txRates = Array.isArray(this.quickBandwidthChartData.txRates) ? this.quickBandwidthChartData.txRates : []
-				const xAxisData = timestamps.map(() => '')
+				const xAxisData = timestamps.map(ts => {
+					const d = new Date(ts * 1000)
+					return `${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+				})
 				const all = [...rxRates, ...txRates]
 				const maxVal = all.length > 0 ? Math.max.apply(Math, all) : 0
 				const scale = this.getQuickBandwidthAxisScale(maxVal)
@@ -495,12 +498,12 @@
 							return `${this.$t('statistics.inbound')}: ${rx}\n${this.$t('statistics.outbound')}: ${tx}`
 						}
 					},
-					grid: { left: '0px', right: '8px', bottom: '12px', top: '10px', containLabel: false },
+					grid: { left: '0px', right: '8px', bottom: '24px', top: '10px', containLabel: false },
 					xAxis: {
 						type: 'category',
 						boundaryGap: false,
 						data: xAxisData,
-						axisLabel: { show: false },
+						axisLabel: { show: true, color: OA_ECHART.axisLabel, fontSize: 10, interval: 'auto', hideOverlap: true },
 						axisTick: { show: true, length: 4, lineStyle: { color: OA_ECHART.axisLine } },
 						axisLine: { lineStyle: { color: OA_ECHART.axisLine } },
 						splitLine: { show: false }
