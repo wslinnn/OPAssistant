@@ -1,11 +1,14 @@
 <template>
   <view class="container">
+    <view class="client-search">
+      <input class="client-search-input" v-model="searchKeyword" :placeholder="$t('client.search_placeholder')" />
+    </view>
      <page-tab :tabs="tab_list" v-model="currentTab" />
     <view v-if="currentTab === 1">
       <oa-empty v-if="loading" :text="$t('client.wireless_clients_loading')" />
-      <oa-empty v-else-if="wirelessClients.length === 0" :text="$t('client.no_wireless_clients')" />
+      <oa-empty v-else-if="filteredWirelessClients.length === 0" :text="searchKeyword ? $t('client.no_match') : $t('client.no_wireless_clients')" />
       <view v-else>
-        <oa-card v-for="(client, index) in wirelessClients" :key="index" padding="lg">
+        <oa-card v-for="(client, index) in filteredWirelessClients" :key="index" padding="lg">
           <view class="client-row">
             <text class="label">{{ $t('client.mac') }}：</text>
             <view class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -29,9 +32,9 @@
     </view>
 
     <view v-else-if="currentTab === 2">
-      <oa-empty v-if="dhcpv4List.length === 0" :text="$t('client.no_dhcpv4_allocation')" />
+      <oa-empty v-if="filteredDhcpv4List.length === 0" :text="searchKeyword ? $t('client.no_match') : $t('client.no_dhcpv4_allocation')" />
       <view v-else>
-        <oa-card v-for="(item, index) in dhcpv4List" :key="index" padding="lg">
+        <oa-card v-for="(item, index) in filteredDhcpv4List" :key="index" padding="lg">
           <view class="client-row"><text class="label">{{ $t('client.mac') }}：</text><oa-copy-text class="value" :text="item.macaddr">{{ item.macaddr }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><oa-copy-text class="value" :text="item.hostname">{{ item.hostname || '-' }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.ip_address') }}：</text><oa-copy-text class="value" :text="item.ipaddr">{{ item.ipaddr }}</oa-copy-text></view>
@@ -41,9 +44,9 @@
     </view>
 
     <view v-else-if="currentTab === 3">
-      <oa-empty v-if="dhcpv6List.length === 0" :text="$t('client.no_dhcpv6_allocation')" />
+      <oa-empty v-if="filteredDhcpv6List.length === 0" :text="searchKeyword ? $t('client.no_match') : $t('client.no_dhcpv6_allocation')" />
       <view v-else>
-        <oa-card v-for="(item, index) in dhcpv6List" :key="index" padding="lg">
+        <oa-card v-for="(item, index) in filteredDhcpv6List" :key="index" padding="lg">
           <view v-if="item.macaddr" class="client-row"><text class="label">{{ $t('client.mac') }}：</text><oa-copy-text class="value" :text="item.macaddr">{{ item.macaddr }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><oa-copy-text class="value" :text="item.hostname">{{ item.hostname || '-' }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.ipv6_address') }}：</text><oa-copy-text class="value" :text="item.ip6addr">{{ item.ip6addr }}</oa-copy-text></view>
@@ -69,11 +72,36 @@ export default {
         { value: 2, label: this.$t('client.dhcpv4_allocation') },
         { value: 3, label: this.$t('client.dhcpv6_allocation') }
       ]
+    },
+    filteredWirelessClients() {
+      const kw = this.searchKeyword.trim().toLowerCase()
+      if (!kw) return this.wirelessClients
+      return this.wirelessClients.filter(c => {
+        const hay = [c.mac, c.hostname].filter(Boolean).join(' ').toLowerCase()
+        return hay.includes(kw)
+      })
+    },
+    filteredDhcpv4List() {
+      const kw = this.searchKeyword.trim().toLowerCase()
+      if (!kw) return this.dhcpv4List
+      return this.dhcpv4List.filter(c => {
+        const hay = [c.macaddr, c.hostname, c.ipaddr].filter(Boolean).join(' ').toLowerCase()
+        return hay.includes(kw)
+      })
+    },
+    filteredDhcpv6List() {
+      const kw = this.searchKeyword.trim().toLowerCase()
+      if (!kw) return this.dhcpv6List
+      return this.dhcpv6List.filter(c => {
+        const hay = [c.macaddr, c.hostname, c.ip6addr].filter(Boolean).join(' ').toLowerCase()
+        return hay.includes(kw)
+      })
     }
   },
   data() {
     return {
       currentTab: 1,
+      searchKeyword: '',
       wirelessClients: [],
       loading: false,
       wirelessIfBandMap: {},
@@ -242,6 +270,20 @@ export default {
 <style scoped lang="scss">
 
 @import '@/styles/common.scss';
+
+.client-search {
+  padding: $oa-sp-2 $oa-sp-3 0;
+}
+.client-search-input {
+  width: 100%;
+  height: 72rpx;
+  padding: 0 $oa-sp-2;
+  background: $oa-surface-sunken;
+  border-radius: $oa-radius-md;
+  font-size: $oa-fs-body;
+  color: $oa-text;
+  box-sizing: border-box;
+}
 
 .client-row {
   display: flex;

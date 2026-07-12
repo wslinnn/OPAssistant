@@ -222,7 +222,9 @@
     "tip": "提示",
     "confirm_disconnect": "确定要断开客户端 {mac} {hostname} 吗？",
     "disconnect_success": "断开成功",
-    "disconnect_failed": "断开失败"
+    "disconnect_failed": "断开失败",
+    "search_placeholder": "搜索 MAC/主机名/IP",
+    "no_match": "无匹配结果"
   },
   "statistics": {
     "title": "统计",

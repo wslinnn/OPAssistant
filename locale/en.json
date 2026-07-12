@@ -226,7 +226,9 @@
     "online_status": "Online Status",
     "online": "Online",
     "active": "Active",
-    "offline": "Offline"
+    "offline": "Offline",
+    "search_placeholder": "Search MAC/hostname/IP",
+    "no_match": "No matching results"
   },
   "statistics": {
     "title": "Statistics",
