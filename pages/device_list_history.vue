@@ -1,5 +1,7 @@
 <template>
 	<view class="container">
+		<oa-loading v-if="loading" overlay :text="$t('device_list.connecting')" />
+
 		<oa-empty v-if="!groups.length" :text="$t('device_list.history_empty')" />
 
 		<view v-for="g in groups" :key="g.name" class="hist-group">
@@ -11,6 +13,7 @@
 						<text class="hist-account">{{ d.username }}</text>
 						<text class="hist-addr">{{ d.ip }}</text>
 					</view>
+					<oa-ping-badge class="hist-ping" :level="pingOf(d).level" :text="pingOf(d).text" />
 					<view class="hist-more" :aria-label="$t('device_list.edit')" @click.stop="openMenu(d)">
 						<image class="hist-more__img" src="/static/more.png" mode="aspectFit" />
 					</view>
@@ -30,19 +33,24 @@
 
 <script>
 	import DeviceManager from '@/utils/deviceManager.js'
+	import UciRpc from '@/utils/uci-rpc.js'
 
-	// 历史设备页:原生导航栏(pages.json 配标题+返回);按设备名分组 + 首字母头像 + 三点(编辑/删除)。
-	// 选/编辑 → reLaunch 登录页 ?editId;删除 → 二次确认 + load() 刷新。
+	// 历史设备页:原生导航栏(标题+返回);按设备名分组 + 首字母头像 + ping 徽标 + 三点(编辑/删除)。
+	// 点卡片 = 直接连接(reconnectDevice);三点编辑 = 登录页 editId;删除 = 二次确认。
+	// ping:HTTP 探测,并行;下拉刷新重 ping。
 	export default {
 		data() {
-			return { groups: [], current: null }
+			return { groups: [], current: null, pings: {}, loading: false }
 		},
 		onLoad() {
 			uni.setNavigationBarTitle({ title: this.$t('device_list.history_title') })
 		},
 		onShow() {
-			uni.setNavigationBarTitle({ title: this.$t('device_list.history_title') })
 			this.load()
+			this.pingAll()
+		},
+		onPullDownRefresh() {
+			this.pingAll().then(() => uni.stopPullDownRefresh())
 		},
 		methods: {
 			load() {
@@ -56,12 +64,36 @@
 				})
 				this.groups = order.map(k => ({ name: k, devices: map[k] }))
 			},
+			async pingAll() {
+				const all = DeviceManager.getDeviceList()
+				await Promise.all(all.map(d => {
+					this.$set(this.pings, d.id, undefined)  // 先标“检测中”
+					return DeviceManager.pingDevice(d).then(ms => {
+						this.$set(this.pings, d.id, ms)
+					})
+				}))
+			},
+			pingOf(d) {
+				const v = this.pings[d.id]
+				if (v === undefined) return { level: 'checking', text: this.$t('device_list.ping_checking') }
+				if (v === null) return { level: 'offline', text: this.$t('device_list.ping_offline') }
+				return { level: DeviceManager.pingLevel(v), text: v + 'ms' }
+			},
 			initial(name) {
 				const n = String(name || 'O').trim()
 				return n ? n[0].toUpperCase() : 'O'
 			},
-			pick(d) {
-				uni.reLaunch({ url: `/pages/device_list?editId=${d.id}` })
+			// 点卡片:直接连接
+			async pick(d) {
+				this.loading = true
+				const r = await UciRpc.reconnectDevice(d)
+				this.loading = false
+				if (r.success) {
+					uni.reLaunch({ url: '/pages/device/home' })
+				} else {
+					// 连不上 → 登录页编辑该设备(改凭据/地址)
+					uni.reLaunch({ url: `/pages/device_list?editId=${d.id}` })
+				}
 			},
 			openMenu(d) {
 				this.current = d
@@ -134,6 +166,10 @@
 	.hist-addr {
 		font-size: $oa-fs-caption;
 		color: $oa-text-muted;
+	}
+	.hist-ping {
+		flex-shrink: 0;
+		margin-right: $oa-sp-2;
 	}
 	.hist-more {
 		display: flex;

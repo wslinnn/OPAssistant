@@ -245,6 +245,33 @@ class DeviceManager {
 		return host
 	}
 
+	// 轻量 ping:HTTP 探测路由器根 URL(带 x-uniauth 放行 HTTPS 自签证书),返回往返 ms 或 null(离线/超时)
+	static pingDevice(device) {
+		if (!device || !device.ip) return Promise.resolve(null)
+		const protocol = device.useHttps ? 'https' : 'http'
+		const host = DeviceManager.formatHostForUrl(device.ip)
+		const url = `${protocol}://${host}:${device.port || 80}/`
+		const start = Date.now()
+		return new Promise(resolve => {
+			uni.request({
+				url,
+				method: 'GET',
+				timeout: 2000,
+				header: { 'x-uniauth': 'true' },
+				success: () => resolve(Date.now() - start),
+				fail: () => resolve(null)
+			})
+		})
+	}
+
+	// ms → 延迟档位:<100 fast / <300 ok / ≥300 slow / null offline
+	static pingLevel(ms) {
+		if (ms == null) return 'offline'
+		if (ms < 100) return 'fast'
+		if (ms < 300) return 'ok'
+		return 'slow'
+	}
+
 	static loginDevice(device, callback) {
 		console.log(`[DeviceManager] Starting login for device: ${device.name} (${device.ip}:${device.port})`)
 		console.log(`[DeviceManager] Device info:`, {

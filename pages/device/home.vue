@@ -30,7 +30,10 @@
 				>
 					<view class="switcher-item__main">
 						<text class="switcher-item__name">{{ d.name }}</text>
-						<text class="switcher-item__addr">{{ d.ip }}</text>
+						<view class="switcher-item__sub">
+							<text class="switcher-item__addr">{{ d.ip }}</text>
+							<oa-ping-badge :level="pingOf(d).level" :text="pingOf(d).text" />
+						</view>
 					</view>
 					<oa-status-badge v-if="d.id === currentDeviceId" type="info" :text="$t('device_list.switch_current')" />
 					<view v-else class="switcher-item__more" :aria-label="$t('device_list.edit')" @click.stop="editDevice(d)">
@@ -210,6 +213,7 @@
 				deviceList: [],
 				currentName: '',
 				currentDeviceId: null,
+				pings: {},
 				deviceInfo: {
 					model: '',
 					version: '',
@@ -341,7 +345,23 @@
 			openSwitcher() {
 				this.deviceList = DeviceManager.getDeviceList()
 				this.refreshCurrent()
+				this.pingSwitcher()
 				this.$refs.switcherPopup.open()
+			},
+			// 切换器:并行 ping 所有设备,徽标随结果回填
+			pingSwitcher() {
+				this.deviceList.forEach(d => {
+					this.$set(this.pings, d.id, undefined)
+					DeviceManager.pingDevice(d).then(ms => {
+						this.$set(this.pings, d.id, ms)
+					})
+				})
+			},
+			pingOf(d) {
+				const v = this.pings[d.id]
+				if (v === undefined) return { level: 'checking', text: this.$t('device_list.ping_checking') }
+				if (v === null) return { level: 'offline', text: this.$t('device_list.ping_offline') }
+				return { level: DeviceManager.pingLevel(v), text: v + 'ms' }
 			},
 			async selectDevice(d) {
 				this.$refs.switcherPopup.close()
@@ -1248,6 +1268,11 @@
 .switcher-item__addr {
 	font-size: $oa-fs-caption;
 	color: $oa-text-muted;
+}
+.switcher-item__sub {
+	display: flex;
+	align-items: center;
+	gap: $oa-sp-1;
 }
 .switcher-item__more {
 	display: flex;

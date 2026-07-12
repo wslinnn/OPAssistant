@@ -23,7 +23,7 @@
 		    "style" : 
 		    {
 		        "navigationBarTitleText": "%device_list.history_title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{

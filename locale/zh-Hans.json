@@ -37,6 +37,8 @@
     "connect": "连接",
     "login_title": "登录",
     "login_prompt": "连接您的路由器",
+    "ping_checking": "检测中",
+    "ping_offline": "离线",
     "password_show": "显示密码",
     "password_hide": "隐藏密码",
     "history_title": "历史设备",

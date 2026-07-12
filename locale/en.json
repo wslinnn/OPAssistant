@@ -37,6 +37,8 @@
     "connect": "Connect",
     "login_title": "Sign In",
     "login_prompt": "Connect your router",
+    "ping_checking": "Checking",
+    "ping_offline": "Offline",
     "password_show": "Show password",
     "password_hide": "Hide password",
     "history_title": "Device History",
