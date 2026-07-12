@@ -37,14 +37,21 @@
 				</view>
 			</oa-card>
 
-			<!-- FullCone NAT -->
-			<oa-card v-if="fullcone.available" padding="none">
-				<view class="tb-row">
+			<!-- FullCone NAT(IPv4 / IPv6 独立) -->
+			<oa-card v-if="fullcone.available || fullcone6.available" padding="none">
+				<view v-if="fullcone.available" class="tb-row">
 					<view class="tb-row-main">
 						<text class="tb-row-title">{{ $t('toolbox.fullcone') }}</text>
 						<text class="tb-row-sub">{{ fullcone.on ? $t('toolbox.toggle_on') : $t('toolbox.toggle_off') }}</text>
 					</view>
 					<oa-switch :value="fullcone.on" :disabled="fullcone.busy" @input="toggleFullcone" />
+				</view>
+				<view v-if="fullcone6.available" class="tb-row">
+					<view class="tb-row-main">
+						<text class="tb-row-title">{{ $t('toolbox.fullcone6') }}</text>
+						<text class="tb-row-sub">{{ fullcone6.on ? $t('toolbox.toggle_on') : $t('toolbox.toggle_off') }}</text>
+					</view>
+					<oa-switch :value="fullcone6.on" :disabled="fullcone6.busy" @input="toggleFullcone6" />
 				</view>
 			</oa-card>
 
@@ -74,7 +81,8 @@ export default {
 			radios: [],
 			ipv6: { available: false, on: false, busy: false },
 			firewall: { available: false, on: false, busy: false, section: '' },
-			fullcone: { available: false, on: false, busy: false, section: '', has6: false },
+			fullcone: { available: false, on: false, busy: false, section: '' },
+			fullcone6: { available: false, on: false, busy: false, section: '' },
 			upnp: { available: false, on: false, busy: false }
 		}
 	},
@@ -232,23 +240,28 @@ export default {
 			try {
 				const data = await UciRpc.get('firewall')
 				const defaults = Object.keys(data).map(k => data[k]).find(s => s && s['.type'] === 'defaults')
-				if (defaults && defaults.fullcone !== undefined) {
-					this.fullcone.available = true
-					this.fullcone.on = defaults.fullcone === '1'
-					this.fullcone.section = defaults['.name']
-					this.fullcone.has6 = defaults.fullcone6 !== undefined
+				if (defaults) {
+					const section = defaults['.name']
+					if (defaults.fullcone !== undefined) {
+						this.fullcone.available = true
+						this.fullcone.on = defaults.fullcone === '1'
+						this.fullcone.section = section
+					}
+					if (defaults.fullcone6 !== undefined) {
+						this.fullcone6.available = true
+						this.fullcone6.on = defaults.fullcone6 === '1'
+						this.fullcone6.section = section
+					}
 				}
 			} catch (e) {
-				this.fullcone.available = false
+				// 两者保持 available:false
 			}
 		},
 		toggleFullcone() {
 			if (this.fullcone.busy) return
 			const next = !this.fullcone.on
-			const values = { fullcone: next ? '1' : '0' }
-			if (this.fullcone.has6) values.fullcone6 = next ? '1' : '0'
 			this.fullcone.busy = true
-			UciRpc.set('firewall', this.fullcone.section, values)
+			UciRpc.set('firewall', this.fullcone.section, { fullcone: next ? '1' : '0' })
 				.then(() => UciRpc.commit('firewall'))
 				.then(() => UciRpc.apply('firewall', 'reload'))
 				.then(() => {
@@ -257,6 +270,20 @@ export default {
 				})
 				.catch(() => uni.showToast({ title: this.$t('toolbox.switch_failed'), icon: 'none' }))
 				.finally(() => { this.fullcone.busy = false })
+		},
+		toggleFullcone6() {
+			if (this.fullcone6.busy) return
+			const next = !this.fullcone6.on
+			this.fullcone6.busy = true
+			UciRpc.set('firewall', this.fullcone6.section, { fullcone6: next ? '1' : '0' })
+				.then(() => UciRpc.commit('firewall'))
+				.then(() => UciRpc.apply('firewall', 'reload'))
+				.then(() => {
+					this.fullcone6.on = next
+					uni.showToast({ title: this.$t('toolbox.switch_success'), icon: 'success' })
+				})
+				.catch(() => uni.showToast({ title: this.$t('toolbox.switch_failed'), icon: 'none' }))
+				.finally(() => { this.fullcone6.busy = false })
 		},
 		async probeUpnp() {
 			try {

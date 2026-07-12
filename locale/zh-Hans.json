@@ -783,6 +783,7 @@
     "firewall": "防火墙",
     "firewall_risk": "关闭防火墙将使路由器失去防护,远程管理时可能导致失联,确定继续?",
     "fullcone": "FullCone NAT",
+    "fullcone6": "FullCone NAT IPv6",
     "upnp": "UPnP",
     "toggle_on": "已开启",
     "toggle_off": "已关闭",

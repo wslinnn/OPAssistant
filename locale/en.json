@@ -787,6 +787,7 @@
     "firewall": "Firewall",
     "firewall_risk": "Disabling the firewall removes protection and may disconnect you during remote management. Continue?",
     "fullcone": "FullCone NAT",
+    "fullcone6": "FullCone NAT IPv6",
     "upnp": "UPnP",
     "toggle_on": "On",
     "toggle_off": "Off",
