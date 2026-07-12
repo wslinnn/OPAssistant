@@ -118,6 +118,7 @@ export default {
 	},
 	onHide() { this.stopPoll() },
 	onUnload() { this.stopPoll() },
+	onPullDownRefresh() { Promise.resolve(this.load()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		formatBytes,
 		async load(silent = false) {

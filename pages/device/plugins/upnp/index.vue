@@ -88,6 +88,7 @@ export default {
 	},
 	onHide() { this.stopPoll() },
 	onUnload() { this.stopPoll() },
+	onPullDownRefresh() { Promise.resolve(this.load()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = this.acls.length === 0 && this.rules.length === 0

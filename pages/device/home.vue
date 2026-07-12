@@ -317,6 +317,7 @@
 				this._quickBandwidthChartInstance = null
 			}
 		},
+		onPullDownRefresh() { Promise.resolve(this.loadData()).finally(() => uni.stopPullDownRefresh()) },
 		methods: {
 			// 启动门控:无设备/无上次设备 → 登录页;有则探活+静默重登,失败 → 登录页
 			async guardLaunch() {

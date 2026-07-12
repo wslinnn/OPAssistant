@@ -573,6 +573,7 @@ export default {
         this._loadChartInstance = null
       }
     },
+  onPullDownRefresh() { Promise.resolve(this.loadPageData()).finally(() => uni.stopPullDownRefresh()) },
   methods: {
     goBack() {
       this.stopAutoRefresh()

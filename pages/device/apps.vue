@@ -94,6 +94,7 @@ export default {
 	onUnload() {
 		this.clearNavRetryTimer()
 	},
+	onPullDownRefresh() { Promise.resolve(this.loadInstalled()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		applyNavigationBar() {
 			const title = this.$t('apps.title') || 'App Center'

@@ -73,6 +73,7 @@ export default {
 	onUnload() {
 		this.stopAutoRefresh()
 	},
+	onPullDownRefresh() { Promise.resolve(this.loadProcessList()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		// busy 守卫:防止 3s 轮询在慢请求(>3s)下堆积(callUbus 改 await 后,loading 不再天然拦截轮询)
 		async loadProcessList() {

@@ -70,6 +70,7 @@ export default {
 		this.load()
 		this.loadPrinters()
 	},
+	onPullDownRefresh() { Promise.all([Promise.resolve(this.load()), Promise.resolve(this.loadPrinters())]).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = !this.initialized

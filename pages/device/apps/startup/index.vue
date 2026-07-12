@@ -42,6 +42,7 @@ export default {
 		})
 		this.loadStartupList()
 	},
+	onPullDownRefresh() { Promise.resolve(this.loadStartupList()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		statusType(startup) {
 			if (startup.running) return 'up'

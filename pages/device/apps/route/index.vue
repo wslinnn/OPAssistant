@@ -44,6 +44,7 @@ export default {
 		})
 		this.loadRouteTable()
 	},
+	onPullDownRefresh() { Promise.resolve(this.loadRouteTable()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async loadRouteTable() {
 			this.loading = true

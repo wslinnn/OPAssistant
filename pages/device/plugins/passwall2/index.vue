@@ -180,6 +180,7 @@ export default {
 		uni.setNavigationBarTitle({ title: this.$t('passwall2.title') })
 		this.load()
 	},
+	onPullDownRefresh() { Promise.resolve(this.load()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = true

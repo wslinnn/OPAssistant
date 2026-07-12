@@ -250,6 +250,7 @@ export default {
 		this.loadCandidates()
 		this.loadCustom()
 	},
+	onPullDownRefresh() { Promise.all([Promise.resolve(this.load()), Promise.resolve(this.loadCandidates()), Promise.resolve(this.loadCustom())]).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		zoneColor(name) { return getZoneColor(name) },
 		redirectLine(r) { const s = redirectSummary(r); return `${s.proto} · ${s.line}` },

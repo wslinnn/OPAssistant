@@ -153,6 +153,7 @@
 				]
 			}
 		},
+		onPullDownRefresh() { Promise.resolve(this.loadData()).finally(() => uni.stopPullDownRefresh()) },
 		methods: {
 			formatBytes,
 

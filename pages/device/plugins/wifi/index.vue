@@ -134,6 +134,7 @@ export default {
 		uni.setNavigationBarTitle({ title: this.$t('wifi.title') })
 		this.load()
 	},
+	onPullDownRefresh() { Promise.resolve(this.load()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = this.radios.length === 0

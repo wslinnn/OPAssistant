@@ -85,6 +85,7 @@ export default {
 		this.load()
 		this.loadInterfaces()
 	},
+	onPullDownRefresh() { Promise.all([Promise.resolve(this.load()), Promise.resolve(this.loadInterfaces())]).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = this.shares.length === 0

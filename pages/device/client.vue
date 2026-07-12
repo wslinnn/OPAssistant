@@ -99,6 +99,7 @@ export default {
       backgroundColor: '#F8F8F8'
     })
   },
+  onPullDownRefresh() { Promise.resolve(this.loadData()).finally(() => uni.stopPullDownRefresh()) },
   methods: {
     goBack() {
       uni.reLaunch({ url: '/pages/device_list' })

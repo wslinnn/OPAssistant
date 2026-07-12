@@ -66,6 +66,7 @@ export default {
 		this.load()
 		this.loadCandidates()
 	},
+	onPullDownRefresh() { Promise.all([Promise.resolve(this.load()), Promise.resolve(this.loadCandidates())]).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = this.sections.length === 0
