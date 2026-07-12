@@ -40,6 +40,11 @@
 			</view>
 
 			<oa-button type="primary" block class="login-submit" @click="connect">{{ $t('device_list.connect') }}</oa-button>
+
+			<view class="login-lang" :aria-label="$t('device_list.language_settings')" @click="goLanguage">
+				<image class="login-lang__icon" src="/static/lang.png" mode="aspectFit" />
+				<text class="login-lang__text">{{ $t('device_list.language_settings') }}</text>
+			</view>
 		</view>
 	</view>
 </template>
@@ -104,6 +109,9 @@
 			},
 			goHistory() {
 				uni.navigateTo({ url: '/pages/device_list_history' })
+			},
+			goLanguage() {
+				uni.navigateTo({ url: '/pages/language/index' })
 			},
 			validateIP(host) {
 				const s = String(host || '').trim()
@@ -247,5 +255,20 @@
 	}
 	.login-submit {
 		margin-top: $oa-sp-4;
+	}
+	.login-lang {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: $oa-sp-1;
+		margin-top: $oa-sp-4;
+	}
+	.login-lang__icon {
+		width: 32rpx;
+		height: 32rpx;
+	}
+	.login-lang__text {
+		font-size: $oa-fs-caption;
+		color: $oa-text-muted;
 	}
 </style>

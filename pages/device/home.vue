@@ -10,6 +10,11 @@
 						<text class="switch-trigger__caret">▾</text>
 					</view>
 				</template>
+				<template #right>
+					<view class="nav-lang" :aria-label="$t('device_list.language_settings')" @click="goLanguage">
+						<image class="nav-lang__icon" src="/static/lang.png" mode="aspectFit" />
+					</view>
+				</template>
 			</oa-nav-header>
 		</view>
 
@@ -357,6 +362,9 @@
 			addNewDevice() {
 				this.$refs.switcherPopup.close()
 				uni.reLaunch({ url: '/pages/device_list' })
+			},
+			goLanguage() {
+				uni.navigateTo({ url: '/pages/language/index' })
 			},
 			updateTabBarText() {
 				uni.setTabBarItem({ index: 0, text: this.$t('tabbar.home') })
@@ -1250,5 +1258,16 @@
 	padding: $oa-sp-2;
 	font-size: $oa-fs-body;
 	color: $oa-brand;
+}
+.nav-lang {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 64rpx;
+	height: 64rpx;
+}
+.nav-lang__icon {
+	width: 40rpx;
+	height: 40rpx;
 }
 </style>
