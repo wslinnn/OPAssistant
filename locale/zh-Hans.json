@@ -39,6 +39,7 @@
     "login_prompt": "连接您的路由器",
     "ping_checking": "检测中",
     "ping_offline": "离线",
+    "ping_hint": "延迟为 HTTP 响应时间,仅供参考",
     "password_show": "显示密码",
     "password_hide": "隐藏密码",
     "history_title": "历史设备",

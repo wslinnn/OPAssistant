@@ -41,6 +41,7 @@
 					</view>
 				</view>
 				<view class="switcher-add" @click="addNewDevice">＋ {{ $t('device_list.add_new_device') }}</view>
+					<text class="switcher-hint">{{ $t('device_list.ping_hint') }}</text>
 			</view>
 		</uni-popup>
 
@@ -1290,6 +1291,13 @@
 	padding: $oa-sp-2;
 	font-size: $oa-fs-body;
 	color: $oa-brand;
+}
+.switcher-hint {
+	display: block;
+	font-size: $oa-fs-caption;
+	color: $oa-text-muted;
+	line-height: 1.4;
+	margin-top: $oa-sp-2;
 }
 .nav-lang {
 	display: flex;

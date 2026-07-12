@@ -39,6 +39,7 @@
     "login_prompt": "Connect your router",
     "ping_checking": "Checking",
     "ping_offline": "Offline",
+    "ping_hint": "Latency is HTTP response time, for reference only",
     "password_show": "Show password",
     "password_hide": "Hide password",
     "history_title": "Device History",

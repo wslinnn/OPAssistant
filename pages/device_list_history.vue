@@ -2,6 +2,7 @@
 	<view class="container">
 		<oa-loading v-if="loading" overlay :text="$t('device_list.connecting')" />
 
+		<text v-if="groups.length" class="hist-hint">{{ $t('device_list.ping_hint') }}</text>
 		<oa-empty v-if="!groups.length" :text="$t('device_list.history_empty')" />
 
 		<view v-for="g in groups" :key="g.name" class="hist-group">
@@ -133,6 +134,13 @@
 		font-size: $oa-fs-caption;
 		color: $oa-text-muted;
 		margin: $oa-sp-3 0 $oa-sp-2;
+	}
+	.hist-hint {
+		display: block;
+		font-size: $oa-fs-caption;
+		color: $oa-text-muted;
+		line-height: 1.4;
+		margin-bottom: $oa-sp-1;
 	}
 	.hist-row {
 		display: flex;
