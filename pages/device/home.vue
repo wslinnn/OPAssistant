@@ -944,7 +944,6 @@
 	}
 	.temperature-value {
 		max-width: 70%;
-		font-size: $oa-fs-caption;
 		line-height: 1.4;
 	}
 
