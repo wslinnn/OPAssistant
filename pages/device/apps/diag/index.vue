@@ -7,16 +7,16 @@
 
 			<view class="diag-field">
 				<text class="diag-label">{{ $t('diag.target') }}</text>
-				<input class="diag-input" v-model="host" :placeholder="$t('diag.target_placeholder')" />
+				<input class="diag-input" :class="{ 'is-focused': activeField === 'host' }" v-model="host" :placeholder="$t('diag.target_placeholder')" @focus="activeField = 'host'" @blur="activeField = ''" />
 			</view>
 
 			<view v-if="tool === 'ping'" class="diag-field diag-field--inline">
 				<text class="diag-label">{{ $t('diag.count') }}</text>
-				<input class="diag-input diag-input--num" type="number" v-model="count" />
+				<input class="diag-input diag-input--num" :class="{ 'is-focused': activeField === 'count' }" type="number" v-model="count" @focus="activeField = 'count'" @blur="activeField = ''" />
 			</view>
 			<view v-if="tool === 'traceroute'" class="diag-field diag-field--inline">
 				<text class="diag-label">{{ $t('diag.hops') }}</text>
-				<input class="diag-input diag-input--num" type="number" v-model="hops" />
+				<input class="diag-input diag-input--num" :class="{ 'is-focused': activeField === 'hops' }" type="number" v-model="hops" @focus="activeField = 'hops'" @blur="activeField = ''" />
 			</view>
 
 			<view class="diag-actions">
@@ -52,7 +52,8 @@ export default {
 			running: false,
 			output: '',
 			error: '',
-			lastLineId: ''
+			lastLineId: '',
+			activeField: ''
 		}
 	},
 	computed: {
@@ -155,6 +156,7 @@ export default {
 	font-size: $oa-fs-body;
 	color: $oa-text;
 	box-sizing: border-box;
+	@include oa-input-focus();
 }
 .diag-input--num {
 	width: 140rpx;

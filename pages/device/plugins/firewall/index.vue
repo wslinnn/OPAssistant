@@ -108,7 +108,7 @@
 		<uni-popup ref="customPopup" type="center" :mask-click="false">
 			<view class="custom-dialog">
 				<view class="custom-dialog__header"><text class="custom-dialog__title">{{ $t('firewall.custom_rules') }}</text></view>
-				<textarea class="custom-dialog__area" v-model="customDraft" :maxlength="-1" auto-height :placeholder="$t('firewall.custom_placeholder')" />
+				<textarea class="custom-dialog__area" :class="{ 'is-focused': customFocused }" v-model="customDraft" :maxlength="-1" auto-height :placeholder="$t('firewall.custom_placeholder')" @focus="customFocused = true" @blur="customFocused = false" />
 				<view class="custom-dialog__actions">
 					<oa-button type="neutral" block :disabled="savingCustom" @click="closeCustom">{{ $t('common.cancel') }}</oa-button>
 					<oa-button type="primary" block :loading="savingCustom" @click="saveCustom">{{ $t('firewall.save_apply') }}</oa-button>
@@ -138,7 +138,8 @@ export default {
 			candidates: { zones: [], interfaces: [], helpers: [] },
 			customRules: '',
 			customDraft: '',
-			savingCustom: false
+			savingCustom: false,
+			customFocused: false
 		}
 	},
 	computed: {
@@ -376,6 +377,6 @@ export default {
 .custom-dialog { width: 640rpx; max-height: 80vh; background: $oa-surface; border-radius: $oa-radius-2xl; padding: $oa-sp-3; display: flex; flex-direction: column; box-sizing: border-box; }
 .custom-dialog__header { text-align: center; margin-bottom: $oa-sp-2; }
 .custom-dialog__title { font-size: $oa-fs-title; font-weight: 600; color: $oa-text; }
-.custom-dialog__area { width: 100%; box-sizing: border-box; min-height: 400rpx; max-height: 56vh; background: $oa-surface-sunken; border-radius: $oa-radius-md; padding: $oa-sp-2; font-size: $oa-fs-caption; color: $oa-text; }
+.custom-dialog__area { width: 100%; box-sizing: border-box; min-height: 400rpx; max-height: 56vh; background: $oa-surface-sunken; border-radius: $oa-radius-md; padding: $oa-sp-2; font-size: $oa-fs-caption; color: $oa-text; @include oa-input-focus(); }
 .custom-dialog__actions { display: flex; gap: $oa-sp-2; margin-top: $oa-sp-3; }
 </style>

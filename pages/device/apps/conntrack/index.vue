@@ -23,7 +23,7 @@
 
 		<oa-card padding="lg">
 			<view class="ct-filter">
-				<input class="ct-input" v-model="keyword" :placeholder="$t('conntrack.search')" />
+				<input class="ct-input" :class="{ 'is-focused': inputFocused }" v-model="keyword" :placeholder="$t('conntrack.search')" @focus="inputFocused = true" @blur="inputFocused = false" />
 				<oa-button size="small" type="primary" :loading="loading" @click="load">{{ $t('conntrack.refresh') }}</oa-button>
 			</view>
 			<view class="ct-toggles">
@@ -87,7 +87,8 @@ export default {
 			autoRefresh: true,
 			enableDns: false,
 			dnsCache: {},
-			pollTimer: null
+			pollTimer: null,
+			inputFocused: false
 		}
 	},
 	computed: {
@@ -244,6 +245,7 @@ export default {
 	font-size: $oa-fs-body;
 	color: $oa-text;
 	box-sizing: border-box;
+	@include oa-input-focus();
 }
 .ct-toggles {
 	display: flex;

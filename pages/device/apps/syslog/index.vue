@@ -8,7 +8,7 @@
 				<oa-segmented :value="level" :options="levelOptions" @input="onLevelChange" />
 			</view>
 			<view class="log-filter">
-				<input class="log-input" v-model="keyword" :placeholder="$t('syslog.search')" />
+				<input class="log-input" :class="{ 'is-focused': inputFocused }" v-model="keyword" :placeholder="$t('syslog.search')" @focus="inputFocused = true" @blur="inputFocused = false" />
 				<oa-button size="small" type="primary" :loading="loading" @click="load">{{ $t('syslog.refresh') }}</oa-button>
 			</view>
 			<view class="log-auto">
@@ -52,7 +52,8 @@ export default {
 			reqSeq: 0,
 			busy: false,
 			autoRefresh: true,
-			pollTimer: null
+			pollTimer: null,
+			inputFocused: false
 		}
 	},
 	computed: {
@@ -185,6 +186,7 @@ export default {
 	font-size: $oa-fs-body;
 	color: $oa-text;
 	box-sizing: border-box;
+	@include oa-input-focus();
 }
 .log-meta {
 	display: flex;
