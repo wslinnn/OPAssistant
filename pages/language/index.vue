@@ -66,7 +66,8 @@
 							duration: 2000
 						})
 						setTimeout(() => {
-							uni.navigateBack()
+							// reLaunch 回首页:home.onLoad 刷新底部 tabBar,各页 %key% 标题按新 locale 重新解析(方案 B)
+							uni.reLaunch({ url: '/pages/device/home' })
 						}, 1500)
 					}
 				} catch (error) {
