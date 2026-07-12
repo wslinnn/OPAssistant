@@ -256,10 +256,6 @@
 			}
 		},
 		computed: {
-			truncatedModel() {
-				const model = this.deviceInfo.model || this.$t('home.openwrt_device')
-				return model.length > 20 ? model.substring(0, 20) + '...' : model
-			},
 			overlayDisk() {
 				return this.diskInfo.find(t => t.mount === '/overlay') || null
 			},
@@ -604,13 +600,6 @@
 					return `${mb.toFixed(mb >= 10 ? 0 : 1)} MB/s`
 				}
 				return this.formatBandwidth(val)
-			},
-			formatChartTime(ts) {
-				const d = new Date(1000 * Number(ts || 0))
-				const h = String(d.getHours()).padStart(2, '0')
-				const m = String(d.getMinutes()).padStart(2, '0')
-				const s = String(d.getSeconds()).padStart(2, '0')
-				return `${h}:${m}:${s}`
 			},
 			getQuickBandwidthTarget(interfaces) {
 				if (!Array.isArray(interfaces)) {
@@ -1093,10 +1082,6 @@
 		flex-direction: column;
 		gap: 6rpx;
 	}
-	.quick-bandwidth-device {
-		font-size: 22rpx;
-		color: $oa-text-subtle;
-	}
 	.quick-bandwidth-metrics {
 		display: flex;
 		align-items: center;
@@ -1110,10 +1095,10 @@
 		gap: 6rpx;
 	}
 	.quick-bandwidth-metric-down {
-		color: #4facfe;
+		color: $oa-bw-down;
 	}
 	.quick-bandwidth-metric-up {
-		color: #00c4cc;
+		color: $oa-bw-up;
 	}
 	.quick-bandwidth-arrow {
 		font-size: 24rpx;
@@ -1169,7 +1154,6 @@
 		padding: 20rpx;
 		background: $oa-surface-sunken;
 		border-radius: $oa-radius-md;
-		border-left: 4rpx solid $oa-brand;
 	}
 	.disk-info {
 		margin-bottom: 12rpx;

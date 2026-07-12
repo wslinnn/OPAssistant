@@ -81,6 +81,8 @@ $oa-danger:           #DC2626;  $oa-danger-surface:  #FDECEC;
 $oa-hairline:         rgba(31, 41, 55, 0.10);  // 分隔线
 $oa-scrim:            rgba(0, 0, 0, 0.55);     // 弹窗遮罩
 $oa-focus-ring:       rgba(14, 132, 181, 0.60); // 焦点环
+$oa-bw-down:          #4facfe;  // 实时带宽入站(与 echart-theme inband 对齐)
+$oa-bw-up:            #00C4CC;  // 实时带宽出站(与 echart-theme outband 对齐)
 
 /* ---- 圆角阶梯 ---- */
 $oa-radius-sm:   8rpx;
