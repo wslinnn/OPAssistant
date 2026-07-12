@@ -33,6 +33,7 @@ const TOOLS = [
 	{ id: 'diag', group: 'tools', iconText: '诊断', page: '/pages/device/apps/diag/index' },
 	{ id: 'syslog', group: 'tools', iconText: '日志', page: '/pages/device/apps/syslog/index' },
 	{ id: 'conntrack', group: 'tools', iconText: '连接', page: '/pages/device/apps/conntrack/index' },
+	{ id: 'toolbox', group: 'tools', iconText: '工具', page: '/pages/device/apps/toolbox/index' },
 	{ id: 'reboot', group: 'tools', icon: '/static/reboot-w.png', page: '/pages/device/apps/reboot/index' }
 ]
 

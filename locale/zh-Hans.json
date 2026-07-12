@@ -434,6 +434,7 @@
     "diag": "诊断",
     "syslog": "系统日志",
     "conntrack": "活动连接",
+    "toolbox": "工具箱",
     "coming_soon": "即将推出",
     "group_tools": "常用工具",
     "group_network": "网络与安全",
@@ -771,5 +772,22 @@
     "system": "系统",
     "apps": "应用",
     "statistics": "统计"
+  },
+  "toolbox": {
+    "title": "快捷工具箱",
+    "wifi_24g": "WiFi 2.4G",
+    "wifi_5g": "WiFi 5G",
+    "wifi_radio": "WiFi · {device}",
+    "ipv6": "IPv6",
+    "ipv6_hint": "仅关闭局域网 IPv6 分发",
+    "firewall": "防火墙",
+    "firewall_risk": "关闭防火墙将使路由器失去防护,远程管理时可能导致失联,确定继续?",
+    "fullcone": "FullCone NAT",
+    "upnp": "UPnP",
+    "toggle_on": "已开启",
+    "toggle_off": "已关闭",
+    "load_failed": "加载状态失败",
+    "switch_success": "已更新",
+    "switch_failed": "切换失败"
   }
 }
