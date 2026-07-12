@@ -50,7 +50,7 @@
 </template>
 
 <script>
-	import DeviceManager from '@/utils/deviceManager.js'
+	import DeviceManager from '@/utils/device-manager.js'
 
 	// 登录页(由原设备列表改造):品牌头 + 分组凹陷表单 + 历史入口 + 密码显隐 + 通栏连接。
 	// 首跑 / 自动重连失败 / 切换器"添加/编辑"时进入。onLoad 读 editId 进入编辑预填模式。

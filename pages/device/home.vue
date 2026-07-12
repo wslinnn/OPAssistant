@@ -175,7 +175,7 @@
 
 <script>
 	import UciRpc from '@/utils/uci-rpc.js'
-	import DeviceManager from '@/utils/deviceManager.js'
+	import DeviceManager from '@/utils/device-manager.js'
 	import { formatBytes, formatRate, computeBandwidthRates } from '@/utils/format.js'
 	import { OA_ECHART } from '@/utils/echart-theme.js'
 	// #ifdef MP

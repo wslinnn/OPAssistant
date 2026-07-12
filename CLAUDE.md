@@ -18,7 +18,7 @@ OpenWrt 路由器移动管理 App,uni-app + Vue2,一套代码发行 Android(app-
 
 ### 1. 通信层:`utils/uci-rpc.js`(`UciRpc` 类)—— 所有路由器 IO 的唯一入口
 
-所有插件/工具页只调 `UciRpc`,**不直接拼 `uni.request`**(历史上有 42 处裸请求,已收敛到 4 处:设备登录 3 + 通道本身 1)。建在 `utils/deviceManager.js`(`DeviceManager`)之上,后者管设备列表、当前设备、登录、sysauth 会话。
+所有插件/工具页只调 `UciRpc`,**不直接拼 `uni.request`**(历史上有 42 处裸请求,已收敛到 4 处:设备登录 3 + 通道本身 1)。建在 `utils/device-manager.js`(`DeviceManager`)之上,后者管设备列表、当前设备、登录、sysauth 会话。
 
 ubus 响应约定:`res.data.result[0] === 0` 成功,`result[1]` 为数据载荷。`callUbus(object, method, params, timeout)` 是通用通道;`_uci(method, params)` 走 `uci` namespace。
 

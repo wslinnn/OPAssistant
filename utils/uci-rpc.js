@@ -1,5 +1,5 @@
 
-import DeviceManager from './deviceManager.js'
+import DeviceManager from './device-manager.js'
 
 // 统一 UCI CRUD 封装：所有插件页只调本模块，不直接拼 uni.request。
 // 在 DeviceManager 之上薄封装 /ubus JSON-RPC（uci namespace + 通用 ubus call）。

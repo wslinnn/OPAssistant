@@ -71,7 +71,7 @@
 
 <script>
 import UciRpc from '@/utils/uci-rpc.js'
-import DeviceManager from '@/utils/deviceManager.js'
+import DeviceManager from '@/utils/device-manager.js'
 
 export default {
 	data() {

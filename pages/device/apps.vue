@@ -23,7 +23,7 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
+import DeviceManager from '@/utils/device-manager.js'
 
 // 固定系统工具（始终显示，图片图标）
 const TOOLS = [

@@ -33,7 +33,7 @@
 </template>
 
 <script>
-	import DeviceManager from '@/utils/deviceManager.js'
+	import DeviceManager from '@/utils/device-manager.js'
 	import UciRpc from '@/utils/uci-rpc.js'
 
 	// 历史设备页:原生导航栏(标题+返回);按设备名分组 + 首字母头像 + ping 徽标 + 三点(编辑/删除)。
