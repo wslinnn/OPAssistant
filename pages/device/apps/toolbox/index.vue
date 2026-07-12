@@ -36,6 +36,28 @@
 					<oa-switch :value="firewall.on" :disabled="firewall.busy" @input="toggleFirewall" />
 				</view>
 			</oa-card>
+
+			<!-- FullCone NAT -->
+			<oa-card v-if="fullcone.available" padding="none">
+				<view class="tb-row">
+					<view class="tb-row-main">
+						<text class="tb-row-title">{{ $t('toolbox.fullcone') }}</text>
+						<text class="tb-row-sub">{{ fullcone.on ? $t('toolbox.toggle_on') : $t('toolbox.toggle_off') }}</text>
+					</view>
+					<oa-switch :value="fullcone.on" :disabled="fullcone.busy" @input="toggleFullcone" />
+				</view>
+			</oa-card>
+
+			<!-- UPnP(需 luci-app-upnp;无配置则整行隐藏) -->
+			<oa-card v-if="upnp.available" padding="none">
+				<view class="tb-row">
+					<view class="tb-row-main">
+						<text class="tb-row-title">{{ $t('toolbox.upnp') }}</text>
+						<text class="tb-row-sub">{{ upnp.on ? $t('toolbox.toggle_on') : $t('toolbox.toggle_off') }}</text>
+					</view>
+					<oa-switch :value="upnp.on" :disabled="upnp.busy" @input="toggleUpnp" />
+				</view>
+			</oa-card>
 		</view>
 	</view>
 </template>
@@ -68,7 +90,7 @@ export default {
 			this.loading = true
 			this.loadError = false
 			try {
-				await Promise.all([ this.probeWifi(), this.probeIpv6(), this.probeFirewall() ])
+				await Promise.all([ this.probeWifi(), this.probeIpv6(), this.probeFirewall(), this.probeFullcone(), this.probeUpnp() ])
 			} catch (e) {
 				this.loadError = true
 			} finally {
@@ -205,6 +227,66 @@ export default {
 				})
 				.catch(() => uni.showToast({ title: this.$t('toolbox.switch_failed'), icon: 'none' }))
 				.finally(() => { this.firewall.busy = false })
+		},
+		async probeFullcone() {
+			try {
+				const data = await UciRpc.get('firewall')
+				const defaults = Object.keys(data).map(k => data[k]).find(s => s && s['.type'] === 'defaults')
+				if (defaults && defaults.fullcone !== undefined) {
+					this.fullcone.available = true
+					this.fullcone.on = defaults.fullcone === '1'
+					this.fullcone.section = defaults['.name']
+					this.fullcone.has6 = defaults.fullcone6 !== undefined
+				}
+			} catch (e) {
+				this.fullcone.available = false
+			}
+		},
+		toggleFullcone() {
+			if (this.fullcone.busy) return
+			const next = !this.fullcone.on
+			const values = { fullcone: next ? '1' : '0' }
+			if (this.fullcone.has6) values.fullcone6 = next ? '1' : '0'
+			this.fullcone.busy = true
+			UciRpc.set('firewall', this.fullcone.section, values)
+				.then(() => UciRpc.commit('firewall'))
+				.then(() => UciRpc.apply('firewall', 'reload'))
+				.then(() => {
+					this.fullcone.on = next
+					uni.showToast({ title: this.$t('toolbox.switch_success'), icon: 'success' })
+				})
+				.catch(() => uni.showToast({ title: this.$t('toolbox.switch_failed'), icon: 'none' }))
+				.finally(() => { this.fullcone.busy = false })
+		},
+		async probeUpnp() {
+			try {
+				await UciRpc.get('upnpd')   // config 不存在 → 抛 → 隐藏该行
+				let on = true
+				try {
+					// /etc/init.d/miniupnpd enabled:exit 0=已启用(固定命令,无注入面,直走 callUbus 读探针)
+					const r = await UciRpc.callUbus('file', 'exec', { command: '/etc/init.d/miniupnpd', params: ['enabled'] }, 5000)
+					on = !!(r && r.code === 0)
+				} catch (e) { on = true }
+				this.upnp.available = true
+				this.upnp.on = on
+			} catch (e) {
+				this.upnp.available = false
+			}
+		},
+		toggleUpnp() {
+			if (this.upnp.busy) return
+			const next = !this.upnp.on
+			this.upnp.busy = true
+			const task = next
+				? UciRpc.apply('miniupnpd', 'enable').then(() => UciRpc.apply('miniupnpd', 'start'))
+				: UciRpc.apply('miniupnpd', 'stop').then(() => UciRpc.apply('miniupnpd', 'disable'))
+			task
+				.then(() => {
+					this.upnp.on = next
+					uni.showToast({ title: this.$t('toolbox.switch_success'), icon: 'success' })
+				})
+				.catch(() => uni.showToast({ title: this.$t('toolbox.switch_failed'), icon: 'none' }))
+				.finally(() => { this.upnp.busy = false })
 		}
 	}
 }
