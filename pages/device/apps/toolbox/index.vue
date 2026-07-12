@@ -25,6 +25,17 @@
 					<oa-switch :value="ipv6.on" :disabled="ipv6.busy" @input="toggleIpv6" />
 				</view>
 			</oa-card>
+
+			<!-- 防火墙(高危:关闭需二次确认) -->
+			<oa-card v-if="firewall.available" padding="none">
+				<view class="tb-row">
+					<view class="tb-row-main">
+						<text class="tb-row-title">{{ $t('toolbox.firewall') }}</text>
+						<text class="tb-row-sub">{{ firewall.on ? $t('toolbox.toggle_on') : $t('toolbox.toggle_off') }}</text>
+					</view>
+					<oa-switch :value="firewall.on" :disabled="firewall.busy" @input="toggleFirewall" />
+				</view>
+			</oa-card>
 		</view>
 	</view>
 </template>
@@ -57,7 +68,7 @@ export default {
 			this.loading = true
 			this.loadError = false
 			try {
-				await Promise.all([ this.probeWifi(), this.probeIpv6() ])
+				await Promise.all([ this.probeWifi(), this.probeIpv6(), this.probeFirewall() ])
 			} catch (e) {
 				this.loadError = true
 			} finally {
@@ -154,6 +165,46 @@ export default {
 			await UciRpc.set('dhcp', 'lan', { ra })
 			await UciRpc.commit('dhcp')
 			await UciRpc.apply('odhcpd', 'restart')
+		},
+		async probeFirewall() {
+			try {
+				const data = await UciRpc.get('firewall')
+				const defaults = Object.keys(data).map(k => data[k]).find(s => s && s['.type'] === 'defaults')
+				if (defaults) {
+					this.firewall.available = true
+					this.firewall.on = defaults.enabled !== '0'
+					this.firewall.section = defaults['.name']
+				}
+			} catch (e) {
+				this.firewall.available = false
+			}
+		},
+		toggleFirewall() {
+			if (this.firewall.busy) return
+			const next = !this.firewall.on
+			if (!next) {
+				// 关闭防火墙 = 高危:二次确认 + 风险提示(远程可能失联,但有 rollback 兜底)
+				uni.showModal({
+					title: this.$t('toolbox.firewall'),
+					content: this.$t('toolbox.firewall_risk'),
+					confirmColor: '#ff3b30',
+					success: (res) => { if (res.confirm) this.doToggleFirewall(next) }
+				})
+				return
+			}
+			this.doToggleFirewall(next)
+		},
+		doToggleFirewall(next) {
+			this.firewall.busy = true
+			UciRpc.set('firewall', this.firewall.section, { enabled: next ? '1' : '0' })
+				.then(() => UciRpc.commit('firewall'))
+				.then(() => UciRpc.apply('firewall', 'reload'))
+				.then(() => {
+					this.firewall.on = next
+					uni.showToast({ title: this.$t('toolbox.switch_success'), icon: 'success' })
+				})
+				.catch(() => uni.showToast({ title: this.$t('toolbox.switch_failed'), icon: 'none' }))
+				.finally(() => { this.firewall.busy = false })
 		}
 	}
 }
