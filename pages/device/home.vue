@@ -386,6 +386,7 @@
 			getOverlayRingOption() {
 				const v = this.overlayPercentNum
 				return {
+					animation: false,
 					graphic: [],
 					series: [{
 						type: 'pie',
@@ -407,6 +408,7 @@
 			getMemRingOption() {
 				const v = this.memPercentNum
 				return {
+					animation: false,
 					graphic: [],
 					series: [{
 						type: 'pie',
