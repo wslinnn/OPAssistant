@@ -576,7 +576,7 @@ export default {
     goBack() {
       this.stopAutoRefresh()
       this.stopLoadRefresh()
-      uni.reLaunch({ url: '/pages/device_list' })
+      uni.reLaunch({ url: '/pages/device/device_list' })
     },
     
 

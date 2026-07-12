@@ -302,9 +302,9 @@
 			async guardLaunch() {
 				this.loading = true  // 先显蒙层,防首跑/重连期闪现未连接的空仪表盘
 				const list = DeviceManager.getDeviceList()
-				if (!list.length) { this.loading = false; uni.reLaunch({ url: '/pages/device_list' }); return }
+				if (!list.length) { this.loading = false; uni.reLaunch({ url: '/pages/device/device_list' }); return }
 				const last = DeviceManager.getCurrentDevice()
-				if (!last) { this.loading = false; uni.reLaunch({ url: '/pages/device_list' }); return }
+				if (!last) { this.loading = false; uni.reLaunch({ url: '/pages/device/device_list' }); return }
 				const r = await UciRpc.reconnectDevice(last)
 				this.loading = false
 				if (r.success) {
@@ -312,7 +312,7 @@
 					this.loadData()
 					this.startAutoRefresh()
 				} else {
-					uni.reLaunch({ url: '/pages/device_list' })
+					uni.reLaunch({ url: '/pages/device/device_list' })
 				}
 			},
 
@@ -354,16 +354,16 @@
 					this.loadData()
 					this.startAutoRefresh()
 				} else {
-					uni.reLaunch({ url: `/pages/device_list?editId=${d.id}` })
+					uni.reLaunch({ url: `/pages/device/device_list?editId=${d.id}` })
 				}
 			},
 			editDevice(d) {
 				this.$refs.switcherPopup.close()
-				uni.reLaunch({ url: `/pages/device_list?editId=${d.id}` })
+				uni.reLaunch({ url: `/pages/device/device_list?editId=${d.id}` })
 			},
 			addNewDevice() {
 				this.$refs.switcherPopup.close()
-				uni.reLaunch({ url: '/pages/device_list' })
+				uni.reLaunch({ url: '/pages/device/device_list' })
 			},
 			goLanguage() {
 				uni.navigateTo({ url: '/pages/language/index' })

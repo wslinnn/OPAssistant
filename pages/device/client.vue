@@ -131,9 +131,6 @@ export default {
   },
   onPullDownRefresh() { Promise.resolve(this.loadData()).finally(() => uni.stopPullDownRefresh()) },
   methods: {
-    goBack() {
-      uni.reLaunch({ url: '/pages/device_list' })
-    },
     loadData() {
       this.dhcpCache = null
       if (this.currentTab === 1) {

@@ -11,7 +11,7 @@
 		    }
 		},
 		{
-		    "path" : "pages/device_list",
+		    "path" : "pages/device/device_list",
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%device_list.login_title%",
@@ -19,7 +19,7 @@
 		    }
 		},
 		{
-		    "path" : "pages/device_list_history",
+		    "path" : "pages/device/device_list_history",
 		    "style" : 
 		    {
 		        "navigationBarTitleText": "%device_list.history_title%",

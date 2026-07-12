@@ -56,7 +56,7 @@ export default {
 
 		onCountdownEnd() {
 			uni.reLaunch({
-				url: '/pages/device_list'
+				url: '/pages/device/device_list'
 			})
 		}
 	}

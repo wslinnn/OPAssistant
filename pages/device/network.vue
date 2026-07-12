@@ -157,7 +157,7 @@
 
 			goBack() {
 				uni.reLaunch({
-					url: '/pages/device_list'
+					url: '/pages/device/device_list'
 				})
 			},
 			goWifiSettings() {

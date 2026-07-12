@@ -93,7 +93,7 @@
 					uni.reLaunch({ url: '/pages/device/home' })
 				} else {
 					// 连不上 → 登录页编辑该设备(改凭据/地址)
-					uni.reLaunch({ url: `/pages/device_list?editId=${d.id}` })
+					uni.reLaunch({ url: `/pages/device/device_list?editId=${d.id}` })
 				}
 			},
 			openMenu(d) {
@@ -102,7 +102,7 @@
 			},
 			editCurrent() {
 				this.$refs.menuPopup.close()
-				if (this.current) uni.reLaunch({ url: `/pages/device_list?editId=${this.current.id}` })
+				if (this.current) uni.reLaunch({ url: `/pages/device/device_list?editId=${this.current.id}` })
 			},
 			deleteCurrent() {
 				this.$refs.menuPopup.close()

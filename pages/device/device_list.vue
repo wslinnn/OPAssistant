@@ -112,7 +112,7 @@
 				}
 			},
 			goHistory() {
-				uni.navigateTo({ url: '/pages/device_list_history' })
+				uni.navigateTo({ url: '/pages/device/device_list_history' })
 			},
 			goLanguage() {
 				uni.navigateTo({ url: '/pages/language/index' })
