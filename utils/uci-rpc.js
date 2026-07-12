@@ -165,7 +165,8 @@ class UciRpc {
 	static apply(initScript, action = 'reload') {
 		if (!initScript) return Promise.resolve()
 		if (!/^[a-zA-Z0-9_-]+$/.test(initScript)) return Promise.reject(new Error('invalid init script name'))
-		if (!/^(reload|restart|start|stop)$/.test(action)) return Promise.reject(new Error('invalid action'))
+		// enable|disable: procd init 服务级启停(UPnP 等服务型开关需要)
+		if (!/^(reload|restart|start|stop|enable|disable)$/.test(action)) return Promise.reject(new Error('invalid action'))
 		return this.callUbus('file', 'exec', {
 			command: `/etc/init.d/${initScript}`,
 			params: [action]
