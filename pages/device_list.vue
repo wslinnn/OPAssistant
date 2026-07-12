@@ -10,24 +10,24 @@
 		<view class="login-form">
 			<!-- 连接 -->
 			<text class="login-group">{{ $t('device_list.group_connection') }}</text>
-			<view class="login-field">
-				<input class="login-input" v-model="deviceForm.ip" :placeholder="$t('device_list.host_placeholder')" />
+			<view class="login-field" :class="{ 'is-focused': activeField === 'ip' }">
+				<input class="login-input" v-model="deviceForm.ip" :placeholder="$t('device_list.host_placeholder')" @focus="activeField = 'ip'" @blur="activeField = ''" />
 				<view class="login-field__icon" :aria-label="$t('device_list.history_title')" @click="goHistory">
 					<image class="login-field__img" src="/static/list.png" mode="aspectFit" />
 				</view>
 			</view>
 			<oa-segmented class="login-seg" :options="protocolOptions" v-model="deviceForm.useHttps" equal @change="onProtocolChange" />
-			<view class="login-field">
-				<input class="login-input" v-model="deviceForm.port" :placeholder="$t('device_list.port_placeholder')" />
+			<view class="login-field" :class="{ 'is-focused': activeField === 'port' }">
+				<input class="login-input" v-model="deviceForm.port" :placeholder="$t('device_list.port_placeholder')" @focus="activeField = 'port'" @blur="activeField = ''" />
 			</view>
 
 			<!-- 凭据 -->
 			<text class="login-group">{{ $t('device_list.group_credentials') }}</text>
-			<view class="login-field">
-				<input class="login-input" v-model="deviceForm.username" :placeholder="$t('device_list.username_placeholder')" />
+			<view class="login-field" :class="{ 'is-focused': activeField === 'username' }">
+				<input class="login-input" v-model="deviceForm.username" :placeholder="$t('device_list.username_placeholder')" @focus="activeField = 'username'" @blur="activeField = ''" />
 			</view>
-			<view class="login-field">
-				<input class="login-input" v-model="deviceForm.password" :password="!showPassword" :placeholder="$t('device_list.password_placeholder')" />
+			<view class="login-field" :class="{ 'is-focused': activeField === 'password' }">
+				<input class="login-input" v-model="deviceForm.password" :password="!showPassword" :placeholder="$t('device_list.password_placeholder')" @focus="activeField = 'password'" @blur="activeField = ''" />
 				<view class="login-field__icon" :aria-label="showPassword ? $t('device_list.password_hide') : $t('device_list.password_show')" @click="showPassword = !showPassword">
 					<image class="login-field__img" src="/static/eye.png" mode="aspectFit" />
 				</view>
@@ -35,8 +35,8 @@
 
 			<!-- 命名 -->
 			<text class="login-group">{{ $t('device_list.group_naming') }}</text>
-			<view class="login-field">
-				<input class="login-input" v-model="deviceForm.name" :placeholder="$t('device_list.name_placeholder')" />
+			<view class="login-field" :class="{ 'is-focused': activeField === 'name' }">
+				<input class="login-input" v-model="deviceForm.name" :placeholder="$t('device_list.name_placeholder')" @focus="activeField = 'name'" @blur="activeField = ''" />
 			</view>
 
 			<oa-button type="primary" block class="login-submit" @click="connect">{{ $t('device_list.connect') }}</oa-button>
@@ -68,7 +68,8 @@
 				isEdit: false,
 				editDeviceId: null,
 				showPassword: false,
-				submitting: false
+				submitting: false,
+				activeField: ''
 			}
 		},
 		computed: {
@@ -234,6 +235,7 @@
 		height: 80rpx;
 		padding: 0 $oa-sp-2;
 		margin-bottom: $oa-sp-2;
+		@include oa-input-focus();
 	}
 	.login-input {
 		flex: 1;

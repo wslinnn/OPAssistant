@@ -26,6 +26,20 @@
     box-sizing: border-box;
 }
 
+/* 焦点反馈 mixin:凹陷输入聚焦时模拟青蓝描边 + 外光环 + 底色微浮。
+   用 box-shadow spread 模拟描边,避免 border 宽度变化导致布局跳动。
+   调用方:容器/input 绑 @focus/@blur 切 .is-focused,再 @include 本 mixin。*/
+@mixin oa-input-focus($bg-focus: $oa-surface) {
+    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    &.is-focused {
+        background: $bg-focus;
+        box-shadow:
+            0 0 0 2rpx $oa-brand,
+            0 0 0 6rpx $oa-focus-ring;
+    }
+}
+
 .form-row {
     display: flex;
     flex-direction: column;

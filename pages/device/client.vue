@@ -1,7 +1,7 @@
 <template>
   <view class="container">
     <view class="client-search">
-      <input class="client-search-input" v-model="searchKeyword" :placeholder="$t('client.search_placeholder')" />
+      <input class="client-search-input" :class="{ 'is-focused': searchFocused }" v-model="searchKeyword" :placeholder="$t('client.search_placeholder')" @focus="searchFocused = true" @blur="searchFocused = false" />
       <view v-if="searchKeyword" class="client-search-clear" @click="searchKeyword = ''">
         <text class="client-search-clear-icon">×</text>
       </view>
@@ -105,6 +105,7 @@ export default {
     return {
       currentTab: 1,
       searchKeyword: '',
+      searchFocused: false,
       wirelessClients: [],
       loading: false,
       wirelessIfBandMap: {},
@@ -287,6 +288,7 @@ export default {
   font-size: $oa-fs-body;
   color: $oa-text;
   box-sizing: border-box;
+  @include oa-input-focus();
 }
 .client-search-clear {
   position: absolute;
