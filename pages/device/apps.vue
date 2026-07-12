@@ -208,7 +208,7 @@ export default {
 .app-abbr {
 	font-size: $oa-fs-caption;
 	color: #FFFFFF;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .app-name {
