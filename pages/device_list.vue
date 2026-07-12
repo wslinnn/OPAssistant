@@ -97,6 +97,9 @@
 				}
 			}
 		},
+		onShow() {
+			uni.setNavigationBarTitle({ title: this.$t('device_list.login_title') })
+		},
 		methods: {
 			getErrorMessage(errorCode) {
 				switch (errorCode) {

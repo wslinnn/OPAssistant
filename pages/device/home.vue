@@ -6,6 +6,7 @@
 			<oa-nav-header :title="''" :show-back="false">
 				<template #left>
 					<view class="switch-trigger" :aria-label="$t('device_list.add_new_device')" @click="openSwitcher">
+						<image class="switch-trigger__icon" src="/static/router.png" mode="aspectFit" />
 						<text class="switch-trigger__name">{{ currentName }}</text>
 						<text class="switch-trigger__caret">▾</text>
 					</view>
@@ -1193,21 +1194,27 @@
 	display: flex;
 	align-items: center;
 	gap: $oa-sp-1;
-	height: 64rpx;
-	padding: 0 $oa-sp-2;
+	height: 72rpx;
+	padding: 0 $oa-sp-3;
+	background: $oa-brand-subtle;
+	border-radius: $oa-radius-full;
+}
+.switch-trigger__icon {
+	width: 40rpx;
+	height: 40rpx;
 }
 .switch-trigger__name {
-	font-size: $oa-fs-body;
+	font-size: $oa-fs-title;
 	font-weight: 600;
-	color: $oa-text;
-	max-width: 360rpx;
+	color: $oa-brand;
+	max-width: 300rpx;
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
 }
 .switch-trigger__caret {
-	font-size: $oa-fs-caption;
-	color: $oa-text-muted;
+	font-size: $oa-fs-body;
+	color: $oa-brand;
 }
 .switcher-dropdown {
 	background: $oa-surface;

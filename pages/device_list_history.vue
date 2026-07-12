@@ -41,6 +41,7 @@
 			uni.setNavigationBarTitle({ title: this.$t('device_list.history_title') })
 		},
 		onShow() {
+			uni.setNavigationBarTitle({ title: this.$t('device_list.history_title') })
 			this.load()
 		},
 		methods: {
