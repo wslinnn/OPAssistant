@@ -2,6 +2,9 @@
   <view class="container">
     <view class="client-search">
       <input class="client-search-input" v-model="searchKeyword" :placeholder="$t('client.search_placeholder')" />
+      <view v-if="searchKeyword" class="client-search-clear" @click="searchKeyword = ''">
+        <text class="client-search-clear-icon">×</text>
+      </view>
     </view>
      <page-tab :tabs="tab_list" v-model="currentTab" />
     <view v-if="currentTab === 1">
@@ -272,17 +275,33 @@ export default {
 @import '@/styles/common.scss';
 
 .client-search {
+  position: relative;
   padding: $oa-sp-2 $oa-sp-3 0;
 }
 .client-search-input {
   width: 100%;
   height: 72rpx;
-  padding: 0 $oa-sp-2;
+  padding: 0 64rpx 0 $oa-sp-2;
   background: $oa-surface-sunken;
   border-radius: $oa-radius-md;
   font-size: $oa-fs-body;
   color: $oa-text;
   box-sizing: border-box;
+}
+.client-search-clear {
+  position: absolute;
+  right: $oa-sp-3;
+  top: $oa-sp-2;
+  width: 56rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.client-search-clear-icon {
+  font-size: 36rpx;
+  color: $oa-text-muted;
+  line-height: 1;
 }
 
 .client-row {
