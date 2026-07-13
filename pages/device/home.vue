@@ -46,7 +46,7 @@
 		</uni-popup>
 
 		<!-- 系统状态 -->
-			<oa-card :title="$t('home.system_status')">
+			<oa-card :key="'sys'" :title="$t('home.system_status')">
 				<view class="device-details">
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.model') }}</text>
@@ -84,7 +84,7 @@
 			</oa-card>
 
 			<!-- 资源监控(双环形图) -->
-			<oa-card :title="$t('home.resource_monitor')">
+			<oa-card :key="'res'" :title="$t('home.resource_monitor')">
 				<view class="ring-row">
 					<view class="ring-item">
 						<view class="ring-chart-wrap">
@@ -110,7 +110,7 @@
 			</oa-card>
 
 			<!-- 实时带宽(WAN 优先 / LAN 兜底) -->
-			<oa-card v-if="quickBandwidthDevice" :title="quickBandwidthDisplayName">
+			<oa-card :key="'bw'" v-if="quickBandwidthDevice" :title="quickBandwidthDisplayName">
 				<view slot="actions" class="quick-bandwidth-metrics">
 					<view class="quick-bandwidth-metric quick-bandwidth-metric-down">
 						<text class="quick-bandwidth-arrow">↓</text>
@@ -127,7 +127,7 @@
 			</oa-card>
 
 			<!-- 网络 -->
-			<oa-card :title="$t('home.network_status')">
+			<oa-card :key="'net'" :title="$t('home.network_status')">
 				<view class="network-details">
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.wan_ip') }}</text>
@@ -153,7 +153,7 @@
 			</oa-card>
 
 			<!-- 存储 -->
-			<oa-card v-if="diskInfo.length > 0" :title="$t('home.disk_status')">
+			<oa-card :key="'disk'" v-if="diskInfo.length > 0" :title="$t('home.disk_status')">
 				<view class="disk-list">
 					<view class="disk-item" v-for="(disk, index) in diskInfo" :key="index">
 						<view class="disk-info">

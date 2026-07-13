@@ -133,7 +133,7 @@
     "gateway": "Gateway",
     "dns": "DNS",
     "disk_usage": "Disk Usage",
-    "disk_status": "Storage Space",
+    "disk_status": "Storage Status",
     "temp_space": "(Temp Space)",
     "average_load": "Average Load",
     "cpu_load": "CPU Load",

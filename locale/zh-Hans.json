@@ -133,7 +133,7 @@
     "gateway": "网关",
     "dns": "DNS",
     "disk_usage": "磁盘使用情况",
-    "disk_status": "存储空间",
+    "disk_status": "存储状态",
     "temp_space": "(临时空间)",
     "average_load": "平均负载",
     "cpu_load": "CPU负载",
