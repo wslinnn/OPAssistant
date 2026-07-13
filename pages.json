@@ -2,20 +2,28 @@
 	"lazyCodeLoading": "requiredComponents",
 	"pages": [ 
 		{
-		    "path" : "pages/device_list",
-		    "style" :                                                                                    
-		    {
-		        "navigationBarTitleText": "%device_list.title%",
-		        "enablePullDownRefresh": false
-		    }
-		},
-		{
 		    "path" : "pages/device/home",
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%home.title%",
-		        "enablePullDownRefresh": false,
+		        "enablePullDownRefresh": true,
 		        "navigationStyle": "custom"
+		    }
+		},
+		{
+		    "path" : "pages/device/device_list",
+		    "style" :                                                                                    
+		    {
+		        "navigationBarTitleText": "%device_list.login_title%",
+		        "enablePullDownRefresh": false
+		    }
+		},
+		{
+		    "path" : "pages/device/device_list_history",
+		    "style" : 
+		    {
+		        "navigationBarTitleText": "%device_list.history_title%",
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -23,7 +31,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%network.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -31,7 +39,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%statistics.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -39,7 +47,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%client.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -47,7 +55,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%apps.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 
@@ -64,7 +72,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%process.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -72,7 +80,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%startup.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -80,7 +88,7 @@
 		    "style" :                                                                                    
 		    {
 		        "navigationBarTitleText": "%route.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -96,7 +104,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%syslog.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -104,15 +112,15 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%conntrack.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
-		    "path" : "pages/device/client_detail",
-		    "style" :                                                                                    
+		    "path" : "pages/device/apps/toolbox/index",
+		    "style" :
 		    {
-		        "navigationBarTitleText": "%client_detail.title%",
-		        "enablePullDownRefresh": false
+		        "navigationBarTitleText": "%toolbox.title%",
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -120,7 +128,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%arpbind.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -128,7 +136,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%wolplus.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -136,7 +144,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%autoreboot.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -144,7 +152,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%cifs.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -152,7 +160,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%samba.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -160,7 +168,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%upnp.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -168,7 +176,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%wifi.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -176,7 +184,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%firewall.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -184,7 +192,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%usb_printer.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{
@@ -192,7 +200,7 @@
 		    "style" :
 		    {
 		        "navigationBarTitleText": "%passwall2.title%",
-		        "enablePullDownRefresh": false
+		        "enablePullDownRefresh": true
 		    }
 		},
 		{

@@ -15,12 +15,12 @@
 						<block v-else>
 							<text class="uci-field__label">{{ f.label }}<text v-if="f.required" class="uci-field__req">*</text></text>
 							<view v-if="f.type === 'text'" class="uci-field__combo">
-								<input class="uci-field__input" v-model="formData[f.key]" :placeholder="f.placeholder || ''" />
+								<input class="uci-field__input" :class="{ 'is-focused': focusedKey === f.key }" v-model="formData[f.key]" :placeholder="f.placeholder || ''" @focus="focusedKey = f.key" @blur="focusedKey = ''" />
 								<picker v-if="(f.candidates || f.options) && fieldOptions(f).length" mode="selector" :range="fieldOptions(f)" range-key="label" :value="fieldOptionIndex(f)" @change="onPick(f, $event)">
 									<text class="uci-field__combo-btn">▾</text>
 								</picker>
 							</view>
-							<input v-else-if="f.type === 'password'" class="uci-field__input" v-model="formData[f.key]" password :placeholder="f.placeholder || ''" />
+							<input v-else-if="f.type === 'password'" class="uci-field__input" :class="{ 'is-focused': focusedKey === f.key }" v-model="formData[f.key]" password :placeholder="f.placeholder || ''" @focus="focusedKey = f.key" @blur="focusedKey = ''" />
 							<picker v-else-if="f.type === 'select' || f.type === 'deviceSelect'" mode="selector" :range="fieldOptions(f)" range-key="label" :value="fieldOptionIndex(f)" @change="onPick(f, $event)">
 								<view class="uci-field__select">
 									<text :class="['uci-field__select-text', { 'is-placeholder': !formData[f.key] }]">{{ fieldOptionLabel(f) || (f.placeholder || $t('common.please_select')) }}</text>
@@ -34,7 +34,7 @@
 										<text class="dyn-tag__del" @click="removeDyn(f, i)">×</text>
 									</view>
 								</view>
-								<input class="uci-field__input" v-model="dynInput[f.key]" :placeholder="f.placeholder || $t('common.add')" @confirm="addDyn(f)" />
+								<input class="uci-field__input" :class="{ 'is-focused': focusedKey === f.key }" v-model="dynInput[f.key]" :placeholder="f.placeholder || $t('common.add')" @confirm="addDyn(f)" @focus="focusedKey = f.key" @blur="focusedKey = ''" />
 							</view>
 							<view v-else-if="f.type === 'multiSelect'" class="uci-field__multi">
 								<view class="multi-tags">
@@ -43,7 +43,7 @@
 									</view>
 								</view>
 							</view>
-							<view v-else-if="f.type === 'textarea'"><textarea class="uci-field__area" v-model="formData[f.key]" :placeholder="f.placeholder || ''" :maxlength="-1" auto-height /></view>
+							<view v-else-if="f.type === 'textarea'"><textarea class="uci-field__area" :class="{ 'is-focused': focusedKey === f.key }" v-model="formData[f.key]" :placeholder="f.placeholder || ''" :maxlength="-1" auto-height @focus="focusedKey = f.key" @blur="focusedKey = ''" /></view>
 						</block>
 					</view>
 				</view>
@@ -81,7 +81,8 @@ export default {
 			formData: {},
 			dynInput: {},
 			saving: false,
-			deleting: false
+			deleting: false,
+			focusedKey: ''
 		}
 	},
 	computed: {
@@ -416,6 +417,7 @@ export default {
 	padding: 0 $oa-sp-2;
 	font-size: $oa-fs-body;
 	color: $oa-text;
+	@include oa-input-focus();
 }
 .uci-field__select {
 	display: flex;
@@ -484,6 +486,7 @@ export default {
 	padding: $oa-sp-2;
 	font-size: $oa-fs-caption;
 	color: $oa-text;
+	@include oa-input-focus();
 }
 .uci-dialog__actions {
 	display: flex;

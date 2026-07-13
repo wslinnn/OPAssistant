@@ -8,8 +8,8 @@
 				<view class="app-grid">
 					<view class="app-item" v-for="app in g.apps" :key="app.id" @click="onAppClick(app)">
 						<view class="app-icon">
-							<image v-if="app.icon" :src="app.icon" mode="aspectFit" class="icon-image" />
-							<text v-else class="icon-text">{{ app.iconText }}</text>
+							<text v-if="app.fa" class="fa" :class="app.fa"></text>
+							<text v-else class="app-abbr">{{ app.abbr }}</text>
 						</view>
 						<view class="app-name">
 							<text class="name-text">{{ app.name }}</text>
@@ -23,30 +23,31 @@
 </template>
 
 <script>
-import DeviceManager from '@/utils/deviceManager.js'
+import DeviceManager from '@/utils/device-manager.js'
 
-// 固定系统工具（始终显示，图片图标）
+// 固定系统工具（始终显示，Font Awesome 图标）
 const TOOLS = [
-	{ id: 'route', group: 'tools', icon: '/static/route-w.png', page: '/pages/device/apps/route/index' },
-	{ id: 'process', group: 'tools', icon: '/static/process-w.png', page: '/pages/device/apps/process/index' },
-	{ id: 'startup', group: 'tools', icon: '/static/startup-w.png', page: '/pages/device/apps/startup/index' },
-	{ id: 'diag', group: 'tools', iconText: '诊断', page: '/pages/device/apps/diag/index' },
-	{ id: 'syslog', group: 'tools', iconText: '日志', page: '/pages/device/apps/syslog/index' },
-	{ id: 'conntrack', group: 'tools', iconText: '连接', page: '/pages/device/apps/conntrack/index' },
-	{ id: 'reboot', group: 'tools', icon: '/static/reboot-w.png', page: '/pages/device/apps/reboot/index' }
+	{ id: 'route', group: 'tools', fa: 'fa-route', page: '/pages/device/apps/route/index' },
+	{ id: 'process', group: 'tools', fa: 'fa-microchip', page: '/pages/device/apps/process/index' },
+	{ id: 'startup', group: 'tools', fa: 'fa-power-off', page: '/pages/device/apps/startup/index' },
+	{ id: 'diag', group: 'tools', fa: 'fa-wave-square', page: '/pages/device/apps/diag/index' },
+	{ id: 'syslog', group: 'tools', fa: 'fa-file-lines', page: '/pages/device/apps/syslog/index' },
+	{ id: 'conntrack', group: 'tools', fa: 'fa-link', page: '/pages/device/apps/conntrack/index' },
+	{ id: 'toolbox', group: 'tools', fa: 'fa-toolbox', page: '/pages/device/apps/toolbox/index' },
+	{ id: 'reboot', group: 'tools', fa: 'fa-rotate-right', page: '/pages/device/apps/reboot/index' }
 ]
 
 // luci 插件：fixed=系统自带必显示，否则由 DeviceManager.getInstalledPlugins(config) 探测；i18n 为各插件 locale section 名
 const PLUGINS = [
-	{ id: 'arpbind', i18n: 'arpbind', config: 'arpbind', group: 'network', iconText: '绑定', page: '/pages/device/plugins/arpbind/index' },
-	{ id: 'firewall', i18n: 'firewall', fixed: true, group: 'network', iconText: '防火', page: '/pages/device/plugins/firewall/index' },
-	{ id: 'upnp', i18n: 'upnp', config: 'upnpd', group: 'network', iconText: 'UPnP', page: '/pages/device/plugins/upnp/index' },
-	{ id: 'wolplus', i18n: 'wolplus', config: 'wolplus', group: 'network', iconText: '唤醒', page: '/pages/device/plugins/wolplus/index' },
-	{ id: 'samba4', i18n: 'samba', config: 'samba4', group: 'storage', iconText: '共享', page: '/pages/device/plugins/samba4/index' },
-	{ id: 'cifs', i18n: 'cifs', config: 'cifs-mount', group: 'storage', iconText: '挂载', page: '/pages/device/plugins/cifs-mount/index' },
-	{ id: 'usb-printer', i18n: 'usb_printer', config: 'usb_printer', group: 'storage', iconText: '打印', page: '/pages/device/plugins/usb-printer/index' },
-	{ id: 'autoreboot', i18n: 'autoreboot', config: 'autoreboot', group: 'system', iconText: '定时', page: '/pages/device/plugins/autoreboot/index' },
-	{ id: 'passwall2', i18n: 'passwall2', config: 'passwall2', group: 'proxy', iconText: '代理', page: '/pages/device/plugins/passwall2/index' }
+	{ id: 'arpbind', i18n: 'arpbind', config: 'arpbind', group: 'network', fa: 'fa-thumbtack', page: '/pages/device/plugins/arpbind/index' },
+	{ id: 'firewall', i18n: 'firewall', fixed: true, group: 'network', fa: 'fa-shield-halved', page: '/pages/device/plugins/firewall/index' },
+	{ id: 'upnp', i18n: 'upnp', config: 'upnpd', group: 'network', abbr: 'UPnP', page: '/pages/device/plugins/upnp/index' },
+	{ id: 'wolplus', i18n: 'wolplus', config: 'wolplus', group: 'network', abbr: 'WOL', page: '/pages/device/plugins/wolplus/index' },
+	{ id: 'samba4', i18n: 'samba', config: 'samba4', group: 'storage', fa: 'fa-share-nodes', page: '/pages/device/plugins/samba4/index' },
+	{ id: 'cifs', i18n: 'cifs', config: 'cifs-mount', group: 'storage', fa: 'fa-hard-drive', page: '/pages/device/plugins/cifs-mount/index' },
+	{ id: 'usb-printer', i18n: 'usb_printer', config: 'usb_printer', group: 'storage', fa: 'fa-print', page: '/pages/device/plugins/usb-printer/index' },
+	{ id: 'autoreboot', i18n: 'autoreboot', config: 'autoreboot', group: 'system', fa: 'fa-clock', page: '/pages/device/plugins/autoreboot/index' },
+	{ id: 'passwall2', i18n: 'passwall2', config: 'passwall2', group: 'proxy', abbr: 'PW', page: '/pages/device/plugins/passwall2/index' }
 ]
 
 const GROUPS = ['tools', 'network', 'storage', 'system', 'proxy']
@@ -94,6 +95,7 @@ export default {
 	onUnload() {
 		this.clearNavRetryTimer()
 	},
+	onPullDownRefresh() { Promise.resolve(this.loadInstalled()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		applyNavigationBar() {
 			const title = this.$t('apps.title') || 'App Center'
@@ -198,15 +200,15 @@ export default {
 	box-shadow: $oa-shadow-sm;
 }
 
-.icon-image {
-	width: 60rpx;
-	height: 60rpx;
+.app-icon .fa {
+	font-size: 48rpx;
+	color: #FFFFFF;
 }
 
-.icon-text {
+.app-abbr {
 	font-size: $oa-fs-caption;
 	color: #FFFFFF;
-	font-weight: 600;
+	font-weight: 700;
 }
 
 .app-name {

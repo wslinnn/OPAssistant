@@ -1,20 +1,19 @@
 <template>
-	<view class="page-tab">
+	<view class="oa-page-tab">
 		<view
 			v-for="(tab, index) in tabs"
 			:key="index"
-			:class="['tab', is_active(tab, index) ? 'active' : '']"
+			:class="['oa-page-tab__item', is_active(tab, index) ? 'oa-page-tab__item--active' : '']"
 			@click="handle_tab_click(tab, index)"
 		>{{ tab.label }}</view>
 	</view>
 </template>
 
 <script>
-	// 通用子页签组件（从 v1.0.12 bundle bc5f 模块还原）
-	// 用法：<page-tab :tabs="tab_list" v-model="currentTab" @change="onTabChange">
+	// 通用子页签组件(easycom:<oa-page-tab :tabs="..." v-model="..." />)
 	// tabs: [{value: 0, label: '...'}, ...]
 	export default {
-		name: 'page_tab',
+		name: 'oa-page-tab',
 		props: {
 			value: {
 				type: [Number, String],
@@ -42,7 +41,7 @@
 </script>
 
 <style scoped lang="scss">
-	.page-tab {
+	.oa-page-tab {
 		display: flex;
 		background: $oa-surface;
 		border-radius: $oa-radius-md;
@@ -50,7 +49,7 @@
 		overflow: hidden;
 		box-shadow: $oa-shadow-sm;
 	}
-	.tab {
+	.oa-page-tab__item {
 		flex: 1;
 		text-align: center;
 		padding: $oa-sp-2 0;
@@ -59,7 +58,7 @@
 		border-radius: $oa-radius-md;
 		transition: all 0.2s;
 	}
-	.tab.active {
+	.oa-page-tab__item--active {
 		color: $oa-brand;
 		font-weight: 600;
 		background: $oa-brand-subtle;

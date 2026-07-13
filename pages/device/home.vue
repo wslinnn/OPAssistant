@@ -3,14 +3,50 @@
 		<oa-loading v-if="loading" overlay :text="$t('home.loading')" />
 
 		<view class="sticky-header">
-			<oa-nav-header :title="truncatedModel || $t('home.openwrt_device')" show-back @back="goBack" />
+			<oa-nav-header :title="''" :show-back="false">
+				<template #left>
+					<view class="switch-trigger" :aria-label="$t('device_list.add_new_device')" @click="openSwitcher">
+						<image class="switch-trigger__icon" src="/static/router.png" mode="aspectFit" />
+						<text class="switch-trigger__name">{{ currentName }}</text>
+						<text class="switch-trigger__caret">▾</text>
+					</view>
+				</template>
+				<template #right>
+					<view class="nav-lang" :aria-label="$t('device_list.language_settings')" @click="goLanguage">
+						<image class="nav-lang__icon" src="/static/lang.png" mode="aspectFit" />
+					</view>
+				</template>
+			</oa-nav-header>
 		</view>
 
-		<!-- 系统状态 -->
-			<view class="device-card">
-				<view class="device-header">
-					<text class="card-title">{{ $t('home.system_status') }}</text>
+		<!-- 设备切换器:顶部下拉 -->
+		<uni-popup ref="switcherPopup" type="top" :mask-click="true">
+			<view class="switcher-dropdown">
+				<view
+					v-for="d in deviceList"
+					:key="d.id"
+					:class="['switcher-item', { 'switcher-item--current': d.id === currentDeviceId }]"
+					@click="selectDevice(d)"
+				>
+					<view class="switcher-item__main">
+						<text class="switcher-item__name">{{ d.name }}</text>
+						<view class="switcher-item__sub">
+							<text class="switcher-item__addr">{{ d.ip }}</text>
+							<oa-ping-badge :level="pingOf(d).level" :text="pingOf(d).text" />
+						</view>
+					</view>
+					<oa-status-badge v-if="d.id === currentDeviceId" type="info" :text="$t('device_list.switch_current')" />
+					<view v-else class="switcher-item__more" :aria-label="$t('device_list.edit')" @click.stop="editDevice(d)">
+						<image class="switcher-item__more-img" src="/static/more.png" mode="aspectFit" />
+					</view>
 				</view>
+				<view class="switcher-add" @click="addNewDevice">＋ {{ $t('device_list.add_new_device') }}</view>
+					<text class="switcher-hint">{{ $t('device_list.ping_hint') }}</text>
+			</view>
+		</uni-popup>
+
+		<!-- 系统状态 -->
+			<oa-card :key="'sys'" :title="$t('home.system_status')">
 				<view class="device-details">
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.model') }}</text>
@@ -45,20 +81,17 @@
 						<text class="detail-value">{{ systemStatus.cpuLoad || '0.00 0.00 0.00' }}</text>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 
-			<!-- 资源监控（双环形图） -->
-			<view class="cpu-mem-card">
-				<view class="card-header">
-					<text class="card-title">{{ $t('home.resource_monitor') }}</text>
-				</view>
+			<!-- 资源监控(双环形图) -->
+			<oa-card :key="'res'" :title="$t('home.resource_monitor')">
 				<view class="ring-row">
 					<view class="ring-item">
 						<view class="ring-chart-wrap">
 							<l-echart ref="overlayChartRef" @finished="initOverlayChart" style="width: 100%; height: 100%;"></l-echart>
 							<view class="ring-center">
 								<text class="ring-center-title">{{ $t('home.overlay') }}</text>
-								<text class="ring-center-percent">{{ overlayPercentNum }}</text>
+								<text class="ring-center-percent">{{ overlayPercentNum }}%</text>
 							</view>
 						</view>
 						<text class="ring-detail">{{ overlayDetail }}</text>
@@ -74,35 +107,27 @@
 						<text class="ring-detail">{{ systemStatus.memoryDetail || '0MB / 0MB' }}</text>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 
-			<!-- 实时带宽（WAN 优先 / LAN 兜底） -->
-			<view class="quick-bandwidth-card" v-if="quickBandwidthDevice">
-				<view class="quick-bandwidth-header">
-					<view class="quick-bandwidth-title-wrap">
-						<text class="card-title">{{ quickBandwidthDisplayName }}</text>
+			<!-- 实时带宽(WAN 优先 / LAN 兜底) -->
+			<oa-card :key="'bw'" v-if="quickBandwidthDevice" :title="quickBandwidthDisplayName">
+				<view slot="actions" class="quick-bandwidth-metrics">
+					<view class="quick-bandwidth-metric quick-bandwidth-metric-down">
+						<text class="quick-bandwidth-arrow">↓</text>
+						<text class="quick-bandwidth-metric-value">{{ formatBandwidth(quickRxRate) }}</text>
 					</view>
-					<view class="quick-bandwidth-metrics">
-						<view class="quick-bandwidth-metric quick-bandwidth-metric-down">
-							<text class="quick-bandwidth-arrow">↓</text>
-							<text class="quick-bandwidth-metric-value">{{ formatBandwidth(quickRxRate) }}</text>
-						</view>
-						<view class="quick-bandwidth-metric quick-bandwidth-metric-up">
-							<text class="quick-bandwidth-arrow">↑</text>
-							<text class="quick-bandwidth-metric-value">{{ formatBandwidth(quickTxRate) }}</text>
-						</view>
+					<view class="quick-bandwidth-metric quick-bandwidth-metric-up">
+						<text class="quick-bandwidth-arrow">↑</text>
+						<text class="quick-bandwidth-metric-value">{{ formatBandwidth(quickTxRate) }}</text>
 					</view>
 				</view>
 				<view class="quick-bandwidth-chart">
 					<l-echart ref="quickBandwidthChartRef" @finished="initQuickBandwidthChart" style="width: 100%; height: 100%;"></l-echart>
 				</view>
-			</view>
+			</oa-card>
 
 			<!-- 网络 -->
-			<view class="network-card">
-				<view class="card-header">
-					<text class="card-title">{{ $t('home.network_status') }}</text>
-				</view>
+			<oa-card :key="'net'" :title="$t('home.network_status')">
 				<view class="network-details">
 					<view class="detail-row">
 						<text class="detail-label">{{ $t('home.wan_ip') }}</text>
@@ -125,13 +150,10 @@
 						<text class="detail-value">{{ systemStatus.connectionsDetail || '0 / 0' }}</text>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 
 			<!-- 存储 -->
-			<view class="disk-card" v-if="diskInfo.length > 0">
-				<view class="card-header">
-					<text class="card-title">{{ $t('home.disk_status') }}</text>
-				</view>
+			<oa-card :key="'disk'" v-if="diskInfo.length > 0" :title="$t('home.disk_status')">
 				<view class="disk-list">
 					<view class="disk-item" v-for="(disk, index) in diskInfo" :key="index">
 						<view class="disk-info">
@@ -147,12 +169,13 @@
 						</view>
 					</view>
 				</view>
-			</view>
+			</oa-card>
 	</view>
 </template>
 
 <script>
 	import UciRpc from '@/utils/uci-rpc.js'
+	import DeviceManager from '@/utils/device-manager.js'
 	import { formatBytes, formatRate, computeBandwidthRates } from '@/utils/format.js'
 	import { OA_ECHART } from '@/utils/echart-theme.js'
 	// #ifdef MP
@@ -171,6 +194,10 @@
 				loading: false,
 				isFirstLoad: true,
 				timer: null,
+				deviceList: [],
+				currentName: '',
+				currentDeviceId: null,
+				pings: {},
 				deviceInfo: {
 					model: '',
 					version: '',
@@ -212,10 +239,6 @@
 			}
 		},
 		computed: {
-			truncatedModel() {
-				const model = this.deviceInfo.model || this.$t('home.openwrt_device')
-				return model.length > 20 ? model.substring(0, 20) + '...' : model
-			},
 			overlayDisk() {
 				return this.diskInfo.find(t => t.mount === '/overlay') || null
 			},
@@ -246,11 +269,14 @@
 		},
 		onLoad() {
 			this.updateTabBarText()
-			this.loadData()
-			this.startAutoRefresh()
+			this.refreshCurrent()
+			this.guardLaunch()
 		},
 		onShow() {
-			this.startAutoRefresh()
+			// 仅在已连接时恢复轮询;未连接态由 guardLaunch 处理,不重复探活
+			if (DeviceManager.getCurrentDevice() && DeviceManager.getCurrentDevice().sysauth) {
+				this.startAutoRefresh()
+			}
 		},
 		onHide() {
 			this.stopAutoRefresh()
@@ -270,12 +296,77 @@
 				this._quickBandwidthChartInstance = null
 			}
 		},
+		onPullDownRefresh() { Promise.resolve(this.loadData()).finally(() => uni.stopPullDownRefresh()) },
 		methods: {
-			goBack() {
-				this.stopAutoRefresh()
-				uni.reLaunch({
-					url: '/pages/device_list'
+			// 启动门控:无设备/无上次设备 → 登录页;有则探活+静默重登,失败 → 登录页
+			async guardLaunch() {
+				this.loading = true  // 先显蒙层,防首跑/重连期闪现未连接的空仪表盘
+				const list = DeviceManager.getDeviceList()
+				if (!list.length) { this.loading = false; uni.reLaunch({ url: '/pages/device/device_list' }); return }
+				const last = DeviceManager.getCurrentDevice()
+				if (!last) { this.loading = false; uni.reLaunch({ url: '/pages/device/device_list' }); return }
+				const r = await UciRpc.reconnectDevice(last)
+				this.loading = false
+				if (r.success) {
+					this.refreshCurrent()
+					this.loadData()
+					this.startAutoRefresh()
+				} else {
+					uni.reLaunch({ url: '/pages/device/device_list' })
+				}
+			},
+
+			refreshCurrent() {
+				const c = DeviceManager.getCurrentDevice() || {}
+				this.currentName = c.name || this.$t('home.openwrt_device')
+				this.currentDeviceId = c.id || null
+			},
+
+			// 设备切换器(顶部下拉)
+			openSwitcher() {
+				this.deviceList = DeviceManager.getDeviceList()
+				this.refreshCurrent()
+				this.pingSwitcher()
+				this.$refs.switcherPopup.open()
+			},
+			// 切换器:并行 ping 所有设备,徽标随结果回填
+			pingSwitcher() {
+				this.deviceList.forEach(d => {
+					this.$set(this.pings, d.id, undefined)
+					DeviceManager.pingDevice(d).then(ms => {
+						this.$set(this.pings, d.id, ms)
+					})
 				})
+			},
+			pingOf(d) {
+				const v = this.pings[d.id]
+				if (v === undefined) return { level: 'checking', text: this.$t('device_list.ping_checking') }
+				if (v === null) return { level: 'offline', text: this.$t('device_list.ping_offline') }
+				return { level: DeviceManager.pingLevel(v), text: v + 'ms' }
+			},
+			async selectDevice(d) {
+				this.$refs.switcherPopup.close()
+				this.loading = true
+				const r = await UciRpc.reconnectDevice(d)
+				this.loading = false
+				if (r.success) {
+					this.refreshCurrent()
+					this.loadData()
+					this.startAutoRefresh()
+				} else {
+					uni.reLaunch({ url: `/pages/device/device_list?editId=${d.id}` })
+				}
+			},
+			editDevice(d) {
+				this.$refs.switcherPopup.close()
+				uni.reLaunch({ url: `/pages/device/device_list?editId=${d.id}` })
+			},
+			addNewDevice() {
+				this.$refs.switcherPopup.close()
+				uni.reLaunch({ url: '/pages/device/device_list' })
+			},
+			goLanguage() {
+				uni.navigateTo({ url: '/pages/language/index' })
 			},
 			updateTabBarText() {
 				uni.setTabBarItem({ index: 0, text: this.$t('tabbar.home') })
@@ -385,7 +476,10 @@
 				const timestamps = Array.isArray(this.quickBandwidthChartData.timestamps) ? this.quickBandwidthChartData.timestamps : []
 				const rxRates = Array.isArray(this.quickBandwidthChartData.rxRates) ? this.quickBandwidthChartData.rxRates : []
 				const txRates = Array.isArray(this.quickBandwidthChartData.txRates) ? this.quickBandwidthChartData.txRates : []
-				const xAxisData = timestamps.map(() => '')
+				const xAxisData = timestamps.map(ts => {
+					const d = new Date(ts * 1000)
+					return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}:${String(d.getSeconds()).padStart(2, '0')}`
+				})
 				const all = [...rxRates, ...txRates]
 				const maxVal = all.length > 0 ? Math.max.apply(Math, all) : 0
 				const scale = this.getQuickBandwidthAxisScale(maxVal)
@@ -404,12 +498,12 @@
 							return `${this.$t('statistics.inbound')}: ${rx}\n${this.$t('statistics.outbound')}: ${tx}`
 						}
 					},
-					grid: { left: '0px', right: '8px', bottom: '12px', top: '10px', containLabel: false },
+					grid: { left: '0px', right: '8px', bottom: '24px', top: '10px', containLabel: false },
 					xAxis: {
 						type: 'category',
 						boundaryGap: false,
 						data: xAxisData,
-						axisLabel: { show: false },
+						axisLabel: { show: true, color: OA_ECHART.axisLabel, fontSize: 10, interval: 'auto', hideOverlap: true },
 						axisTick: { show: true, length: 4, lineStyle: { color: OA_ECHART.axisLine } },
 						axisLine: { lineStyle: { color: OA_ECHART.axisLine } },
 						splitLine: { show: false }
@@ -492,13 +586,6 @@
 					return `${mb.toFixed(mb >= 10 ? 0 : 1)} MB/s`
 				}
 				return this.formatBandwidth(val)
-			},
-			formatChartTime(ts) {
-				const d = new Date(1000 * Number(ts || 0))
-				const h = String(d.getHours()).padStart(2, '0')
-				const m = String(d.getMinutes()).padStart(2, '0')
-				const s = String(d.getSeconds()).padStart(2, '0')
-				return `${h}:${m}:${s}`
 			},
 			getQuickBandwidthTarget(interfaces) {
 				if (!Array.isArray(interfaces)) {
@@ -828,82 +915,49 @@
 		background: $oa-bg;
 	}
 
-	.device-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
-	.device-header {
-		margin-bottom: 20rpx;
-	}
-	.device-details {
+	/* —— 详情行(系统状态 / 网络 共用) —— */
+	.device-details,
+	.network-details {
 		display: flex;
 		flex-direction: column;
-		gap: 12rpx;
-	}
-	.device-card .device-details {
-		gap: 4rpx;
+		gap: $oa-sp-1;
 	}
 	.detail-row {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		padding: 8rpx 0;
+		padding: $oa-sp-1 0;
 		border-bottom: 1rpx solid $oa-hairline;
-	}
-	.device-card .detail-row {
-		padding: 4rpx 0;
 	}
 	.detail-row:last-child {
 		border-bottom: none;
 	}
 	.detail-label {
-		font-size: 26rpx;
+		font-size: $oa-fs-label;
 		color: $oa-text-muted;
 		font-weight: 500;
 	}
 	.detail-value {
-		font-size: 26rpx;
-		font-weight: 610;
+		font-size: $oa-fs-label;
+		font-weight: 600;
 		color: $oa-text;
 		text-align: right;
 		max-width: 60%;
 		word-break: break-all;
 	}
 	.temperature-value {
-		max-width: 70% !important;
-		font-size: 24rpx !important;
-		line-height: 1.4 !important;
+		max-width: 70%;
+		line-height: 1.4;
 	}
 
-	.card-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 20rpx;
-	}
-	.card-title {
-		font-size: 28rpx;
-		font-weight: 600;
-		color: $oa-text;
-	}
-
-	.cpu-mem-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 10rpx 40rpx 20rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
+	/* —— 资源监控环形图 —— */
 	.ring-row {
 		display: flex;
 		justify-content: space-around;
 		align-items: flex-start;
 		flex-wrap: wrap;
-		gap: 24rpx;
-		margin-top: 16rpx;
+		gap: $oa-sp-3;
+		margin-top: $oa-sp-2;
 	}
 	.ring-item {
 		display: flex;
@@ -937,7 +991,7 @@
 		top: 32%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		font-size: 20rpx;
+		font-size: $oa-fs-caption;
 		font-weight: 400;
 		color: $oa-text-muted;
 		line-height: 1;
@@ -948,68 +1002,45 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		font-size: 24rpx;
+		font-size: $oa-fs-label;
 		font-weight: 700;
 		color: $oa-text;
 		line-height: 1;
 		white-space: nowrap;
 	}
 	.ring-detail {
-		font-size: 22rpx;
+		font-size: $oa-fs-caption;
 		color: $oa-text-subtle;
-		margin-top: 12rpx;
+		margin-top: $oa-sp-1;
 		text-align: center;
 		word-break: break-all;
 	}
 
-	.quick-bandwidth-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx 20rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
-	.quick-bandwidth-header {
-		display: flex;
-		align-items: flex-start;
-		justify-content: space-between;
-		margin-bottom: 12rpx;
-		gap: 16rpx;
-	}
-	.quick-bandwidth-title-wrap {
-		display: flex;
-		flex-direction: column;
-		gap: 6rpx;
-	}
-	.quick-bandwidth-device {
-		font-size: 22rpx;
-		color: $oa-text-subtle;
-	}
+	/* —— 实时带宽 —— */
 	.quick-bandwidth-metrics {
 		display: flex;
 		align-items: center;
-		gap: 18rpx;
-		padding-top: 2rpx;
+		gap: $oa-sp-2;
 		flex-shrink: 0;
 	}
 	.quick-bandwidth-metric {
 		display: flex;
 		align-items: center;
-		gap: 6rpx;
+		gap: $oa-sp-1;
 	}
 	.quick-bandwidth-metric-down {
-		color: #4facfe;
+		color: $oa-bw-down;
 	}
 	.quick-bandwidth-metric-up {
-		color: #00c4cc;
+		color: $oa-bw-up;
 	}
 	.quick-bandwidth-arrow {
-		font-size: 24rpx;
+		font-size: $oa-fs-label;
 		font-weight: 600;
 		line-height: 1;
 	}
 	.quick-bandwidth-metric-value {
-		font-size: 24rpx;
+		font-size: $oa-fs-label;
 		font-weight: 600;
 		line-height: 1.2;
 	}
@@ -1022,48 +1053,22 @@
 		height: 100%;
 	}
 
-	.network-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
-	.network-details {
-		display: flex;
-		flex-direction: column;
-		gap: 12rpx;
-	}
-	.network-card .network-details {
-		gap: 4rpx;
-	}
-	.network-card .detail-row {
-		padding: 4rpx 0;
-	}
-
-	.disk-card {
-		background: $oa-surface;
-		border-radius: $oa-radius-lg;
-		padding: 24rpx 40rpx;
-		margin-bottom: 13rpx;
-		box-shadow: $oa-shadow-md;
-	}
+	/* —— 存储 —— */
 	.disk-list {
 		display: flex;
 		flex-direction: column;
-		gap: 20rpx;
+		gap: $oa-sp-3;
 	}
 	.disk-item {
-		padding: 20rpx;
+		padding: $oa-sp-2;
 		background: $oa-surface-sunken;
 		border-radius: $oa-radius-md;
-		border-left: 4rpx solid $oa-brand;
 	}
 	.disk-info {
-		margin-bottom: 12rpx;
+		margin-bottom: $oa-sp-1;
 	}
 	.disk-mount {
-		font-size: 26rpx;
+		font-size: $oa-fs-label;
 		font-weight: 700;
 		color: $oa-text;
 		line-height: 1.4;
@@ -1072,10 +1077,10 @@
 	.disk-usage {
 		display: flex;
 		flex-direction: column;
-		gap: 8rpx;
+		gap: $oa-sp-1;
 	}
 	.disk-usage-line {
-		font-size: 24rpx;
+		font-size: $oa-fs-label;
 		color: $oa-text;
 		text-align: right;
 	}
@@ -1090,13 +1095,130 @@
 		height: 100%;
 		border-radius: $oa-radius-sm;
 		background: $oa-success;
-		transition: width 0.3s ease;
+		transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 	.disk-temp-label {
-		font-size: 22rpx;
+		font-size: $oa-fs-caption;
 		color: $oa-text-subtle;
 		font-weight: 400;
-		margin-left: 8rpx;
+		margin-left: $oa-sp-1;
 	}
 
+	/* —— 设备切换器 —— */
+	.switch-trigger {
+		display: flex;
+		align-items: center;
+		gap: $oa-sp-1;
+		height: 72rpx;
+		padding: 0 $oa-sp-3;
+		background: $oa-brand-subtle;
+		border-radius: $oa-radius-full;
+		transition: opacity 0.15s ease;
+	}
+	.switch-trigger:active {
+		opacity: 0.7;
+	}
+	.switch-trigger__icon {
+		width: 40rpx;
+		height: 40rpx;
+	}
+	.switch-trigger__name {
+		font-size: $oa-fs-title;
+		font-weight: 600;
+		color: $oa-brand;
+		max-width: 300rpx;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.switch-trigger__caret {
+		font-size: $oa-fs-body;
+		color: $oa-brand;
+	}
+	.switcher-dropdown {
+		background: $oa-surface;
+		border-radius: $oa-radius-lg;
+		box-shadow: $oa-shadow-lg;
+		width: 70%;
+		margin-left: $oa-sp-3;
+		margin-top: calc(var(--status-bar-height) + 88rpx);
+		padding: $oa-sp-2;
+	}
+	.switcher-item {
+		display: flex;
+		align-items: center;
+		padding: $oa-sp-2;
+		border-radius: $oa-radius-md;
+		transition: background-color 0.15s ease;
+	}
+	.switcher-item:active {
+		background: $oa-brand-subtle;
+	}
+	.switcher-item--current {
+		background: $oa-brand-subtle;
+	}
+	.switcher-item__main {
+		flex: 1;
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.switcher-item__name {
+		font-size: $oa-fs-body;
+		font-weight: 600;
+		color: $oa-text;
+	}
+	.switcher-item__addr {
+		font-size: $oa-fs-caption;
+		color: $oa-text-muted;
+	}
+	.switcher-item__sub {
+		display: flex;
+		align-items: center;
+		gap: $oa-sp-1;
+	}
+	.switcher-item__more {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 80rpx;
+		height: 80rpx;
+	}
+	.switcher-item__more-img {
+		width: 36rpx;
+		height: 36rpx;
+	}
+	.switcher-add {
+		margin-top: $oa-sp-1;
+		padding: $oa-sp-2;
+		font-size: $oa-fs-body;
+		color: $oa-brand;
+		transition: opacity 0.15s ease;
+	}
+	.switcher-add:active {
+		opacity: 0.7;
+	}
+	.switcher-hint {
+		display: block;
+		font-size: $oa-fs-caption;
+		color: $oa-text-muted;
+		line-height: 1.4;
+		margin-top: $oa-sp-2;
+	}
+	.nav-lang {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 80rpx;
+		height: 80rpx;
+		transition: opacity 0.15s ease;
+	}
+	.nav-lang:active {
+		opacity: 0.7;
+	}
+	.nav-lang__icon {
+		width: 40rpx;
+		height: 40rpx;
+	}
 </style>
+

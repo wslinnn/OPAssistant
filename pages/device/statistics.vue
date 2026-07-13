@@ -1,9 +1,9 @@
 <template>
   <view class="container">
-    <page-tab :tabs="tab_list" v-model="currentTab" />
+    <oa-page-tab :tabs="tab_list" v-model="currentTab" />
 
     <view v-if="currentTab === 1">
-      <oa-card v-if="loadData" padding="md">
+      <oa-card :key="'load'" v-if="loadData" padding="md">
         <view class="load-stats">
           <view class="stat-section">
             <view class="stat-title">{{ $t('statistics.current_load') }}</view>
@@ -67,12 +67,12 @@
     </view>
 
     <view v-else-if="currentTab === 0">
-      <oa-card padding="md">
+      <oa-card :key="'ctrl'" padding="md">
         <view class="selector-label">{{ $t('statistics.select_interface') }}：</view>
         <oa-segmented :value="selectedDevice" :options="interfaceOptions" @change="selectDevice" />
       </oa-card>
 
-      <oa-card v-if="selectedDevice && bandwidthData" padding="md">
+      <oa-card :key="'bw'" v-if="selectedDevice && bandwidthData" padding="md">
         <view class="bandwidth-stats">
           <view class="stat-section">
                   <view class="stat-title">{{ $t('statistics.inbound') }}</view>
@@ -133,10 +133,8 @@ const echarts = require('@/uni_modules/lime-echart/static/app/echarts.min.js')
 // #ifndef MP
 const echarts = null
 // #endif
-import PageTab from '@/components/PageTab.vue'
 
 export default {
-  components: { PageTab },
   computed: {
     tab_list() {
       return [
@@ -573,11 +571,12 @@ export default {
         this._loadChartInstance = null
       }
     },
+  onPullDownRefresh() { Promise.resolve(this.loadPageData()).finally(() => uni.stopPullDownRefresh()) },
   methods: {
     goBack() {
       this.stopAutoRefresh()
       this.stopLoadRefresh()
-      uni.reLaunch({ url: '/pages/device_list' })
+      uni.reLaunch({ url: '/pages/device/device_list' })
     },
     
 
@@ -730,9 +729,10 @@ export default {
         
         const categories = this.loadChartData.timestamps.map((timestamp, index) => {
           const date = new Date(timestamp * 1000)
+          const hours = date.getHours().toString().padStart(2, '0')
           const minutes = date.getMinutes().toString().padStart(2, '0')
           const seconds = date.getSeconds().toString().padStart(2, '0')
-          return `${minutes}:${seconds}`
+          return `${hours}:${minutes}:${seconds}`
         })
         
         const allLoads = [...this.loadChartData.load1, ...this.loadChartData.load5, ...this.loadChartData.load15]
@@ -982,9 +982,10 @@ export default {
          
          const categories = this.chartData.timestamps.map((timestamp, index) => {
            const date = new Date(timestamp * 1000)
+           const hours = date.getHours().toString().padStart(2, '0')
            const minutes = date.getMinutes().toString().padStart(2, '0')
            const seconds = date.getSeconds().toString().padStart(2, '0')
-           return `${minutes}:${seconds}`
+           return `${hours}:${minutes}:${seconds}`
          })
          
          const allRates = [...this.chartData.rxRates, ...this.chartData.txRates]

@@ -18,9 +18,9 @@
 				</oa-card>
 			</view>
 
-			<oa-empty v-else :text="$t('route.no_routes')" />
+			<oa-empty :key="'no-route'" v-else :text="$t('route.no_routes')" />
 
-			<oa-empty v-if="error" :text="error">
+			<oa-empty :key="'error'" v-if="error" :text="error">
 				<oa-button size="small" @click="loadRouteTable">{{ $t('route.retry') }}</oa-button>
 			</oa-empty>
 		</view>
@@ -44,6 +44,7 @@ export default {
 		})
 		this.loadRouteTable()
 	},
+	onPullDownRefresh() { Promise.resolve(this.loadRouteTable()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async loadRouteTable() {
 			this.loading = true

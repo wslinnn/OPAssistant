@@ -81,6 +81,8 @@ $oa-danger:           #DC2626;  $oa-danger-surface:  #FDECEC;
 $oa-hairline:         rgba(31, 41, 55, 0.10);  // 分隔线
 $oa-scrim:            rgba(0, 0, 0, 0.55);     // 弹窗遮罩
 $oa-focus-ring:       rgba(14, 132, 181, 0.60); // 焦点环
+$oa-bw-down:          #4facfe;  // 实时带宽入站(与 echart-theme inband 对齐)
+$oa-bw-up:            #00C4CC;  // 实时带宽出站(与 echart-theme outband 对齐)
 
 /* ---- 圆角阶梯 ---- */
 $oa-radius-sm:   8rpx;
@@ -108,3 +110,15 @@ $oa-fs-body:    28rpx;  // 正文
 $oa-fs-label:   26rpx;  // 行标签
 $oa-fs-title:   32rpx;  // 卡片标题
 $oa-fs-h1:      40rpx;
+
+/* ---- 焦点反馈 mixin(uni.scss 全局注入,各 scoped style 直接 @include oa-input-focus) ---- */
+@mixin oa-input-focus($bg-focus: $oa-surface) {
+    transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    &.is-focused {
+        background: $bg-focus;
+        box-shadow:
+            0 0 0 2rpx $oa-brand,
+            0 0 0 6rpx $oa-focus-ring;
+    }
+}

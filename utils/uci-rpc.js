@@ -1,5 +1,5 @@
 
-import DeviceManager from './deviceManager.js'
+import DeviceManager from './device-manager.js'
 
 // 统一 UCI CRUD 封装：所有插件页只调本模块，不直接拼 uni.request。
 // 在 DeviceManager 之上薄封装 /ubus JSON-RPC（uci namespace + 通用 ubus call）。
@@ -119,6 +119,29 @@ class UciRpc {
 		await this._uci('confirm', { config })
 	}
 
+	// 探活指定设备(用其缓存 sysauth),失败则用存的账号密码静默重登。
+	// 返回 { success, device }。成功时 device 含新 sysauth 并已 setCurrentDevice。
+	// 供 home 启动门控与左上切换器复用(DRY);放此处避免 DeviceManager↔UciRpc 循环依赖。
+	static reconnectDevice(device) {
+		if (!device) return Promise.resolve({ success: false })
+		DeviceManager.setCurrentDevice(device) // callUbus 按 current_device 取上下文
+		return new Promise((resolve) => {
+			this.callUbus('system', 'board', {}, 3000)
+				.then(() => resolve({ success: true, device }))
+				.catch(() => {
+					DeviceManager.loginDevice({ ...device, sysauth: null }, (r) => {
+						if (r.success) {
+							const updated = { ...device, sysauth: r.sysauth, online: true }
+							DeviceManager.setCurrentDevice(updated)
+							resolve({ success: true, device: updated })
+						} else {
+							resolve({ success: false })
+						}
+					})
+				})
+		})
+	}
+
 	// session 预检：system.board 探针验证当前 sysauth 服务端仍有效；失效(ubus 6/超时/网络)则重登
 	// （远程跨网场景关键：apply 与 confirm 之间 session 过期会导致 confirm 失败 → 进入 rollback 被回滚）
 	static async _ensureSession() {
@@ -142,7 +165,8 @@ class UciRpc {
 	static apply(initScript, action = 'reload') {
 		if (!initScript) return Promise.resolve()
 		if (!/^[a-zA-Z0-9_-]+$/.test(initScript)) return Promise.reject(new Error('invalid init script name'))
-		if (!/^(reload|restart|start|stop)$/.test(action)) return Promise.reject(new Error('invalid action'))
+		// enable|disable: procd init 服务级启停(UPnP 等服务型开关需要)
+		if (!/^(reload|restart|start|stop|enable|disable)$/.test(action)) return Promise.reject(new Error('invalid action'))
 		return this.callUbus('file', 'exec', {
 			command: `/etc/init.d/${initScript}`,
 			params: [action]

@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<!-- 统计卡：UDP/TCP/其它 当前/平均/峰值 -->
-		<oa-card v-if="stats" padding="none" class="ct-stats-card">
+		<oa-card :key="'stats'" v-if="stats" padding="none" class="ct-stats-card">
 			<view v-for="row in statsRows" :key="row.key" class="ct-stats-row">
 				<text class="ct-stats-label" :class="'ct-stats-label--' + row.key">{{ row.label }}</text>
 				<view class="ct-stats-cols">
@@ -21,9 +21,9 @@
 			</view>
 		</oa-card>
 
-		<oa-card padding="lg">
+		<oa-card :key="'filter'" padding="lg">
 			<view class="ct-filter">
-				<input class="ct-input" v-model="keyword" :placeholder="$t('conntrack.search')" />
+				<input class="ct-input" :class="{ 'is-focused': inputFocused }" v-model="keyword" :placeholder="$t('conntrack.search')" @focus="inputFocused = true" @blur="inputFocused = false" />
 				<oa-button size="small" type="primary" :loading="loading" @click="load">{{ $t('conntrack.refresh') }}</oa-button>
 			</view>
 			<view class="ct-toggles">
@@ -42,7 +42,7 @@
 			<text class="ct-count">{{ $t('conntrack.total', { n: total }) }} · {{ filtered.length }} / {{ list.length }}</text>
 		</view>
 
-		<oa-card v-if="filtered.length > 0" padding="none">
+		<oa-card :key="'list'" v-if="filtered.length > 0" padding="none">
 			<scroll-view scroll-y class="ct-list">
 				<view v-for="(c, i) in filtered" :key="i" class="ct-row">
 					<view class="ct-row-head">
@@ -87,7 +87,8 @@ export default {
 			autoRefresh: true,
 			enableDns: false,
 			dnsCache: {},
-			pollTimer: null
+			pollTimer: null,
+			inputFocused: false
 		}
 	},
 	computed: {
@@ -118,6 +119,7 @@ export default {
 	},
 	onHide() { this.stopPoll() },
 	onUnload() { this.stopPoll() },
+	onPullDownRefresh() { Promise.resolve(this.load()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		formatBytes,
 		async load(silent = false) {
@@ -243,6 +245,7 @@ export default {
 	font-size: $oa-fs-body;
 	color: $oa-text;
 	box-sizing: border-box;
+	@include oa-input-focus();
 }
 .ct-toggles {
 	display: flex;

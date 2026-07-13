@@ -81,6 +81,7 @@ export default {
 		uni.setNavigationBarTitle({ title: this.$t('cifs.title') })
 		this.load()
 	},
+	onPullDownRefresh() { Promise.resolve(this.load()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = this.sections.length === 0

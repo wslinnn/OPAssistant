@@ -41,10 +41,10 @@
 			</view>
 
 			<!-- 空状态 -->
-			<oa-empty v-else :text="$t('process.no_processes')" />
+			<oa-empty :key="'no-proc'" v-else :text="$t('process.no_processes')" />
 
 			<!-- 错误状态 -->
-			<oa-empty v-if="error" :text="error" />
+			<oa-empty :key="'error'" v-if="error" :text="error" />
 		</view>
 	</view>
 </template>
@@ -73,6 +73,7 @@ export default {
 	onUnload() {
 		this.stopAutoRefresh()
 	},
+	onPullDownRefresh() { Promise.resolve(this.loadProcessList()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		// busy 守卫:防止 3s 轮询在慢请求(>3s)下堆积(callUbus 改 await 后,loading 不再天然拦截轮询)
 		async loadProcessList() {

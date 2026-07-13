@@ -70,7 +70,7 @@
 
 <script>
 import UciRpc from '@/utils/uci-rpc.js'
-import DeviceManager from '@/utils/deviceManager.js'
+import DeviceManager from '@/utils/device-manager.js'
 
 export default {
 	data() {
@@ -180,6 +180,7 @@ export default {
 		uni.setNavigationBarTitle({ title: this.$t('passwall2.title') })
 		this.load()
 	},
+	onPullDownRefresh() { Promise.resolve(this.load()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = true

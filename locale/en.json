@@ -27,6 +27,27 @@
     "add_device": "Add Device",
     "edit_device": "Edit Device",
     "empty_message": "No devices yet, please add OpenWrt device first,You need to ensure that the current device can access the OpenWrt device through a browser.",
+    "empty_title": "No routers added yet",
+    "empty_value": "Add one to manage it remotely from anywhere — no router-side plugins needed, and every change is covered by auto-rollback.",
+    "empty_cta": "Add your first router",
+    "empty_hint": "Have ready: address, port, username, password",
+    "group_connection": "Connection",
+    "group_credentials": "Credentials",
+    "group_naming": "Name",
+    "connect": "Connect",
+    "login_title": "Sign In",
+    "login_prompt": "Connect your router",
+    "ping_checking": "Checking",
+    "ping_offline": "Offline",
+    "ping_hint": "Latency is HTTP response time, for reference only",
+    "password_show": "Show password",
+    "password_hide": "Hide password",
+    "history_title": "Device History",
+    "history_empty": "No saved devices yet",
+    "switch_current": "Current",
+    "add_new_device": "Add new device",
+    "no_device_last": "Last device not found, please log in again",
+    "reconnect_failed": "Connection failed, please log in again",
     "settings": "Settings",
     "language_settings": "Language Settings",
     "host_address": "Host",
@@ -35,6 +56,7 @@
     "create_time": "Create Time",
     "edit": "Edit",
     "delete": "Delete",
+    "more_aria": "More actions",
     "add_device_popup": "Add Device",
     "edit_device_popup": "Edit Device",
     "protocol": "Protocol",
@@ -111,7 +133,7 @@
     "gateway": "Gateway",
     "dns": "DNS",
     "disk_usage": "Disk Usage",
-    "disk_status": "Storage Space",
+    "disk_status": "Storage Status",
     "temp_space": "(Temp Space)",
     "average_load": "Average Load",
     "cpu_load": "CPU Load",
@@ -204,7 +226,9 @@
     "online_status": "Online Status",
     "online": "Online",
     "active": "Active",
-    "offline": "Offline"
+    "offline": "Offline",
+    "search_placeholder": "Search MAC/hostname/IP",
+    "no_match": "No matching results"
   },
   "statistics": {
     "title": "Statistics",
@@ -295,9 +319,6 @@
     "switch_success": "Language switched successfully",
     "restart_required": "Please restart the app to apply language settings"
   },
-  "client_detail": {
-    "title": "Client Details"
-  },
   "pages": {
     "home": "Home",
     "clients": "Clients",
@@ -315,6 +336,7 @@
     "diag": "Diagnostics",
     "syslog": "System Log",
     "conntrack": "Connections",
+    "toolbox": "Toolbox",
     "coming_soon": "Coming Soon",
     "group_tools": "Tools",
     "group_network": "Network & Security",
@@ -754,5 +776,23 @@
     "packets": "{n} pkts",
     "empty": "No connections",
     "load_failed": "Failed to load"
+  },
+  "toolbox": {
+    "title": "Quick Toolbox",
+    "wifi_24g": "WiFi 2.4G",
+    "wifi_5g": "WiFi 5G",
+    "wifi_radio": "WiFi · {device}",
+    "ipv6": "IPv6",
+    "ipv6_hint": "Disables LAN IPv6 distribution only",
+    "firewall": "Firewall",
+    "firewall_risk": "Disabling the firewall removes protection and may disconnect you during remote management. Continue?",
+    "fullcone": "FullCone NAT",
+    "fullcone6": "FullCone NAT IPv6",
+    "upnp": "UPnP",
+    "toggle_on": "On",
+    "toggle_off": "Off",
+    "load_failed": "Failed to load state",
+    "switch_success": "Updated",
+    "switch_failed": "Switch failed"
   }
 }

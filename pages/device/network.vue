@@ -2,7 +2,7 @@
 <template>
 	<view class="container">
 
-		<page-tab :tabs="tab_list" v-model="currentTab" />
+		<oa-page-tab :tabs="tab_list" v-model="currentTab" />
 
 		<view v-if="currentTab === 0">
 			<oa-card v-for="iface in interfaceList" :key="iface.name" padding="lg" :divider="true">
@@ -111,10 +111,8 @@
 <script>
 		import UciRpc from '@/utils/uci-rpc.js'
 	import { formatBytes } from '@/utils/format.js'
-	import PageTab from '@/components/PageTab.vue'
 
 	export default {
-		components: { PageTab },
 		data() {
 			return {
 				currentTab: 0,
@@ -153,12 +151,13 @@
 				]
 			}
 		},
+		onPullDownRefresh() { Promise.resolve(this.loadData()).finally(() => uni.stopPullDownRefresh()) },
 		methods: {
 			formatBytes,
 
 			goBack() {
 				uni.reLaunch({
-					url: '/pages/device_list'
+					url: '/pages/device/device_list'
 				})
 			},
 			goWifiSettings() {

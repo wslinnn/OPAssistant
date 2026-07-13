@@ -4,7 +4,7 @@
 
 		<view v-else>
 			<oa-card :title="$t('upnp.active_maps')" divider padding="none">
-				<oa-empty v-if="rules.length === 0" :text="$t('upnp.no_rules')" />
+				<oa-empty :key="'no-rules'" v-if="rules.length === 0" :text="$t('upnp.no_rules')" />
 				<view v-for="(r, i) in rules" :key="(r.num || '') + '-' + i" class="rule" :class="{ 'rule--last': i === rules.length - 1 }">
 					<view class="rule__main">
 						<text class="rule__desc">{{ r.descr || r.host_hint || r.proto }}</text>
@@ -25,7 +25,7 @@
 				<text class="page-hint">{{ $t('upnp.acl_desc') }}</text>
 				<oa-button type="positive" size="small" @click="addAcl">{{ $t('upnp.add_acl') }}</oa-button>
 			</view>
-			<oa-empty v-if="acls.length === 0" :text="$t('upnp.no_acl')" />
+			<oa-empty :key="'no-acl'" v-if="acls.length === 0" :text="$t('upnp.no_acl')" />
 			<oa-card v-for="a in acls" :key="a['.name']" padding="lg">
 				<view class="acl" @click="editAcl(a)">
 					<view class="acl__main">
@@ -88,6 +88,7 @@ export default {
 	},
 	onHide() { this.stopPoll() },
 	onUnload() { this.stopPoll() },
+	onPullDownRefresh() { Promise.resolve(this.load()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		async load() {
 			this.loading = this.acls.length === 0 && this.rules.length === 0

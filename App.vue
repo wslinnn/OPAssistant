@@ -1,8 +1,11 @@
 <script>
+	import DeviceManager from '@/utils/device-manager.js'
+
 	export default {
 		onLaunch: function() {
 			this.initI18n()
 			this.initRequestInterceptor()
+			DeviceManager.prefetchDns()
 		},
 		onShow: function() {
 
@@ -43,4 +46,30 @@
 </script>
 
 <style>
+@font-face {
+  font-family: 'FA';
+  src: url('/static/fonts/fa-solid-900.woff2') format('woff2');
+  font-weight: 900;
+  font-style: normal;
+}
+.fa {
+  font-family: 'FA';
+  font-weight: 900;
+  -webkit-font-smoothing: antialiased;
+  display: inline-block;
+}
+.fa-route::before { content: '\f6d7'; }
+.fa-microchip::before { content: '\f2db'; }
+.fa-power-off::before { content: '\f011'; }
+.fa-wave-square::before { content: '\f83e'; }
+.fa-file-lines::before { content: '\f15c'; }
+.fa-link::before { content: '\f0c1'; }
+.fa-toolbox::before { content: '\f552'; }
+.fa-rotate-right::before { content: '\f2f9'; }
+.fa-thumbtack::before { content: '\f08d'; }
+.fa-shield-halved::before { content: '\f3ed'; }
+.fa-share-nodes::before { content: '\f1e0'; }
+.fa-hard-drive::before { content: '\f0a0'; }
+.fa-print::before { content: '\f02f'; }
+.fa-clock::before { content: '\f017'; }
 </style>

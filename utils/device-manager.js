@@ -245,6 +245,33 @@ class DeviceManager {
 		return host
 	}
 
+	// 轻量 ping:HTTP 探测路由器根 URL(带 x-uniauth 放行 HTTPS 自签证书),返回往返 ms 或 null(离线/超时)
+	static pingDevice(device) {
+		if (!device || !device.ip) return Promise.resolve(null)
+		const protocol = device.useHttps ? 'https' : 'http'
+		const host = DeviceManager.formatHostForUrl(device.ip)
+		const url = `${protocol}://${host}:${device.port || 80}/`
+		const start = Date.now()
+		return new Promise(resolve => {
+			uni.request({
+				url,
+				method: 'GET',
+				timeout: 5000,
+				header: { 'x-uniauth': 'true' },
+				success: () => resolve(Date.now() - start),
+				fail: () => resolve(null)
+			})
+		})
+	}
+
+	// ms → 延迟档位:<100 fast / <300 ok / ≥300 slow / null offline
+	static pingLevel(ms) {
+		if (ms == null) return 'offline'
+		if (ms < 100) return 'fast'
+		if (ms < 300) return 'ok'
+		return 'slow'
+	}
+
 	static loginDevice(device, callback) {
 		console.log(`[DeviceManager] Starting login for device: ${device.name} (${device.ip}:${device.port})`)
 		console.log(`[DeviceManager] Device info:`, {
@@ -280,7 +307,7 @@ class DeviceManager {
 			url: url,
 			method: 'POST',
 			data: data,
-			timeout: 3000,
+			timeout: 5000,
 			header: {
 				'x-uniauth': 'true',
 				'Content-Type': 'application/json;charset=UTF-8'
@@ -478,16 +505,6 @@ class DeviceManager {
 	}
 	
 	/**
-	 * Initialize test data
-	 */
-	static initTestData() {
-		const testDevices = [
-	
-		]
-		return this.saveDeviceList(testDevices)
-	}
-	
-	/**
 	 * Check device connection status
 	 */
 	static async checkDeviceStatus(device) {
@@ -496,6 +513,25 @@ class DeviceManager {
 				const isOnline = Math.random() > 0.3
 				resolve(isOnline)
 			}, 1000)
+		})
+	}
+
+	// DNS 预解析:历史设备的域名提前 GET 根 URL,触发系统 DNS 解析+缓存,
+	// 后续登录/探活命中缓存(快)。IPv4/IPv6 直连无需预热。App 启动调一次。
+	static prefetchDns() {
+		const list = this.getDeviceList()
+		list.forEach(d => {
+			if (!d.ip) return
+			const isIPv4 = /^\d+\.\d+\.\d+\.\d+$/.test(d.ip)
+			if (isIPv4 || this.isIPv6(d.ip)) return
+			const protocol = d.useHttps ? 'https' : 'http'
+			const host = this.formatHostForUrl(d.ip)
+			uni.request({
+				url: `${protocol}://${host}:${d.port || 80}/`,
+				method: 'GET',
+				timeout: 3000,
+				header: { 'x-uniauth': 'true' }
+			})
 		})
 	}
 	

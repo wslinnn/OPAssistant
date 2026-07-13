@@ -18,9 +18,9 @@
 				</view>
 			</oa-card>
 
-			<oa-empty v-else :text="$t('startup.no_startup')" />
+			<oa-empty :key="'no-startup'" v-else :text="$t('startup.no_startup')" />
 
-			<oa-empty v-if="error" :text="error" />
+			<oa-empty :key="'error'" v-if="error" :text="error" />
 		</view>
 	</view>
 </template>
@@ -42,6 +42,7 @@ export default {
 		})
 		this.loadStartupList()
 	},
+	onPullDownRefresh() { Promise.resolve(this.loadStartupList()).finally(() => uni.stopPullDownRefresh()) },
 	methods: {
 		statusType(startup) {
 			if (startup.running) return 'up'

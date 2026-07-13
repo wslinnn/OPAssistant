@@ -1,11 +1,17 @@
 <template>
   <view class="container">
-     <page-tab :tabs="tab_list" v-model="currentTab" />
+    <view class="client-search">
+      <input class="client-search-input" :class="{ 'is-focused': searchFocused }" v-model="searchKeyword" :placeholder="$t('client.search_placeholder')" @focus="searchFocused = true" @blur="searchFocused = false" />
+      <view v-if="searchKeyword" class="client-search-clear" @click="searchKeyword = ''">
+        <text class="client-search-clear-icon">×</text>
+      </view>
+    </view>
+     <oa-page-tab :tabs="tab_list" v-model="currentTab" />
     <view v-if="currentTab === 1">
       <oa-empty v-if="loading" :text="$t('client.wireless_clients_loading')" />
-      <oa-empty v-else-if="wirelessClients.length === 0" :text="$t('client.no_wireless_clients')" />
+      <oa-empty v-else-if="filteredWirelessClients.length === 0" :text="searchKeyword ? $t('client.no_match') : $t('client.no_wireless_clients')" />
       <view v-else>
-        <oa-card v-for="(client, index) in wirelessClients" :key="index" padding="lg" @click.native="goToDeviceDetail(client, 'wireless')">
+        <oa-card v-for="(client, index) in filteredWirelessClients" :key="index" padding="lg">
           <view class="client-row">
             <text class="label">{{ $t('client.mac') }}：</text>
             <view class="value" style="display: flex; align-items: center; justify-content: space-between; width: 100%;">
@@ -29,9 +35,9 @@
     </view>
 
     <view v-else-if="currentTab === 2">
-      <oa-empty v-if="dhcpv4List.length === 0" :text="$t('client.no_dhcpv4_allocation')" />
+      <oa-empty v-if="filteredDhcpv4List.length === 0" :text="searchKeyword ? $t('client.no_match') : $t('client.no_dhcpv4_allocation')" />
       <view v-else>
-        <oa-card v-for="(item, index) in dhcpv4List" :key="index" padding="lg" @click.native="goToDeviceDetail(item, 'dhcpv4')">
+        <oa-card v-for="(item, index) in filteredDhcpv4List" :key="index" padding="lg">
           <view class="client-row"><text class="label">{{ $t('client.mac') }}：</text><oa-copy-text class="value" :text="item.macaddr">{{ item.macaddr }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><oa-copy-text class="value" :text="item.hostname">{{ item.hostname || '-' }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.ip_address') }}：</text><oa-copy-text class="value" :text="item.ipaddr">{{ item.ipaddr }}</oa-copy-text></view>
@@ -41,9 +47,9 @@
     </view>
 
     <view v-else-if="currentTab === 3">
-      <oa-empty v-if="dhcpv6List.length === 0" :text="$t('client.no_dhcpv6_allocation')" />
+      <oa-empty v-if="filteredDhcpv6List.length === 0" :text="searchKeyword ? $t('client.no_match') : $t('client.no_dhcpv6_allocation')" />
       <view v-else>
-        <oa-card v-for="(item, index) in dhcpv6List" :key="index" padding="lg" @click.native="goToDeviceDetail(item, 'dhcpv6')">
+        <oa-card v-for="(item, index) in filteredDhcpv6List" :key="index" padding="lg">
           <view v-if="item.macaddr" class="client-row"><text class="label">{{ $t('client.mac') }}：</text><oa-copy-text class="value" :text="item.macaddr">{{ item.macaddr }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.hostname') }}：</text><oa-copy-text class="value" :text="item.hostname">{{ item.hostname || '-' }}</oa-copy-text></view>
           <view class="client-row"><text class="label">{{ $t('client.ipv6_address') }}：</text><oa-copy-text class="value" :text="item.ip6addr">{{ item.ip6addr }}</oa-copy-text></view>
@@ -59,9 +65,7 @@
 import UciRpc from '@/utils/uci-rpc.js'
 import Wireless from '@/utils/wireless.js'
 import { formatDuration } from '@/utils/format.js'
-import PageTab from '@/components/PageTab.vue'
 export default {
-  components: { PageTab },
   computed: {
     tab_list() {
       return [
@@ -69,11 +73,37 @@ export default {
         { value: 2, label: this.$t('client.dhcpv4_allocation') },
         { value: 3, label: this.$t('client.dhcpv6_allocation') }
       ]
+    },
+    filteredWirelessClients() {
+      const kw = this.searchKeyword.trim().toLowerCase()
+      if (!kw) return this.wirelessClients
+      return this.wirelessClients.filter(c => {
+        const hay = [c.mac, c.hostname].filter(Boolean).join(' ').toLowerCase()
+        return hay.includes(kw)
+      })
+    },
+    filteredDhcpv4List() {
+      const kw = this.searchKeyword.trim().toLowerCase()
+      if (!kw) return this.dhcpv4List
+      return this.dhcpv4List.filter(c => {
+        const hay = [c.macaddr, c.hostname, c.ipaddr].filter(Boolean).join(' ').toLowerCase()
+        return hay.includes(kw)
+      })
+    },
+    filteredDhcpv6List() {
+      const kw = this.searchKeyword.trim().toLowerCase()
+      if (!kw) return this.dhcpv6List
+      return this.dhcpv6List.filter(c => {
+        const hay = [c.macaddr, c.hostname, c.ip6addr].filter(Boolean).join(' ').toLowerCase()
+        return hay.includes(kw)
+      })
     }
   },
   data() {
     return {
       currentTab: 1,
+      searchKeyword: '',
+      searchFocused: false,
       wirelessClients: [],
       loading: false,
       wirelessIfBandMap: {},
@@ -99,17 +129,8 @@ export default {
       backgroundColor: '#F8F8F8'
     })
   },
+  onPullDownRefresh() { Promise.resolve(this.loadData()).finally(() => uni.stopPullDownRefresh()) },
   methods: {
-    goBack() {
-      uni.reLaunch({ url: '/pages/device_list' })
-    },
-    // 跳转到设备详情页面（通用：无线/DHCP）
-    goToDeviceDetail(device, type) {
-      const data = encodeURIComponent(JSON.stringify({ device, type }))
-      uni.navigateTo({
-        url: `/pages/device/client_detail?data=${data}`
-      })
-    },
     loadData() {
       this.dhcpCache = null
       if (this.currentTab === 1) {
@@ -248,6 +269,37 @@ export default {
 <style scoped lang="scss">
 
 @import '@/styles/common.scss';
+
+.client-search {
+  position: relative;
+  padding: $oa-sp-2 $oa-sp-3 0;
+}
+.client-search-input {
+  width: 100%;
+  height: 72rpx;
+  padding: 0 64rpx 0 $oa-sp-2;
+  background: $oa-surface-sunken;
+  border-radius: $oa-radius-md;
+  font-size: $oa-fs-body;
+  color: $oa-text;
+  box-sizing: border-box;
+  @include oa-input-focus();
+}
+.client-search-clear {
+  position: absolute;
+  right: $oa-sp-3;
+  top: $oa-sp-2;
+  width: 56rpx;
+  height: 72rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.client-search-clear-icon {
+  font-size: 36rpx;
+  color: $oa-text-muted;
+  line-height: 1;
+}
 
 .client-row {
   display: flex;
