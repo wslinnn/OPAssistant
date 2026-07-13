@@ -88,7 +88,7 @@
 				<view class="ring-row">
 					<view class="ring-item">
 						<view class="ring-chart-wrap">
-							<l-echart ref="overlayChartRef" v-once @finished="initOverlayChart" style="width: 100%; height: 100%;"></l-echart>
+							<l-echart ref="overlayChartRef" @finished="initOverlayChart" style="width: 100%; height: 100%;"></l-echart>
 							<view class="ring-center">
 								<text class="ring-center-title">{{ $t('home.overlay') }}</text>
 								<text class="ring-center-percent">{{ overlayPercentNum }}%</text>
@@ -98,7 +98,7 @@
 					</view>
 					<view class="ring-item">
 						<view class="ring-chart-wrap">
-							<l-echart ref="memChartRef" v-once @finished="initMemChart" style="width: 100%; height: 100%;"></l-echart>
+							<l-echart ref="memChartRef" @finished="initMemChart" style="width: 100%; height: 100%;"></l-echart>
 							<view class="ring-center">
 								<text class="ring-center-title">{{ $t('home.memory') }}</text>
 								<text class="ring-center-percent">{{ systemStatus.memoryUsage || '0%' }}</text>
@@ -122,7 +122,7 @@
 					</view>
 				</view>
 				<view class="quick-bandwidth-chart">
-					<l-echart ref="quickBandwidthChartRef" v-once @finished="initQuickBandwidthChart" style="width: 100%; height: 100%;"></l-echart>
+					<l-echart ref="quickBandwidthChartRef" @finished="initQuickBandwidthChart" style="width: 100%; height: 100%;"></l-echart>
 				</view>
 			</oa-card>
 
@@ -386,7 +386,6 @@
 			getOverlayRingOption() {
 				const v = this.overlayPercentNum
 				return {
-					animation: false,
 					graphic: [],
 					series: [{
 						type: 'pie',
@@ -408,7 +407,6 @@
 			getMemRingOption() {
 				const v = this.memPercentNum
 				return {
-					animation: false,
 					graphic: [],
 					series: [{
 						type: 'pie',
