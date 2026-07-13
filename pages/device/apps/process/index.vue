@@ -41,10 +41,10 @@
 			</view>
 
 			<!-- 空状态 -->
-			<oa-empty v-else :text="$t('process.no_processes')" />
+			<oa-empty :key="'no-proc'" v-else :text="$t('process.no_processes')" />
 
 			<!-- 错误状态 -->
-			<oa-empty v-if="error" :text="error" />
+			<oa-empty :key="'error'" v-if="error" :text="error" />
 		</view>
 	</view>
 </template>

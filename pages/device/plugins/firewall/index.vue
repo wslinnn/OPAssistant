@@ -14,7 +14,7 @@
 				<text class="sec-head__title">{{ $t('firewall.zones') }}</text>
 				<oa-button type="positive" size="small" @click="addZone">{{ $t('firewall.add_zone') }}</oa-button>
 			</view>
-			<oa-empty v-if="zones.length === 0" :text="$t('firewall.no_zones')" />
+			<oa-empty :key="'zones-empty'" v-if="zones.length === 0" :text="$t('firewall.no_zones')" />
 			<oa-card v-for="z in zones" :key="z['.name']" padding="lg">
 				<view class="entity" @click="editZone(z)">
 					<view class="entity__dot" :style="{ background: zoneColor(z.name || z['.name']) }" />
@@ -33,7 +33,7 @@
 				<text class="sec-head__title">{{ $t('firewall.forwardings') }}</text>
 				<oa-button type="positive" size="small" @click="addFwd">{{ $t('firewall.add_fwd') }}</oa-button>
 			</view>
-			<oa-empty v-if="forwardings.length === 0" :text="$t('firewall.no_forwardings')" />
+			<oa-empty :key="'fwd-empty'" v-if="forwardings.length === 0" :text="$t('firewall.no_forwardings')" />
 			<oa-card v-for="f in forwardings" :key="f['.name']" padding="lg">
 				<view class="fwd" @click="editFwd(f)">
 					<view class="fwd__dot" :style="{ background: zoneColor(f.src) }" />
@@ -48,7 +48,7 @@
 				<text class="sec-head__title">{{ $t('firewall.redirects') }}</text>
 				<oa-button type="positive" size="small" @click="addRedirect">{{ $t('firewall.add_redirect') }}</oa-button>
 			</view>
-			<oa-empty v-if="redirects.length === 0" :text="$t('firewall.no_redirects')" />
+			<oa-empty :key="'redirects-empty'" v-if="redirects.length === 0" :text="$t('firewall.no_redirects')" />
 			<oa-card v-for="rd in redirects" :key="rd['.name']" padding="none">
 				<view class="rl">
 					<view class="rl__main" @click="editRedirect(rd)">
@@ -63,7 +63,7 @@
 				<text class="sec-head__title">{{ $t('firewall.rules') }}</text>
 				<oa-button type="positive" size="small" @click="addRule">{{ $t('firewall.add_rule') }}</oa-button>
 			</view>
-			<oa-empty v-if="rules.length === 0" :text="$t('firewall.no_rules')" />
+			<oa-empty :key="'rules-empty'" v-if="rules.length === 0" :text="$t('firewall.no_rules')" />
 			<oa-card v-for="rl in rules" :key="rl['.name']" padding="none">
 				<view class="rl">
 					<view class="rl__main" @click="editRule(rl)">
@@ -78,7 +78,7 @@
 				<text class="sec-head__title">{{ $t('firewall.nats') }}</text>
 				<oa-button type="positive" size="small" @click="addNat">{{ $t('firewall.add_nat') }}</oa-button>
 			</view>
-			<oa-empty v-if="nats.length === 0" :text="$t('firewall.no_nats')" />
+			<oa-empty :key="'nats-empty'" v-if="nats.length === 0" :text="$t('firewall.no_nats')" />
 			<oa-card v-for="nt in nats" :key="nt['.name']" padding="none">
 				<view class="rl">
 					<view class="rl__main" @click="editNat(nt)">

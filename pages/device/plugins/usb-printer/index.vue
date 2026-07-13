@@ -11,7 +11,7 @@
 				<text class="sec-head__title">{{ $t('usb_printer.detected') }}</text>
 				<oa-button type="neutral" size="small" :loading="scanning" @click="loadPrinters">{{ $t('common.retry') }}</oa-button>
 			</view>
-			<oa-empty v-if="printers.length === 0" :text="$t('usb_printer.no_printers')" />
+			<oa-empty :key="'no-printers'" v-if="printers.length === 0" :text="$t('usb_printer.no_printers')" />
 			<oa-card v-for="p in printers" :key="p.devname" padding="lg">
 				<text class="p-model">{{ p.description || p.model || p.devname }}</text>
 				<text class="p-sub">{{ p.devname }} · {{ p.id }} · {{ p.devicePath }}</text>
@@ -21,7 +21,7 @@
 				<text class="sec-head__title">{{ $t('usb_printer.bindings') }}</text>
 				<oa-button type="positive" size="small" @click="addBinding">{{ $t('usb_printer.add_binding') }}</oa-button>
 			</view>
-			<oa-empty v-if="bindings.length === 0" :text="$t('usb_printer.no_bindings')" />
+			<oa-empty :key="'no-bindings'" v-if="bindings.length === 0" :text="$t('usb_printer.no_bindings')" />
 			<oa-card v-for="b in bindings" :key="b['.name']" padding="none">
 				<view class="b-row" @click="editBinding(b)">
 					<view class="b-main">
