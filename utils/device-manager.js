@@ -256,7 +256,7 @@ class DeviceManager {
 			uni.request({
 				url,
 				method: 'GET',
-				timeout: 2000,
+				timeout: 5000,
 				header: { 'x-uniauth': 'true' },
 				success: () => resolve(Date.now() - start),
 				fail: () => resolve(null)
@@ -307,7 +307,7 @@ class DeviceManager {
 			url: url,
 			method: 'POST',
 			data: data,
-			timeout: 3000,
+			timeout: 5000,
 			header: {
 				'x-uniauth': 'true',
 				'Content-Type': 'application/json;charset=UTF-8'
@@ -513,6 +513,25 @@ class DeviceManager {
 				const isOnline = Math.random() > 0.3
 				resolve(isOnline)
 			}, 1000)
+		})
+	}
+
+	// DNS 预解析:历史设备的域名提前 GET 根 URL,触发系统 DNS 解析+缓存,
+	// 后续登录/探活命中缓存(快)。IPv4/IPv6 直连无需预热。App 启动调一次。
+	static prefetchDns() {
+		const list = this.getDeviceList()
+		list.forEach(d => {
+			if (!d.ip) return
+			const isIPv4 = /^\d+\.\d+\.\d+\.\d+$/.test(d.ip)
+			if (isIPv4 || this.isIPv6(d.ip)) return
+			const protocol = d.useHttps ? 'https' : 'http'
+			const host = this.formatHostForUrl(d.ip)
+			uni.request({
+				url: `${protocol}://${host}:${d.port || 80}/`,
+				method: 'GET',
+				timeout: 3000,
+				header: { 'x-uniauth': 'true' }
+			})
 		})
 	}
 	

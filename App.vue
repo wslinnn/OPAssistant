@@ -1,8 +1,11 @@
 <script>
+	import DeviceManager from '@/utils/device-manager.js'
+
 	export default {
 		onLaunch: function() {
 			this.initI18n()
 			this.initRequestInterceptor()
+			DeviceManager.prefetchDns()
 		},
 		onShow: function() {
 
