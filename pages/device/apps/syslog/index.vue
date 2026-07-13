@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<oa-card padding="lg">
+		<oa-card :key="'filter'" padding="lg">
 			<view class="log-seg">
 				<oa-segmented :value="source" :options="sourceOptions" @input="onSourceChange" />
 			</view>
@@ -25,7 +25,7 @@
 			</view>
 		</view>
 
-		<oa-card v-if="filteredLines.length > 0" padding="none">
+		<oa-card :key="'list'" v-if="filteredLines.length > 0" padding="none">
 			<scroll-view scroll-y class="log-list" :scroll-into-view="lastLineId">
 				<text selectable v-for="(l, i) in filteredLines" :key="i" :id="'L' + i" :class="['log-line', 'log-line--' + l.level]">{{ l.text }}</text>
 			</scroll-view>

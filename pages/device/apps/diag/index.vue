@@ -1,6 +1,6 @@
 <template>
 	<view class="container">
-		<oa-card padding="lg">
+		<oa-card :key="'input'" padding="lg">
 			<view class="diag-seg">
 				<oa-segmented :value="tool" :options="toolOptions" @input="onToolChange" />
 			</view>
@@ -25,7 +25,7 @@
 			</view>
 		</oa-card>
 
-		<oa-card v-if="output || error" padding="none" class="diag-result">
+		<oa-card :key="'result'" v-if="output || error" padding="none" class="diag-result">
 			<view class="diag-result-head">
 				<text class="diag-result-title">{{ $t('diag.result') }}</text>
 				<oa-button v-if="output" size="small" type="neutral" @click="copyOutput">{{ $t('diag.copy') }}</oa-button>

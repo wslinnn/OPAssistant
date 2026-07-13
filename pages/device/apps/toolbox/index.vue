@@ -5,7 +5,7 @@
 
 		<view v-else>
 			<!-- WiFi：每 radio 一行 -->
-			<oa-card v-if="radios.length" padding="none">
+			<oa-card :key="'wifi'" v-if="radios.length" padding="none">
 				<view v-for="r in radios" :key="r.name" class="tb-row">
 					<view class="tb-row-main">
 						<text class="tb-row-title">{{ r.label }}</text>
@@ -16,7 +16,7 @@
 			</oa-card>
 
 			<!-- IPv6(仅关 LAN 侧分发) -->
-			<oa-card v-if="ipv6.available" padding="none">
+			<oa-card :key="'ipv6'" v-if="ipv6.available" padding="none">
 				<view class="tb-row">
 					<view class="tb-row-main">
 						<text class="tb-row-title">{{ $t('toolbox.ipv6') }}</text>
@@ -27,7 +27,7 @@
 			</oa-card>
 
 			<!-- 防火墙(高危:关闭需二次确认) -->
-			<oa-card v-if="firewall.available" padding="none">
+			<oa-card :key="'firewall'" v-if="firewall.available" padding="none">
 				<view class="tb-row">
 					<view class="tb-row-main">
 						<text class="tb-row-title">{{ $t('toolbox.firewall') }}</text>
@@ -38,7 +38,7 @@
 			</oa-card>
 
 			<!-- FullCone NAT(IPv4 / IPv6 独立) -->
-			<oa-card v-if="fullcone.available || fullcone6.available" padding="none">
+			<oa-card :key="'fullcone'" v-if="fullcone.available || fullcone6.available" padding="none">
 				<view v-if="fullcone.available" class="tb-row">
 					<view class="tb-row-main">
 						<text class="tb-row-title">{{ $t('toolbox.fullcone') }}</text>
@@ -56,7 +56,7 @@
 			</oa-card>
 
 			<!-- UPnP(需 luci-app-upnp;无配置则整行隐藏) -->
-			<oa-card v-if="upnp.available" padding="none">
+			<oa-card :key="'upnp'" v-if="upnp.available" padding="none">
 				<view class="tb-row">
 					<view class="tb-row-main">
 						<text class="tb-row-title">{{ $t('toolbox.upnp') }}</text>

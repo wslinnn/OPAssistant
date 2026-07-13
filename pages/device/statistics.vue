@@ -3,7 +3,7 @@
     <oa-page-tab :tabs="tab_list" v-model="currentTab" />
 
     <view v-if="currentTab === 1">
-      <oa-card v-if="loadData" padding="md">
+      <oa-card :key="'load'" v-if="loadData" padding="md">
         <view class="load-stats">
           <view class="stat-section">
             <view class="stat-title">{{ $t('statistics.current_load') }}</view>
@@ -67,12 +67,12 @@
     </view>
 
     <view v-else-if="currentTab === 0">
-      <oa-card padding="md">
+      <oa-card :key="'ctrl'" padding="md">
         <view class="selector-label">{{ $t('statistics.select_interface') }}：</view>
         <oa-segmented :value="selectedDevice" :options="interfaceOptions" @change="selectDevice" />
       </oa-card>
 
-      <oa-card v-if="selectedDevice && bandwidthData" padding="md">
+      <oa-card :key="'bw'" v-if="selectedDevice && bandwidthData" padding="md">
         <view class="bandwidth-stats">
           <view class="stat-section">
                   <view class="stat-title">{{ $t('statistics.inbound') }}</view>
