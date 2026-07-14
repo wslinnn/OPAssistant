@@ -15,3 +15,8 @@ Thumbs.db
 
 # 日志
 *.log
+
+# 个人开发工具产物(勿入库)
+.claude/
+.impeccable/
+docs/superpowers/

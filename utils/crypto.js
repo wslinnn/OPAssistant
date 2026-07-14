@@ -7,7 +7,7 @@
  */
 import CryptoJS from 'crypto-js'
 
-const SECRET = 'b9f419548a1a26381522a520f0cf15e8'   // 沿用 v1.0.12 KEY 字面量，经 SHA256 派生为 32 字节 AES KEY
+const SECRET = 'b9f419548a1a26381522a520f0cf15e8'   // 本地密码加密密钥(随机值),经 SHA256 派生为 32 字节 AES KEY
 const ENCRYPTED_PREFIX = 'AES:'
 
 function deriveKey() {
