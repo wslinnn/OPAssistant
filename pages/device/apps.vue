@@ -42,7 +42,7 @@ const PLUGINS = [
 	{ id: 'arpbind', i18n: 'arpbind', config: 'arpbind', group: 'network', fa: 'fa-thumbtack', page: '/pages/device/plugins/arpbind/index' },
 	{ id: 'firewall', i18n: 'firewall', fixed: true, group: 'network', fa: 'fa-shield-halved', page: '/pages/device/plugins/firewall/index' },
 	{ id: 'upnp', i18n: 'upnp', config: 'upnpd', group: 'network', abbr: 'UPnP', page: '/pages/device/plugins/upnp/index' },
-	{ id: 'wolplus', i18n: 'wolplus', config: 'wolplus', group: 'network', abbr: 'WOL', page: '/pages/device/plugins/wolplus/index' },
+	{ id: 'wolultra', i18n: 'wolultra', config: 'wolultra', group: 'network', abbr: 'WOL', page: '/pages/device/plugins/wolultra/index' },
 	{ id: 'samba4', i18n: 'samba', config: 'samba4', group: 'storage', fa: 'fa-share-nodes', page: '/pages/device/plugins/samba4/index' },
 	{ id: 'cifs', i18n: 'cifs', config: 'cifs-mount', group: 'storage', fa: 'fa-hard-drive', page: '/pages/device/plugins/cifs-mount/index' },
 	{ id: 'usb-printer', i18n: 'usb_printer', config: 'usb_printer', group: 'storage', fa: 'fa-print', page: '/pages/device/plugins/usb-printer/index' },

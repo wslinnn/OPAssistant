@@ -184,7 +184,7 @@ class DeviceManager {
 
 	// 已装 luci 插件探测：uci get config 存在即视为已装。并行探测，会话级缓存
 	static async getInstalledPlugins(configNames) {
-		const names = configNames || ['arpbind', 'autoreboot', 'wolplus', 'cifs-mount', 'samba4', 'upnpd', 'usb_printer', 'passwall2']
+		const names = configNames || ['arpbind', 'autoreboot', 'wolultra', 'cifs-mount', 'samba4', 'upnpd', 'usb_printer', 'passwall2']
 		if (_pluginsCache) return _pluginsCache
 		const device = this.getCurrentDevice()
 		const map = {}

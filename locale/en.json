@@ -356,9 +356,9 @@
     "ifname": "Interface",
     "empty": "No binding rules"
   },
-  "wolplus": {
-    "title": "Wake on LAN",
-    "desc": "Send magic packets to wake devices on LAN",
+  "wolultra": {
+    "title": "WOL Ultra",
+    "desc": "Wake local network devices immediately or on an individual schedule.",
     "add_host": "Add Host",
     "edit_host": "Edit Host",
     "name": "Name",
@@ -368,7 +368,17 @@
     "wake": "Wake",
     "save_first": "Please save the host before waking",
     "wake_sent": "Magic packet sent to {name}",
-    "wake_failed": "Wake failed"
+    "wake_failed": "Wake failed",
+    "group_general": "General Settings",
+    "group_schedule": "Scheduled Wake",
+    "scheduled": "Enable schedule",
+    "minute": "Minute (0-59)",
+    "hour": "Hour (0-23)",
+    "day": "Day (1-31)",
+    "month": "Month (1-12)",
+    "weeks": "Week (0-6)",
+    "mac_invalid": "Invalid MAC address",
+    "cron_invalid": "Must be an integer in range or \"*\""
   },
   "autoreboot": {
     "title": "Scheduled Reboot",

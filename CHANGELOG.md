@@ -18,6 +18,7 @@
 
 ### 改进
 - **应用更名** OPAssistant → **WrtCtrl**,版本 1.0.12 → 2.0.0,新应用图标 + Font Awesome 图标本地化(woff2)
+- **WOL 插件适配**:wolplus → wolultra(超级网络唤醒,后端 etherwake,新增定时唤醒 cron 字段)
 - **应用中心图标统一** Font Awesome solid + 技术简称(WOL / PW 等),缩小简称与图标的视觉差距
 - **首页仪表盘打磨**:5 卡换 `oa-card` + token 化、带宽图横轴显示真实时间(HH:mm:ss)、新增存储卡、温度字号统一、资源监控环补百分号
 - **输入聚焦反馈**:仿 Material 光环全站铺开(`oa-input-focus` mixin 移入 `uni.scss` 全局注入,复用闲置 `$oa-focus-ring`)

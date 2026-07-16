@@ -132,10 +132,10 @@
 		    }
 		},
 		{
-		    "path" : "pages/device/plugins/wolplus/index",
+		    "path" : "pages/device/plugins/wolultra/index",
 		    "style" :
 		    {
-		        "navigationBarTitleText": "%wolplus.title%",
+		        "navigationBarTitleText": "%wolultra.title%",
 		        "enablePullDownRefresh": true
 		    }
 		},

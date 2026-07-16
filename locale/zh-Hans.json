@@ -454,9 +454,9 @@
     "ifname": "接口",
     "empty": "暂无绑定规则"
   },
-  "wolplus": {
-    "title": "网络唤醒",
-    "desc": "向局域网设备发送魔法包，远程唤醒",
+  "wolultra": {
+    "title": "超级网络唤醒",
+    "desc": "立即唤醒局域网设备，或为每台设备设置独立的定时唤醒任务。",
     "add_host": "添加主机",
     "edit_host": "编辑主机",
     "name": "名称",
@@ -466,7 +466,17 @@
     "wake": "唤醒",
     "save_first": "请先保存主机再唤醒",
     "wake_sent": "唤醒包已发送给 {name}",
-    "wake_failed": "唤醒失败"
+    "wake_failed": "唤醒失败",
+    "group_general": "常规设置",
+    "group_schedule": "定时唤醒",
+    "scheduled": "启用定时",
+    "minute": "分(0-59)",
+    "hour": "时(0-23)",
+    "day": "日(1-31)",
+    "month": "月(1-12)",
+    "weeks": "周(0-6)",
+    "mac_invalid": "MAC 地址格式无效",
+    "cron_invalid": "需为指定范围内的整数或 *"
   },
   "autoreboot": {
     "title": "定时重启",
