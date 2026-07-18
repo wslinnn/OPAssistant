@@ -6,10 +6,9 @@
 
 ## 2.0.0
 
-应用更名 **WrtCtrl**、版本升至 2.0.0;导航与设备体验重构;新增快捷工具箱与终端搜索。
+应用更名 **WrtCtrl**、版本升至 2.0.0;导航与设备体验重构;新增终端搜索。
 
 ### 新增
-- **快捷工具箱**:WiFi 分频段 / IPv6 / 防火墙 / FullCone(IPv4·IPv6)/ UPnP 五个一键开关,按设备能力探测可用性,高危项二次确认 + rollback 兜底
 - **终端即时搜索**:无线客户端 / DHCPv4 / DHCPv6 列表按 MAC / 主机名 / IP 过滤,搜索框带一键清空
 - **设备历史页**:登录过的设备分组留存,tap 直连 + ping 延迟徽标(延迟为 HTTP 响应时间,仅供参考)+ 下拉刷新
 - **启动门控**:自动重连上次设备(`reconnectDevice` 探活 + 静默重登),失败回登录页;home 顶部下拉设备切换器
@@ -24,7 +23,6 @@
 - **输入聚焦反馈**:仿 Material 光环全站铺开(`oa-input-focus` mixin 移入 `uni.scss` 全局注入,复用闲置 `$oa-focus-ring`)
 - **登录页重构**:分组表单 + 密码显隐 + 凹陷输入 + 通栏主按钮 + 触摸热区 / 交互态 / 删除项 danger 语义色
 - **结构优化**:`PageTab` → `oa-page-tab`(easycom 统一)、`deviceManager.js` → `device-manager.js`、`device_list` 系列移入 `pages/device/`、删死页 `user/info` 与冗余 `client_detail`
-- **uci-rpc**:`apply` 白名单加 `enable|disable`(供 UPnP 等服务级开关)
 - 建立设计上下文文档:`PRODUCT.md` / `DESIGN.md` / `.impeccable/design.json`
 
 ### 修复

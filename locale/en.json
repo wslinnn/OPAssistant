@@ -336,7 +336,6 @@
     "diag": "Diagnostics",
     "syslog": "System Log",
     "conntrack": "Connections",
-    "toolbox": "Toolbox",
     "coming_soon": "Coming Soon",
     "group_tools": "Tools",
     "group_network": "Network & Security",
@@ -786,23 +785,5 @@
     "packets": "{n} pkts",
     "empty": "No connections",
     "load_failed": "Failed to load"
-  },
-  "toolbox": {
-    "title": "Quick Toolbox",
-    "wifi_24g": "WiFi 2.4G",
-    "wifi_5g": "WiFi 5G",
-    "wifi_radio": "WiFi · {device}",
-    "ipv6": "IPv6",
-    "ipv6_hint": "Disables LAN IPv6 distribution only",
-    "firewall": "Firewall",
-    "firewall_risk": "Disabling the firewall removes protection and may disconnect you during remote management. Continue?",
-    "fullcone": "FullCone NAT",
-    "fullcone6": "FullCone NAT IPv6",
-    "upnp": "UPnP",
-    "toggle_on": "On",
-    "toggle_off": "Off",
-    "load_failed": "Failed to load state",
-    "switch_success": "Updated",
-    "switch_failed": "Switch failed"
   }
 }

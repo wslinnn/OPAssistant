@@ -33,7 +33,6 @@ const TOOLS = [
 	{ id: 'diag', group: 'tools', fa: 'fa-wave-square', page: '/pages/device/apps/diag/index' },
 	{ id: 'syslog', group: 'tools', fa: 'fa-file-lines', page: '/pages/device/apps/syslog/index' },
 	{ id: 'conntrack', group: 'tools', fa: 'fa-link', page: '/pages/device/apps/conntrack/index' },
-	{ id: 'toolbox', group: 'tools', fa: 'fa-toolbox', page: '/pages/device/apps/toolbox/index' },
 	{ id: 'reboot', group: 'tools', fa: 'fa-rotate-right', page: '/pages/device/apps/reboot/index' }
 ]
 

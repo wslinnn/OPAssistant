@@ -64,7 +64,6 @@
 .fa-wave-square::before { content: '\f83e'; }
 .fa-file-lines::before { content: '\f15c'; }
 .fa-link::before { content: '\f0c1'; }
-.fa-toolbox::before { content: '\f552'; }
 .fa-rotate-right::before { content: '\f2f9'; }
 .fa-thumbtack::before { content: '\f08d'; }
 .fa-shield-halved::before { content: '\f3ed'; }

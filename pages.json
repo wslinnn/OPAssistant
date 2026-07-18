@@ -116,14 +116,6 @@
 		    }
 		},
 		{
-		    "path" : "pages/device/apps/toolbox/index",
-		    "style" :
-		    {
-		        "navigationBarTitleText": "%toolbox.title%",
-		        "enablePullDownRefresh": true
-		    }
-		},
-		{
 		    "path" : "pages/device/plugins/arpbind/index",
 		    "style" :
 		    {
